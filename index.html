@@ -376,6 +376,42 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 .theme-btn.active{border-color:var(--accent);background:rgba(76,142,255,.1);color:var(--accent)}
 .secondary-btn{background:var(--panel-2)!important;color:var(--text)!important;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;gap:8px}
 .brand{cursor:pointer}
+
+/* ---------- Action cards (Check-in / Challenges) ---------- */
+.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%}
+.action-card{
+  appearance:none;cursor:pointer;text-align:left;padding:0;
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  overflow:hidden;display:flex;flex-direction:column;
+  transition:border-color .15s,transform .1s;
+}
+.action-card:hover{border-color:#3A465C}
+.action-card:active{transform:scale(.985)}
+.action-card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.action-banner{
+  padding:12px 12px 28px;font-family:'Sora';font-weight:800;font-size:11px;
+  letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.9);
+}
+.action-banner.banner-checkin{background:linear-gradient(135deg,var(--accent),#2E6FE0)}
+.action-banner.banner-challenge{background:linear-gradient(135deg,#FFC24B,#E08A2E)}
+.action-body{padding:12px;display:flex;flex-direction:column;gap:6px;flex:1}
+.action-title{font-family:'Sora';font-weight:700;font-size:15px;color:var(--text);line-height:1.2}
+.action-desc{font-size:12px;color:var(--muted);line-height:1.4;flex:1}
+.action-arrow{align-self:flex-end;font-size:18px;color:var(--accent);font-weight:800}
+
+/* ---------- Leaderboard ---------- */
+.leaderboard-list{display:flex;flex-direction:column;gap:10px}
+.lb-row{
+  display:flex;align-items:center;gap:12px;
+  background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 16px;
+}
+.lb-row.lb-me{border-color:var(--accent);background:rgba(76,142,255,.08)}
+.lb-rank{font-family:'Sora';font-weight:800;font-size:15px;color:var(--muted);width:24px;text-align:center}
+.lb-row:nth-child(1) .lb-rank{color:#FFC24B}
+.lb-row:nth-child(2) .lb-rank{color:#C7CEDB}
+.lb-row:nth-child(3) .lb-rank{color:#D7935B}
+.lb-name{flex:1;font-weight:600;font-size:14.5px}
+.lb-streak{font-family:'Sora';font-weight:700;font-size:14px;color:var(--accent);font-variant-numeric:tabular-nums}
 </style>
 </head>
 <body>
@@ -434,8 +470,25 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
     </div>
     <div class="streak-chip">🔥 <span id="streakChip">0 Tage in Folge</span></div>
     <div class="community-chip" id="communityChip"></div>
-    <button class="cta" id="startBtn">Check-in starten</button>
-    <button class="cta" id="challengesBtn" style="background:var(--panel-2);color:var(--text);border:1px solid var(--line)">Challenges</button>
+    <div class="action-grid">
+      <button class="action-card" id="startBtn">
+        <div class="action-banner banner-checkin" id="checkinCardBanner">Heute</div>
+        <div class="action-body">
+          <div class="action-title" id="checkinCardTitle">Check-in starten</div>
+          <div class="action-desc" id="checkinCardDesc">15 Fragen, 90 Sekunden — dein Coach sieht sofort, wo du stehst.</div>
+          <div class="action-arrow">»</div>
+        </div>
+      </button>
+      <button class="action-card" id="challengesBtn">
+        <div class="action-banner banner-challenge" id="challengeCardBanner">Motivation</div>
+        <div class="action-body">
+          <div class="action-title" id="challengeCardTitle">Challenges</div>
+          <div class="action-desc" id="challengeCardDesc">Mach mit, tracke deinen Fortschritt und bleib gemeinsam dran.</div>
+          <div class="action-arrow">»</div>
+        </div>
+      </button>
+    </div>
+    <button class="cta secondary-btn" id="leaderboardBtn">🏆 <span id="leaderboardBtnText">Bestenliste</span></button>
     <div class="start-hint" id="startHint">Dauert ca. 90 Sekunden · Fortschritt wird automatisch gespeichert</div>
     <button class="logout-btn" id="logoutBtn">Abmelden</button>
   </section>
@@ -504,6 +557,18 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
     <h1 style="font-size:26px" id="challengesTitle">Challenges</h1>
     <div class="challenge-list" id="challengeList"></div>
     <div class="dash-footnote" id="challengesEmpty">Aktuell keine aktiven Challenges.</div>
+  </section>
+
+  <!-- LEADERBOARD -->
+  <section class="screen challenges" id="screen-leaderboard">
+    <div class="progress">
+      <button class="back-btn" id="leaderboardBackBtn">← Zurück</button>
+      <div class="progress-track" style="visibility:hidden"></div>
+      <div style="width:44px"></div>
+    </div>
+    <h1 style="font-size:26px" id="leaderboardTitle">Bestenliste</h1>
+    <div class="leaderboard-list" id="leaderboardList"></div>
+    <div class="dash-footnote" id="leaderboardEmpty">Noch keine Streaks vorhanden.</div>
   </section>
 
   <!-- CHECK-IN -->
@@ -659,7 +724,7 @@ de:{
       'auth/user-not-found':'Kein Konto mit dieser E-Mail gefunden.',
       'auth/wrong-password':'Falsches Passwort.'
     },
-    startTitleHTML:'Dein täglicher<br><em>Performance-Scan</em>',
+    startTitleHTML:'Dein täglicher <em>Performance-Scan</em>',
     startPara:'15 Fragen, nur Antippen. In 90 Sekunden weiß dein Coach genau, wo du stehst — und du auch.',
     streakSuffix:'Tage in Folge', ctaStart:'Check-in starten', challengesBtn:'Challenges',
     startHint:'Dauert ca. 90 Sekunden · Fortschritt wird automatisch gespeichert', logout:'Abmelden',
@@ -684,7 +749,11 @@ de:{
     labelCurrentPassword:'Aktuelles Passwort', labelNewPassword:'Neues Passwort',
     passwordFillBoth:'Bitte beide Felder ausfüllen.', passwordTooShort:'Neues Passwort braucht mindestens 6 Zeichen.',
     passwordSaved:'Passwort geändert.', passwordWrongCurrent:'Aktuelles Passwort ist falsch.',
-    rememberMeLabel:'Angemeldet bleiben'
+    rememberMeLabel:'Angemeldet bleiben',
+    checkinCardBanner:'Heute', checkinCardDesc:'15 Fragen, 90 Sekunden — dein Coach sieht sofort, wo du stehst.',
+    challengeCardBanner:'Motivation', challengeCardDesc:'Mach mit, tracke deinen Fortschritt und bleib gemeinsam dran.',
+    leaderboardBtnText:'Bestenliste', leaderboardTitle:'Bestenliste', leaderboardEmpty:'Noch keine Streaks vorhanden.',
+    lbYou:'(du)'
   },
   q:{
     feeling:{ title:'Wie fühlst du dich heute?', opts:[['😄','Sehr gut'],['🙂','Gut'],['😐','Okay'],['😕','Niedrig'],['😞','Schlecht']] },
@@ -753,7 +822,7 @@ en:{
       'auth/user-not-found':'No account found with this email.',
       'auth/wrong-password':'Incorrect password.'
     },
-    startTitleHTML:'Your daily<br><em>Performance Scan</em>',
+    startTitleHTML:'Your daily <em>Performance Scan</em>',
     startPara:'15 questions, just tap. In 90 seconds your coach knows exactly where you stand — and so do you.',
     streakSuffix:'days in a row', ctaStart:'Start check-in', challengesBtn:'Challenges',
     startHint:'Takes about 90 seconds · Progress is saved automatically', logout:'Log out',
@@ -778,7 +847,11 @@ en:{
     labelCurrentPassword:'Current password', labelNewPassword:'New password',
     passwordFillBoth:'Please fill in both fields.', passwordTooShort:'New password needs at least 6 characters.',
     passwordSaved:'Password changed.', passwordWrongCurrent:'Current password is incorrect.',
-    rememberMeLabel:'Stay signed in'
+    rememberMeLabel:'Stay signed in',
+    checkinCardBanner:'Today', checkinCardDesc:'15 questions, 90 seconds — your coach sees exactly where you stand.',
+    challengeCardBanner:'Motivation', challengeCardDesc:'Join in, track your progress, and stay accountable together.',
+    leaderboardBtnText:'Leaderboard', leaderboardTitle:'Leaderboard', leaderboardEmpty:'No streaks yet.',
+    lbYou:'(you)'
   },
   q:{
     feeling:{ title:'How are you feeling today?', opts:[['😄','Great'],['🙂','Good'],['😐','Okay'],['😕','Low'],['😞','Bad']] },
@@ -872,7 +945,11 @@ zh:{
     labelCurrentPassword:'目前密碼', labelNewPassword:'新密碼',
     passwordFillBoth:'請填寫兩個欄位。', passwordTooShort:'新密碼至少需要6個字元。',
     passwordSaved:'密碼已變更。', passwordWrongCurrent:'目前密碼不正確。',
-    rememberMeLabel:'保持登入狀態'
+    rememberMeLabel:'保持登入狀態',
+    checkinCardBanner:'今天', checkinCardDesc:'15個問題，90秒 — 教練馬上知道你的狀態。',
+    challengeCardBanner:'動力', challengeCardDesc:'一起參加、追蹤進度，互相督促堅持下去。',
+    leaderboardBtnText:'排行榜', leaderboardTitle:'排行榜', leaderboardEmpty:'目前還沒有任何連續打卡紀錄。',
+    lbYou:'（你）'
   },
   q:{
     feeling:{ title:'你今天感覺如何？', opts:[['😄','很好'],['🙂','不錯'],['😐','普通'],['😕','偏低'],['😞','不好']] },
@@ -924,7 +1001,7 @@ zh:{
    FLOW ENGINE
 ========================================================= */
 const $ = s=>document.querySelector(s);
-const screens = { auth:$('#screen-auth'), start:$('#screen-start'), checkin:$('#screen-checkin'), result:$('#screen-result'), settings:$('#screen-settings'), personal:$('#screen-personal'), password:$('#screen-password'), challenges:$('#screen-challenges') };
+const screens = { auth:$('#screen-auth'), start:$('#screen-start'), checkin:$('#screen-checkin'), result:$('#screen-result'), settings:$('#screen-settings'), personal:$('#screen-personal'), password:$('#screen-password'), challenges:$('#screen-challenges'), leaderboard:$('#screen-leaderboard') };
 let currentScreen = 'auth';
 
 function show(name){
@@ -957,8 +1034,12 @@ function applyLanguage(lang){
   setAuthMode(authMode);
   $('#startTitle').innerHTML = t.startTitleHTML;
   $('#startPara').textContent = t.startPara;
-  $('#startBtn').textContent = t.ctaStart;
-  $('#challengesBtn').textContent = t.challengesBtn;
+  $('#checkinCardBanner').textContent = t.checkinCardBanner;
+  $('#checkinCardTitle').textContent = t.ctaStart;
+  $('#checkinCardDesc').textContent = t.checkinCardDesc;
+  $('#challengeCardBanner').textContent = t.challengeCardBanner;
+  $('#challengeCardTitle').textContent = t.challengesBtn;
+  $('#challengeCardDesc').textContent = t.challengeCardDesc;
   $('#startHint').textContent = t.startHint;
   $('#logoutBtn').textContent = t.logout;
   $('#streakChip').textContent = state.streak+' '+t.streakSuffix;
@@ -998,6 +1079,10 @@ function applyLanguage(lang){
   $('#passwordSaveBtn').textContent = t.settingsSaveBtn;
   $('#passwordBackBtn').textContent = '← '+t.backBtn;
   $('#rememberMeLabel').textContent = t.rememberMeLabel;
+  $('#leaderboardBtnText').textContent = t.leaderboardBtnText;
+  $('#leaderboardTitle').textContent = t.leaderboardTitle;
+  $('#leaderboardEmpty').textContent = t.leaderboardEmpty;
+  $('#leaderboardBackBtn').textContent = '← '+t.backBtn;
   updateGreeting();
   updateCommunityChip();
   if(currentScreen==='checkin') renderQuestion();
@@ -1233,6 +1318,7 @@ $('#settingsSaveBtn').addEventListener('click', async ()=>{
   }, { merge:true });
   state.userName = name;
   updateGreeting();
+  updateLeaderboardEntry();
   $('#settingsSuccess').textContent = T[state.lang].ui.settingsSaved;
 });
 
@@ -1273,6 +1359,36 @@ $('#challengesBtn').addEventListener('click', async ()=>{
   await renderChallenges();
 });
 $('#challengesBackBtn').addEventListener('click', ()=> show('start'));
+
+/* =========================================================
+   BESTENLISTE — Name + Streak aller Klienten
+========================================================= */
+$('#leaderboardBtn').addEventListener('click', async ()=>{
+  show('leaderboard');
+  await renderLeaderboard();
+});
+$('#leaderboardBackBtn').addEventListener('click', ()=> show('start'));
+
+async function renderLeaderboard(){
+  const list = $('#leaderboardList');
+  list.innerHTML = '';
+  let entries = [];
+  try{
+    const snap = await getDocs(collection(db,'leaderboard'));
+    entries = snap.docs.map(d=>({ uid:d.id, ...d.data() })).filter(e=>e.streak>0).sort((a,b)=>b.streak-a.streak);
+  }catch(e){}
+  $('#leaderboardEmpty').classList.toggle('hidden', entries.length>0);
+  entries.forEach((e,i)=>{
+    const row = document.createElement('div');
+    row.className = 'lb-row'+(e.uid===state.uid?' lb-me':'');
+    const isYou = e.uid===state.uid;
+    row.innerHTML =
+      '<div class="lb-rank">'+(i+1)+'</div>'+
+      '<div class="lb-name">'+e.name+(isYou?' '+T[state.lang].ui.lbYou:'')+'</div>'+
+      '<div class="lb-streak">🔥 '+e.streak+'</div>';
+    list.appendChild(row);
+  });
+}
 
 async function renderChallenges(){
   const list = $('#challengeList');
@@ -1333,7 +1449,21 @@ async function refreshStreak(){
     state.streak = 0;
   }
   $('#streakChip').textContent = state.streak+' '+T[state.lang].ui.streakSuffix;
+  updateLeaderboardEntry();
   return state.streak;
+}
+
+async function updateLeaderboardEntry(){
+  try{
+    if(state.userName===undefined){
+      const uSnap = await getDoc(doc(db,'users',state.uid));
+      state.userName = uSnap.exists() ? (uSnap.data().name||'') : '';
+    }
+    await setDoc(doc(db,'leaderboard',state.uid), {
+      name: state.userName || (auth.currentUser?.email?.split('@')[0]) || '—',
+      streak: state.streak, updatedAt: serverTimestamp()
+    }, { merge:true });
+  }catch(e){}
 }
 
 function insertAfter(qid, offset=0){

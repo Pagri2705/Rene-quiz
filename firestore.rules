@@ -44,5 +44,13 @@ service cloud.firestore {
       allow read: if isSignedIn();
       allow write: if isSignedIn();
     }
+
+    // Bestenliste: nur Name + Streak, keine E-Mail/Telefon/Ziele — daher
+    // bewusst für alle eingeloggten Nutzer lesbar. Jeder darf nur sein
+    // eigenes Dokument schreiben.
+    match /leaderboard/{uid} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && request.auth.uid == uid;
+    }
   }
 }
