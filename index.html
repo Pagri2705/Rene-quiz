@@ -304,6 +304,16 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 .start p{max-width:34ch;margin:0 auto}
 .streak-chip{align-self:center}
 .community-chip{font-size:12.5px;color:var(--muted)}
+.banner{
+  width:100%;background:rgba(255,194,75,.1);border:1px solid rgba(255,194,75,.35);
+  border-radius:14px;padding:12px 14px;font-size:13px;display:flex;align-items:center;
+  justify-content:center;gap:10px;flex-wrap:wrap;text-align:center;
+}
+.banner.reminder{background:rgba(76,142,255,.1);border-color:rgba(76,142,255,.35)}
+.banner button{
+  background:none;border:1px solid var(--line);color:var(--text);cursor:pointer;
+  font-family:'Inter';font-size:12px;font-weight:600;padding:6px 12px;border-radius:999px;
+}
 
 /* ---------- Settings ---------- */
 .settings{gap:10px;padding-bottom:24px}
@@ -370,6 +380,13 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
       <h1 style="margin-top:10px" id="startTitle">Dein täglicher<br><em>Performance-Scan</em></h1>
     </div>
     <p id="startPara">15 Fragen, nur Antippen. In 90 Sekunden weiß dein Coach genau, wo du stehst — und du auch.</p>
+    <div class="banner hidden" id="verifyBanner">
+      <span id="verifyBannerText">Bitte bestätige deine E-Mail-Adresse.</span>
+      <button id="verifyResendBtn">Erneut senden</button>
+    </div>
+    <div class="banner reminder hidden" id="reminderBanner">
+      <span id="reminderBannerText">Du hast heute noch nicht eingecheckt.</span>
+    </div>
     <div class="streak-chip">🔥 <span id="streakChip">0 Tage in Folge</span></div>
     <div class="community-chip" id="communityChip"></div>
     <button class="cta" id="startBtn">Check-in starten</button>
@@ -467,7 +484,7 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
 import {
   getAuth, onAuthStateChanged, signInWithEmailAndPassword,
-  createUserWithEmailAndPassword, signOut, sendPasswordResetEmail
+  createUserWithEmailAndPassword, signOut, sendPasswordResetEmail, sendEmailVerification
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 import {
   getFirestore, doc, setDoc, getDoc, deleteDoc, collection, query, where,
@@ -574,7 +591,10 @@ de:{
     goalsPlaceholder:'Z. B. 5 kg abnehmen, 10 km laufen, mehr Energie im Alltag …',
     challengesTitle:'Challenges', challengesEmpty:'Aktuell keine aktiven Challenges.',
     challengeJoinBtn:'Teilnehmen', challengeLeaveBtn:'Verlassen', challengeJoinedLabel:'Dabei ✓',
-    challengeProgressLabel:'Fortschritt', communityToday:(n,total)=> n+' von '+total+' haben heute eingecheckt 🔥'
+    challengeProgressLabel:'Fortschritt', communityToday:(n,total)=> n+' von '+total+' haben heute eingecheckt 🔥',
+    verifyBannerText:'Bitte bestätige deine E-Mail-Adresse — check dein Postfach.',
+    verifyResendBtn:'Erneut senden', verifyResendSent:'E-Mail verschickt.',
+    reminderBannerText:'Du hast heute noch nicht eingecheckt — jetzt nachholen?'
   },
   q:{
     feeling:{ title:'Wie fühlst du dich heute?', opts:[['😄','Sehr gut'],['🙂','Gut'],['😐','Okay'],['😕','Niedrig'],['😞','Schlecht']] },
@@ -657,7 +677,10 @@ en:{
     goalsPlaceholder:'E.g. lose 5 kg, run 10 km, more energy day-to-day …',
     challengesTitle:'Challenges', challengesEmpty:'No active challenges right now.',
     challengeJoinBtn:'Join', challengeLeaveBtn:'Leave', challengeJoinedLabel:'Joined ✓',
-    challengeProgressLabel:'Progress', communityToday:(n,total)=> n+' of '+total+' checked in today 🔥'
+    challengeProgressLabel:'Progress', communityToday:(n,total)=> n+' of '+total+' checked in today 🔥',
+    verifyBannerText:'Please verify your email address — check your inbox.',
+    verifyResendBtn:'Resend', verifyResendSent:'Email sent.',
+    reminderBannerText:"You haven't checked in today yet — catch up now?"
   },
   q:{
     feeling:{ title:'How are you feeling today?', opts:[['😄','Great'],['🙂','Good'],['😐','Okay'],['😕','Low'],['😞','Bad']] },
@@ -740,7 +763,10 @@ zh:{
     goalsPlaceholder:'例如：減重5公斤、跑步10公里、每天更有活力……',
     challengesTitle:'挑戰任務', challengesEmpty:'目前沒有進行中的挑戰任務。',
     challengeJoinBtn:'參加', challengeLeaveBtn:'退出', challengeJoinedLabel:'已參加 ✓',
-    challengeProgressLabel:'進度', communityToday:(n,total)=> '今天有 '+n+' / '+total+' 人完成打卡 🔥'
+    challengeProgressLabel:'進度', communityToday:(n,total)=> '今天有 '+n+' / '+total+' 人完成打卡 🔥',
+    verifyBannerText:'請驗證你的電子郵件地址 — 請查看你的信箱。',
+    verifyResendBtn:'重新寄送', verifyResendSent:'郵件已寄出。',
+    reminderBannerText:'你今天還沒有打卡 — 現在補上嗎？'
   },
   q:{
     feeling:{ title:'你今天感覺如何？', opts:[['😄','很好'],['🙂','不錯'],['😐','普通'],['😕','偏低'],['😞','不好']] },
@@ -850,6 +876,9 @@ function applyLanguage(lang){
   $('#challengesTitle').textContent = t.challengesTitle;
   $('#challengesBackBtn').textContent = '← '+t.backBtn;
   $('#challengesEmpty').textContent = t.challengesEmpty;
+  $('#verifyBannerText').textContent = t.verifyBannerText;
+  $('#verifyResendBtn').textContent = t.verifyResendBtn;
+  $('#reminderBannerText').textContent = t.reminderBannerText;
   updateCommunityChip();
   if(currentScreen==='checkin') renderQuestion();
   if(currentScreen==='challenges') renderChallenges();
@@ -886,6 +915,7 @@ $('#authSubmitBtn').addEventListener('click', async ()=>{
       await signInWithEmailAndPassword(auth,email,password);
     } else {
       const cred = await createUserWithEmailAndPassword(auth,email,password);
+      await sendEmailVerification(cred.user);
       await setDoc(doc(db,'users',cred.user.uid), { email, name:'', phone:'', goals:'', createdAt: serverTimestamp() });
       await runTransaction(db, async (tx)=>{
         const ref = doc(db,'stats','totals');
@@ -919,6 +949,23 @@ function authErrorMessage(code){
 
 $('#logoutBtn').addEventListener('click', ()=> signOut(auth));
 
+$('#verifyResendBtn').addEventListener('click', async ()=>{
+  if(!auth.currentUser) return;
+  await sendEmailVerification(auth.currentUser);
+  $('#verifyResendBtn').textContent = T[state.lang].ui.verifyResendSent;
+});
+
+async function updateEngagementBanners(){
+  const user = auth.currentUser;
+  if(!user) return;
+  $('#verifyBanner').classList.toggle('hidden', user.emailVerified);
+
+  const todaySnap = await getDoc(doc(db,'checkins',state.uid+'_'+todayStr()));
+  const checkedInToday = todaySnap.exists();
+  const isEvening = new Date().getHours() >= 18;
+  $('#reminderBanner').classList.toggle('hidden', checkedInToday || !isEvening);
+}
+
 onAuthStateChanged(auth, async (user)=>{
   if(user){
     state.uid = user.uid;
@@ -926,6 +973,7 @@ onAuthStateChanged(auth, async (user)=>{
     $('#settingsBtn').classList.remove('hidden');
     await refreshStreak();
     await updateCommunityChip();
+    await updateEngagementBanners();
     show('start');
   } else {
     state.uid = null;
@@ -1277,7 +1325,7 @@ function animateRing(ringId,scoreId,score){
   requestAnimationFrame(step);
 }
 
-$('#doneBtn').addEventListener('click',()=>show('start'));
+$('#doneBtn').addEventListener('click', async ()=>{ show('start'); await updateEngagementBanners(); await updateCommunityChip(); });
 $('#startBtn').addEventListener('click',startCheckin);
 
 /* =========================================================

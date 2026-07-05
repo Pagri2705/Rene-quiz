@@ -151,6 +151,7 @@ h2{font-family:'Sora';font-weight:700;font-size:18px;margin-top:8px}
         <div class="stat-card"><div class="stat-num" id="statToday">–</div><div class="stat-label">Heute eingecheckt</div></div>
         <div class="stat-card"><div class="stat-num" id="statFlagged">–</div><div class="stat-label">Auffällig</div></div>
       </div>
+      <button class="cta secondary" id="exportCsvBtn" style="max-width:none">Als CSV exportieren</button>
       <h2>Hinweise</h2>
       <div class="alerts" id="alertList"></div>
       <h2>Klienten</h2>
@@ -274,6 +275,8 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
 /* =========================================================
    ÜBERSICHT — echte Klienten-Daten aus Firestore
 ========================================================= */
+let lastClients = [];
+
 async function loadDashboard(){
   const today = todayStr();
   const usersSnap = await getDocs(collection(db,'users'));
@@ -351,7 +354,30 @@ async function loadDashboard(){
     card.addEventListener('click', ()=>card.classList.toggle('open'));
     list.appendChild(card);
   });
+
+  lastClients = sorted;
 }
+
+function csvEscape(val){
+  const s = String(val ?? '');
+  return /[",\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s;
+}
+
+$('#exportCsvBtn').addEventListener('click', ()=>{
+  const headers = ['Name','E-Mail','Telefon','Letzter Check-in','Anzahl Check-ins','Ø Ernährung','Ø Training','Ø Recovery','Heute eingecheckt','Hinweise','Ziele'];
+  const rows = lastClients.map(c=>[
+    c.name||'', c.email||'', c.phone||'', c.lastDate||'', c.checkinCount,
+    c.aE, c.aT, c.aR, c.checkedInToday?'Ja':'Nein', c.flags.join(' | '), c.goals||''
+  ]);
+  const csv = [headers, ...rows].map(r=>r.map(csvEscape).join(',')).join('\r\n');
+  const blob = new Blob(['﻿'+csv], { type:'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'klienten-'+todayStr()+'.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+});
 
 function addDays(dateStr, delta){
   const d = new Date(dateStr+'T00:00:00');
