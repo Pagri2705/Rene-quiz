@@ -15,8 +15,8 @@
   --line:#232D3D;
   --text:#EDF1F7;
   --muted:#8B97A8;
-  --accent:#8B9DFF;
-  --accent-strong:#A5B3FF;
+  --accent:#4C8EFF;
+  --accent-strong:#6FA6FF;
   --green:#3DDC97;
   --amber:#FFC24B;
   --red:#FF6B6B;
@@ -26,7 +26,7 @@
 html,body{height:100%}
 body{
   background:
-    radial-gradient(1200px 600px at 80% -10%, rgba(139,157,255,.08), transparent 60%),
+    radial-gradient(1200px 600px at 80% -10%, rgba(76,142,255,.08), transparent 60%),
     var(--bg);
   color:var(--text);
   font-family:'Inter',system-ui,sans-serif;
@@ -38,14 +38,14 @@ body{
 }
 .app{
   width:100%;
-  max-width:440px;
+  max-width:820px;
   min-height:100dvh;
   display:flex;
   flex-direction:column;
   padding:0 20px calc(20px + env(safe-area-inset-bottom));
   position:relative;
 }
-@media(min-width:520px){
+@media(min-width:900px){
   .app{border-left:1px solid var(--line);border-right:1px solid var(--line)}
 }
 
@@ -57,7 +57,7 @@ header{
 .brand{display:flex;align-items:center;gap:10px}
 .brand-mark{
   width:30px;height:30px;border-radius:9px;
-  background:linear-gradient(135deg,var(--accent),#5E6FE0);
+  background:linear-gradient(135deg,var(--accent),#2E6FE0);
   display:grid;place-items:center;
   font-family:'Sora';font-weight:800;font-size:14px;color:#0D1219;
 }
@@ -139,7 +139,7 @@ h1 em{font-style:normal;color:var(--accent)}
 .opt:hover{border-color:#3A465C;background:var(--panel-2)}
 .opt:active{transform:scale(.985)}
 .opt:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.opt.selected{border-color:var(--accent);background:rgba(139,157,255,.1)}
+.opt.selected{border-color:var(--accent);background:rgba(76,142,255,.1)}
 
 /* ---------- Slider ---------- */
 .slider-block{display:flex;flex-direction:column;gap:18px;padding:8px 4px}
@@ -204,8 +204,8 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 }
 .ring-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:center}
 .insight{
-  background:linear-gradient(135deg,rgba(139,157,255,.12),rgba(139,157,255,.04));
-  border:1px solid rgba(139,157,255,.3);border-radius:var(--radius);
+  background:linear-gradient(135deg,rgba(76,142,255,.12),rgba(76,142,255,.04));
+  border:1px solid rgba(76,142,255,.3);border-radius:var(--radius);
   padding:16px 18px;font-size:14.5px;
 }
 .insight strong{font-family:'Sora';font-weight:700;display:block;margin-bottom:4px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
@@ -267,6 +267,23 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 .client-note{font-size:13px;color:var(--muted);background:var(--panel-2);border-radius:12px;padding:10px 12px}
 .client-note b{color:var(--text);font-weight:600}
 .dash-footnote{font-size:11.5px;color:var(--muted);text-align:center;padding-top:4px}
+
+/* ---------- Auth ---------- */
+.auth{justify-content:center;gap:16px;padding-bottom:60px}
+.auth-field{
+  width:100%;background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  color:var(--text);font-family:'Inter';font-size:15px;padding:15px 16px;
+}
+.auth-field::placeholder{color:#5B6779}
+.auth-field:focus-visible{outline:none;border-color:var(--accent)}
+.auth-error{font-size:13px;color:var(--red);min-height:18px}
+.auth-switch{font-size:13px;color:var(--muted);text-align:center}
+.auth-switch button{background:none;border:none;color:var(--accent);cursor:pointer;font-weight:600;font-family:'Inter';font-size:13px;padding:0}
+.logout-btn{
+  background:none;border:none;color:var(--muted);cursor:pointer;
+  font-size:12px;font-weight:600;font-family:'Inter';padding:4px 0;margin-top:-6px;
+}
+.logout-btn:hover,.logout-btn:focus-visible{color:var(--text)}
 </style>
 </head>
 <body>
@@ -277,19 +294,36 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
       <div class="brand-mark">M</div>
       <div class="brand-name">Modern Athlete <span>Lab</span></div>
     </div>
-    <button class="view-switch" id="viewSwitch">Coach-Ansicht</button>
+    <button class="view-switch hidden" id="viewSwitch">Coach-Ansicht</button>
   </header>
 
+  <!-- AUTH -->
+  <section class="screen auth active" id="screen-auth">
+    <div>
+      <div class="date-eyebrow">Willkommen</div>
+      <h1 style="margin-top:10px">Melde dich <em>an</em></h1>
+    </div>
+    <p id="authIntro">Mit E-Mail und Passwort anmelden, um deinen Check-in-Verlauf zu speichern.</p>
+    <input class="auth-field" id="authEmail" type="email" placeholder="E-Mail" autocomplete="email">
+    <input class="auth-field" id="authPassword" type="password" placeholder="Passwort" autocomplete="current-password">
+    <div class="auth-error" id="authError"></div>
+    <button class="cta" id="authSubmitBtn">Anmelden</button>
+    <div class="auth-switch">
+      <span id="authSwitchText">Noch kein Konto?</span> <button id="authSwitchBtn">Registrieren</button>
+    </div>
+  </section>
+
   <!-- START -->
-  <section class="screen start active" id="screen-start">
+  <section class="screen start" id="screen-start">
     <div>
       <div class="date-eyebrow" id="todayLabel"></div>
       <h1 style="margin-top:10px">Dein täglicher<br><em>Performance-Scan</em></h1>
     </div>
     <p>15 Fragen, nur Antippen. In 90 Sekunden weiß dein Coach genau, wo du stehst — und du auch.</p>
-    <div class="streak-chip">🔥 <span id="streakChip">6 Tage in Folge</span></div>
+    <div class="streak-chip">🔥 <span id="streakChip">0 Tage in Folge</span></div>
     <button class="cta" id="startBtn">Check-in starten</button>
     <div class="start-hint">Dauert ca. 90 Sekunden · Fortschritt wird automatisch gespeichert</div>
+    <button class="logout-btn" id="logoutBtn">Abmelden</button>
   </section>
 
   <!-- CHECK-IN -->
@@ -352,11 +386,39 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 
 </div>
 
-<script>
+<script type="module">
 /* =========================================================
-   STATE (in-memory — kein localStorage)
+   FIREBASE — Auth (E-Mail/Passwort) + Firestore (Check-ins)
+   Projekt in der Firebase Console anlegen und die Platzhalter
+   unten durch die echte Config ersetzen (Project Settings →
+   "Your apps" → SDK setup and configuration → Config).
 ========================================================= */
-const state = { answers:{}, queue:[], idx:0, streak:6 };
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+import {
+  getAuth, onAuthStateChanged, signInWithEmailAndPassword,
+  createUserWithEmailAndPassword, signOut
+} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+import {
+  getFirestore, doc, setDoc, collection, query, where,
+  getDocs, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAmNKAXWVxAanUpqB-1KQawyM7Wl-LR0vM",
+  authDomain: "rene-quiz.firebaseapp.com",
+  projectId: "rene-quiz",
+  storageBucket: "rene-quiz.firebasestorage.app",
+  messagingSenderId: "1050370639137",
+  appId: "1:1050370639137:web:7280095aaa905f0e806a60"
+};
+const fbApp = initializeApp(firebaseConfig);
+const auth = getAuth(fbApp);
+const db = getFirestore(fbApp);
+
+/* =========================================================
+   STATE (in-memory — Check-ins werden in Firestore persistiert)
+========================================================= */
+const state = { answers:{}, queue:[], idx:0, streak:0, uid:null };
 
 /* =========================================================
    QUESTION DEFINITIONS
@@ -474,8 +536,8 @@ const BASE_QUEUE = ['feeling','water','protein','veg','quality','hunger','digest
    FLOW ENGINE
 ========================================================= */
 const $ = s=>document.querySelector(s);
-const screens = { start:$('#screen-start'), checkin:$('#screen-checkin'), result:$('#screen-result'), dash:$('#screen-dash') };
-let currentScreen = 'start';
+const screens = { auth:$('#screen-auth'), start:$('#screen-start'), checkin:$('#screen-checkin'), result:$('#screen-result'), dash:$('#screen-dash') };
+let currentScreen = 'auth';
 
 function show(name){
   Object.values(screens).forEach(s=>s.classList.remove('active'));
@@ -483,6 +545,100 @@ function show(name){
   currentScreen = name;
   $('#viewSwitch').textContent = name==='dash' ? 'Client-Ansicht' : 'Coach-Ansicht';
   window.scrollTo(0,0);
+}
+
+/* =========================================================
+   AUTH — E-Mail/Passwort, Login/Registrierung im selben Screen
+========================================================= */
+let authMode = 'login';
+
+function setAuthMode(mode){
+  authMode = mode;
+  $('#authSubmitBtn').textContent = mode==='login' ? 'Anmelden' : 'Konto erstellen';
+  $('#authIntro').textContent = mode==='login'
+    ? 'Mit E-Mail und Passwort anmelden, um deinen Check-in-Verlauf zu speichern.'
+    : 'Neues Konto erstellen — Passwort braucht mindestens 6 Zeichen.';
+  $('#authSwitchText').textContent = mode==='login' ? 'Noch kein Konto?' : 'Schon registriert?';
+  $('#authSwitchBtn').textContent = mode==='login' ? 'Registrieren' : 'Anmelden';
+  $('#authError').textContent = '';
+}
+$('#authSwitchBtn').addEventListener('click',()=>setAuthMode(authMode==='login'?'register':'login'));
+
+$('#authSubmitBtn').addEventListener('click', async ()=>{
+  const email = $('#authEmail').value.trim();
+  const password = $('#authPassword').value;
+  const errBox = $('#authError');
+  errBox.textContent = '';
+  if(!email || !password){ errBox.textContent = 'Bitte E-Mail und Passwort eingeben.'; return; }
+  try{
+    if(authMode==='login') await signInWithEmailAndPassword(auth,email,password);
+    else await createUserWithEmailAndPassword(auth,email,password);
+  }catch(e){
+    errBox.textContent = authErrorMessage(e.code);
+  }
+});
+
+function authErrorMessage(code){
+  const map = {
+    'auth/invalid-email':'Ungültige E-Mail-Adresse.',
+    'auth/missing-password':'Bitte ein Passwort eingeben.',
+    'auth/weak-password':'Passwort braucht mindestens 6 Zeichen.',
+    'auth/email-already-in-use':'Für diese E-Mail existiert bereits ein Konto.',
+    'auth/invalid-credential':'E-Mail oder Passwort ist falsch.',
+    'auth/user-not-found':'Kein Konto mit dieser E-Mail gefunden.',
+    'auth/wrong-password':'Falsches Passwort.'
+  };
+  return map[code] || 'Etwas ist schiefgelaufen. Bitte erneut versuchen.';
+}
+
+$('#logoutBtn').addEventListener('click', ()=> signOut(auth));
+
+onAuthStateChanged(auth, async (user)=>{
+  if(user){
+    state.uid = user.uid;
+    $('#authEmail').value=''; $('#authPassword').value=''; $('#authError').textContent='';
+    $('#viewSwitch').classList.remove('hidden');
+    await refreshStreak();
+    show('start');
+  } else {
+    state.uid = null;
+    setAuthMode('login');
+    $('#viewSwitch').classList.add('hidden');
+    show('auth');
+  }
+});
+
+/* =========================================================
+   FIRESTORE — Check-ins pro Nutzer/Tag, Streak aus Historie
+========================================================= */
+function todayStr(){
+  const d = new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function dateStrOf(d){
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+async function saveCheckin(answers,scores){
+  const dateStr = todayStr();
+  await setDoc(doc(db,'checkins',state.uid+'_'+dateStr),{
+    uid: state.uid, dateStr, answers, scores, createdAt: serverTimestamp()
+  });
+}
+
+async function refreshStreak(){
+  const q = query(collection(db,'checkins'), where('uid','==',state.uid));
+  const snap = await getDocs(q);
+  const dates = new Set(snap.docs.map(d=>d.data().dateStr));
+  let streak = 0;
+  const cursor = new Date();
+  while(dates.has(dateStrOf(cursor))){
+    streak++;
+    cursor.setDate(cursor.getDate()-1);
+  }
+  state.streak = streak;
+  $('#streakChip').textContent = state.streak+' Tage in Folge';
+  return streak;
 }
 
 function insertAfter(qid, offset=0){
@@ -655,13 +811,13 @@ function buildInsight(a,s){
 /* =========================================================
    RESULT SCREEN
 ========================================================= */
-function finish(){
+async function finish(){
   const a = state.answers;
   const s = computeScores(a);
   show('result');
-  state.streak++;
+  await saveCheckin(a,s);
+  await refreshStreak();
   $('#streakBig').textContent = state.streak+' Tage';
-  $('#streakChip').textContent = state.streak+' Tage in Folge';
   $('#insightText').textContent = buildInsight(a,s);
 
   animateRing('ringErn','scoreErn',s.ern);
