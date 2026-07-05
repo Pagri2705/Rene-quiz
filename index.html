@@ -284,6 +284,15 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 }
 .auth-field::placeholder{color:#5B6779}
 .auth-field:focus-visible{outline:none;border-color:var(--accent)}
+.password-field{position:relative;width:100%}
+.password-field .auth-field{padding-right:46px}
+.password-toggle{
+  position:absolute;right:6px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;font-size:16px;padding:8px;
+  color:var(--muted);line-height:1;
+}
+.password-toggle:hover,.password-toggle:focus-visible{color:var(--text)}
+.cta[disabled]{opacity:.7;cursor:not-allowed}
 .auth-error{font-size:13px;color:var(--red);min-height:18px}
 .auth-switch{font-size:13px;color:var(--muted);text-align:center}
 .auth-switch button{background:none;border:none;color:var(--accent);cursor:pointer;font-weight:600;font-family:'Inter';font-size:13px;padding:0}
@@ -392,7 +401,10 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
     </div>
     <p id="authIntro">Mit E-Mail und Passwort anmelden, um deinen Check-in-Verlauf zu speichern.</p>
     <input class="auth-field" id="authEmail" type="email" placeholder="E-Mail" autocomplete="email">
-    <input class="auth-field" id="authPassword" type="password" placeholder="Passwort" autocomplete="current-password">
+    <div class="password-field">
+      <input class="auth-field" id="authPassword" type="password" placeholder="Passwort" autocomplete="current-password">
+      <button type="button" class="password-toggle" id="passwordToggleBtn" aria-label="Passwort anzeigen">👁</button>
+    </div>
     <div class="auth-error" id="authError"></div>
     <div class="auth-success" id="authSuccess"></div>
     <button class="cta" id="authSubmitBtn">Anmelden</button>
@@ -608,7 +620,7 @@ de:{
     authIntroLogin:'Mit E-Mail und Passwort anmelden, um deinen Check-in-Verlauf zu speichern.',
     authIntroRegister:'Neues Konto erstellen — Passwort braucht mindestens 6 Zeichen.',
     authEmailPh:'E-Mail', authPasswordPh:'Passwort',
-    authSubmitLogin:'Anmelden', authSubmitRegister:'Konto erstellen',
+    authSubmitLogin:'Anmelden', authSubmitRegister:'Konto erstellen', authSubmitting:'Wird angemeldet …',
     authSwitchTextLogin:'Noch kein Konto?', authSwitchTextRegister:'Schon registriert?',
     authSwitchBtnToRegister:'Registrieren', authSwitchBtnToLogin:'Anmelden',
     authForgotBtn:'Passwort vergessen?', authFillBoth:'Bitte E-Mail und Passwort eingeben.',
@@ -697,7 +709,7 @@ en:{
     authIntroLogin:'Sign in with email and password to save your check-in history.',
     authIntroRegister:'Create a new account — password needs at least 6 characters.',
     authEmailPh:'Email', authPasswordPh:'Password',
-    authSubmitLogin:'Sign in', authSubmitRegister:'Create account',
+    authSubmitLogin:'Sign in', authSubmitRegister:'Create account', authSubmitting:'Signing in …',
     authSwitchTextLogin:"Don't have an account yet?", authSwitchTextRegister:'Already registered?',
     authSwitchBtnToRegister:'Register', authSwitchBtnToLogin:'Sign in',
     authForgotBtn:'Forgot password?', authFillBoth:'Please enter email and password.',
@@ -786,7 +798,7 @@ zh:{
     authIntroLogin:'使用電子郵件與密碼登入，以儲存你的打卡紀錄。',
     authIntroRegister:'建立新帳號 — 密碼至少需要6個字元。',
     authEmailPh:'電子郵件', authPasswordPh:'密碼',
-    authSubmitLogin:'登入', authSubmitRegister:'建立帳號',
+    authSubmitLogin:'登入', authSubmitRegister:'建立帳號', authSubmitting:'登入中…',
     authSwitchTextLogin:'還沒有帳號？', authSwitchTextRegister:'已經有帳號了？',
     authSwitchBtnToRegister:'註冊', authSwitchBtnToLogin:'登入',
     authForgotBtn:'忘記密碼？', authFillBoth:'請輸入電子郵件與密碼。',
@@ -967,12 +979,23 @@ function setAuthMode(mode){
 }
 $('#authSwitchBtn').addEventListener('click',()=>setAuthMode(authMode==='login'?'register':'login'));
 
+$('#passwordToggleBtn').addEventListener('click', ()=>{
+  const input = $('#authPassword');
+  const showing = input.type==='text';
+  input.type = showing ? 'password' : 'text';
+  $('#passwordToggleBtn').textContent = showing ? '👁' : '🙈';
+});
+
 $('#authSubmitBtn').addEventListener('click', async ()=>{
   const email = $('#authEmail').value.trim();
   const password = $('#authPassword').value;
   const errBox = $('#authError');
+  const btn = $('#authSubmitBtn');
   errBox.textContent = ''; $('#authSuccess').textContent = '';
   if(!email || !password){ errBox.textContent = T[state.lang].ui.authFillBoth; return; }
+  const originalLabel = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = T[state.lang].ui.authSubmitting;
   try{
     if(authMode==='login'){
       await signInWithEmailAndPassword(auth,email,password);
@@ -988,6 +1011,9 @@ $('#authSubmitBtn').addEventListener('click', async ()=>{
     }
   }catch(e){
     errBox.textContent = authErrorMessage(e.code);
+  }finally{
+    btn.disabled = false;
+    btn.textContent = originalLabel;
   }
 });
 
