@@ -293,6 +293,8 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 }
 .password-toggle:hover,.password-toggle:focus-visible{color:var(--text)}
 .cta[disabled]{opacity:.7;cursor:not-allowed}
+.remember-me{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);cursor:pointer}
+.remember-me input{width:16px;height:16px;accent-color:var(--accent)}
 .auth-error{font-size:13px;color:var(--red);min-height:18px}
 .auth-switch{font-size:13px;color:var(--muted);text-align:center}
 .auth-switch button{background:none;border:none;color:var(--accent);cursor:pointer;font-weight:600;font-family:'Inter';font-size:13px;padding:0}
@@ -405,6 +407,7 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
       <input class="auth-field" id="authPassword" type="password" placeholder="Passwort" autocomplete="current-password">
       <button type="button" class="password-toggle" id="passwordToggleBtn" aria-label="Passwort anzeigen">👁</button>
     </div>
+    <label class="remember-me"><input type="checkbox" id="rememberMe" checked> <span id="rememberMeLabel">Angemeldet bleiben</span></label>
     <div class="auth-error" id="authError"></div>
     <div class="auth-success" id="authSuccess"></div>
     <button class="cta" id="authSubmitBtn">Anmelden</button>
@@ -562,7 +565,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/fireba
 import {
   getAuth, onAuthStateChanged, signInWithEmailAndPassword,
   createUserWithEmailAndPassword, signOut, sendPasswordResetEmail, sendEmailVerification,
-  EmailAuthProvider, reauthenticateWithCredential, updatePassword
+  EmailAuthProvider, reauthenticateWithCredential, updatePassword,
+  setPersistence, browserLocalPersistence, browserSessionPersistence
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 import {
   getFirestore, doc, setDoc, getDoc, deleteDoc, collection, query, where,
@@ -679,7 +683,8 @@ de:{
     changePasswordBtnText:'Passwort ändern', passwordTitle:'Passwort ändern',
     labelCurrentPassword:'Aktuelles Passwort', labelNewPassword:'Neues Passwort',
     passwordFillBoth:'Bitte beide Felder ausfüllen.', passwordTooShort:'Neues Passwort braucht mindestens 6 Zeichen.',
-    passwordSaved:'Passwort geändert.', passwordWrongCurrent:'Aktuelles Passwort ist falsch.'
+    passwordSaved:'Passwort geändert.', passwordWrongCurrent:'Aktuelles Passwort ist falsch.',
+    rememberMeLabel:'Angemeldet bleiben'
   },
   q:{
     feeling:{ title:'Wie fühlst du dich heute?', opts:[['😄','Sehr gut'],['🙂','Gut'],['😐','Okay'],['😕','Niedrig'],['😞','Schlecht']] },
@@ -772,7 +777,8 @@ en:{
     changePasswordBtnText:'Change password', passwordTitle:'Change password',
     labelCurrentPassword:'Current password', labelNewPassword:'New password',
     passwordFillBoth:'Please fill in both fields.', passwordTooShort:'New password needs at least 6 characters.',
-    passwordSaved:'Password changed.', passwordWrongCurrent:'Current password is incorrect.'
+    passwordSaved:'Password changed.', passwordWrongCurrent:'Current password is incorrect.',
+    rememberMeLabel:'Stay signed in'
   },
   q:{
     feeling:{ title:'How are you feeling today?', opts:[['😄','Great'],['🙂','Good'],['😐','Okay'],['😕','Low'],['😞','Bad']] },
@@ -865,7 +871,8 @@ zh:{
     changePasswordBtnText:'變更密碼', passwordTitle:'變更密碼',
     labelCurrentPassword:'目前密碼', labelNewPassword:'新密碼',
     passwordFillBoth:'請填寫兩個欄位。', passwordTooShort:'新密碼至少需要6個字元。',
-    passwordSaved:'密碼已變更。', passwordWrongCurrent:'目前密碼不正確。'
+    passwordSaved:'密碼已變更。', passwordWrongCurrent:'目前密碼不正確。',
+    rememberMeLabel:'保持登入狀態'
   },
   q:{
     feeling:{ title:'你今天感覺如何？', opts:[['😄','很好'],['🙂','不錯'],['😐','普通'],['😕','偏低'],['😞','不好']] },
@@ -990,6 +997,7 @@ function applyLanguage(lang){
   $('#labelNewPassword').textContent = t.labelNewPassword;
   $('#passwordSaveBtn').textContent = t.settingsSaveBtn;
   $('#passwordBackBtn').textContent = '← '+t.backBtn;
+  $('#rememberMeLabel').textContent = t.rememberMeLabel;
   updateGreeting();
   updateCommunityChip();
   if(currentScreen==='checkin') renderQuestion();
@@ -1034,6 +1042,7 @@ $('#authSubmitBtn').addEventListener('click', async ()=>{
   btn.disabled = true;
   btn.textContent = T[state.lang].ui.authSubmitting;
   try{
+    await setPersistence(auth, $('#rememberMe').checked ? browserLocalPersistence : browserSessionPersistence);
     if(authMode==='login'){
       await signInWithEmailAndPassword(auth,email,password);
     } else {

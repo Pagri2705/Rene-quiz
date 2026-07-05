@@ -44,6 +44,8 @@ h2{font-family:'Sora';font-weight:700;font-size:18px;margin-top:8px}
   color:var(--text);font-family:'Inter';font-size:15px;padding:15px 16px;
 }
 .auth-error{font-size:13px;color:var(--red);min-height:18px}
+.remember-me{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);cursor:pointer}
+.remember-me input{width:16px;height:16px;accent-color:var(--accent)}
 .cta{
   appearance:none;border:none;cursor:pointer;background:var(--accent);color:#0D1219;
   font-family:'Sora';font-weight:700;font-size:15px;border-radius:14px;padding:14px 20px;
@@ -133,6 +135,7 @@ h2{font-family:'Sora';font-weight:700;font-size:18px;margin-top:8px}
     </div>
     <input class="auth-field" id="authEmail" type="email" placeholder="E-Mail" autocomplete="email">
     <input class="auth-field" id="authPassword" type="password" placeholder="Passwort" autocomplete="current-password">
+    <label class="remember-me"><input type="checkbox" id="rememberMe" checked> Angemeldet bleiben</label>
     <div class="auth-error" id="authError"></div>
     <button class="cta" id="authSubmitBtn">Anmelden</button>
   </section>
@@ -212,7 +215,8 @@ h2{font-family:'Sora';font-weight:700;font-size:18px;margin-top:8px}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
 import {
   getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut,
-  EmailAuthProvider, reauthenticateWithCredential, updatePassword
+  EmailAuthProvider, reauthenticateWithCredential, updatePassword,
+  setPersistence, browserLocalPersistence, browserSessionPersistence
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 import {
   getFirestore, doc, setDoc, deleteDoc, collection, getDocs, query, where, serverTimestamp
@@ -257,6 +261,7 @@ $('#authSubmitBtn').addEventListener('click', async ()=>{
     return;
   }
   try{
+    await setPersistence(auth, $('#rememberMe').checked ? browserLocalPersistence : browserSessionPersistence);
     await signInWithEmailAndPassword(auth,email,password);
   }catch(e){
     errBox.textContent = 'E-Mail oder Passwort ist falsch.';
@@ -271,7 +276,9 @@ onAuthStateChanged(auth, async (user)=>{
     await loadDashboard();
     await loadChallengeManagement();
   } else {
-    if(user) await signOut(auth);
+    // Kein signOut hier: index.html und admin.html teilen sich die Firebase-Session
+    // auf derselben Domain — ein erzwungener signOut würde auch eingeloggte
+    // Klienten in anderen Tabs ausloggen.
     $('#logoutBtn').classList.add('hidden');
     show('auth');
   }
