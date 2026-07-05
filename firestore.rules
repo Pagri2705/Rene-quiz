@@ -2,9 +2,45 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function isCoach() {
+      return isSignedIn() && request.auth.token.email == 'rene.schneider1410@gmail.com';
+    }
+
     match /checkins/{checkinId} {
-      allow read, update, delete: if request.auth != null && request.auth.uid == resource.data.uid;
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.uid;
+      allow read: if isSignedIn() && (request.auth.uid == resource.data.uid || isCoach());
+      allow update, delete: if isSignedIn() && request.auth.uid == resource.data.uid;
+      allow create: if isSignedIn() && request.auth.uid == request.resource.data.uid;
+    }
+
+    match /users/{uid} {
+      allow read: if isSignedIn() && (request.auth.uid == uid || isCoach());
+      allow write: if isSignedIn() && request.auth.uid == uid;
+    }
+
+    match /challenges/{challengeId} {
+      allow read: if isSignedIn();
+      allow write: if isCoach();
+    }
+
+    match /challengeParticipants/{participantId} {
+      allow read: if isSignedIn() && (resource.data.uid == request.auth.uid || isCoach());
+      allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
+      allow delete: if isSignedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    // Aggregate-only counters, keine personenbezogenen Daten — bewusst offen
+    // lesbar/schreibbar für den anonymisierten "X von Y" Check-in-Zähler.
+    match /stats/{statId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
+    }
+    match /dailyStats/{dateId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
     }
   }
 }

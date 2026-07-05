@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Modern Athlete Lab — Coach-Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0D1219; --panel:#141B25; --panel-2:#1A2230; --line:#232D3D;
+  --text:#EDF1F7; --muted:#8B97A8; --accent:#4C8EFF; --accent-strong:#6FA6FF;
+  --green:#3DDC97; --amber:#FFC24B; --red:#FF6B6B; --radius:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background: radial-gradient(1200px 600px at 80% -10%, rgba(76,142,255,.08), transparent 60%), var(--bg);
+  color:var(--text); font-family:'Inter',system-ui,sans-serif; font-size:16px; line-height:1.5;
+  -webkit-font-smoothing:antialiased; display:flex; justify-content:center;
+}
+.app{ width:100%; max-width:920px; min-height:100dvh; display:flex; flex-direction:column;
+  padding:0 20px 40px; position:relative; }
+@media(min-width:1000px){ .app{border-left:1px solid var(--line);border-right:1px solid var(--line)} }
+header{ display:flex;align-items:center;justify-content:space-between;padding:18px 0 14px; }
+.brand{display:flex;align-items:center;gap:10px}
+.brand-mark{ width:30px;height:30px;border-radius:9px; background:linear-gradient(135deg,var(--accent),#2E6FE0);
+  display:grid;place-items:center; font-family:'Sora';font-weight:800;font-size:14px;color:#0D1219; }
+.brand-name{font-family:'Sora';font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase}
+.brand-name span{color:var(--muted);font-weight:600}
+.logout-btn{ background:none;border:none;color:var(--muted);cursor:pointer;
+  font-size:12px;font-weight:600;font-family:'Inter'; }
+.logout-btn:hover{color:var(--text)}
+.screen{display:none;flex:1;flex-direction:column;gap:16px}
+.screen.active{display:flex}
+h1{font-family:'Sora';font-weight:800;font-size:28px;letter-spacing:-.01em}
+h2{font-family:'Sora';font-weight:700;font-size:18px;margin-top:8px}
+
+/* Auth */
+.auth-wrap{justify-content:center;align-items:center;text-align:center;gap:16px;flex:1}
+.auth-field{
+  width:100%;max-width:340px;background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  color:var(--text);font-family:'Inter';font-size:15px;padding:15px 16px;
+}
+.auth-error{font-size:13px;color:var(--red);min-height:18px}
+.cta{
+  appearance:none;border:none;cursor:pointer;background:var(--accent);color:#0D1219;
+  font-family:'Sora';font-weight:700;font-size:15px;border-radius:14px;padding:14px 20px;
+  max-width:340px;width:100%;
+}
+.cta:hover{background:var(--accent-strong)}
+.cta.secondary{background:var(--panel-2);color:var(--text);border:1px solid var(--line)}
+
+/* Stats row */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.stat-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;text-align:center}
+.stat-num{font-family:'Sora';font-weight:800;font-size:26px}
+.stat-label{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:4px}
+
+/* Alerts */
+.alerts{display:flex;flex-direction:column;gap:8px}
+.alert{ display:flex;align-items:flex-start;gap:10px; background:rgba(255,107,107,.08);
+  border:1px solid rgba(255,107,107,.35); border-radius:14px;padding:12px 14px;font-size:13.5px; }
+.alert .dot{width:8px;height:8px;border-radius:50%;background:var(--red);margin-top:6px;flex-shrink:0}
+.alert strong{font-weight:600}
+.alert .a-detail{color:var(--muted)}
+
+/* Client list */
+.client-list{display:flex;flex-direction:column;gap:10px}
+.client{ background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:14px 16px;cursor:pointer;transition:border-color .15s; }
+.client:hover{border-color:#3A465C}
+.client.flagged{border-color:rgba(255,107,107,.45)}
+.client-row{display:flex;align-items:center;gap:12px}
+.avatar{ width:38px;height:38px;border-radius:12px;flex-shrink:0; background:var(--panel-2);
+  display:grid;place-items:center; font-family:'Sora';font-weight:700;font-size:13px;color:var(--accent); }
+.client-meta{flex:1;min-width:0}
+.client-name{font-weight:600;font-size:15px}
+.client-last{font-size:12px;color:var(--muted)}
+.pillar-dots{display:flex;gap:7px}
+.pdot{width:13px;height:13px;border-radius:50%}
+.pdot.g{background:var(--green)} .pdot.y{background:var(--amber)} .pdot.r{background:var(--red)}
+.client-detail{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--line);flex-direction:column;gap:10px}
+.client.open .client-detail{display:flex}
+.client-note{font-size:13px;color:var(--muted);background:var(--panel-2);border-radius:12px;padding:10px 12px}
+.client-note b{color:var(--text);font-weight:600}
+.client-goals{font-size:13px;color:var(--muted);background:var(--panel-2);border-radius:12px;padding:10px 12px}
+.client-goals b{color:var(--text);font-weight:600}
+.empty-note{font-size:13px;color:var(--muted);text-align:center;padding:20px 0}
+
+/* Challenge management */
+.challenge-form{ background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px;display:flex;flex-direction:column;gap:10px; }
+.challenge-form label{font-size:12px;font-weight:600;color:var(--muted)}
+.challenge-form input,.challenge-form select,.challenge-form textarea{
+  width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;
+  color:var(--text);font-family:'Inter';font-size:14px;padding:10px 12px;
+}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.challenge-list{display:flex;flex-direction:column;gap:10px}
+.challenge-item{ background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px; }
+.challenge-item-title{font-weight:600;font-size:14.5px}
+.challenge-item-meta{font-size:12px;color:var(--muted)}
+.delete-btn{ background:none;border:1px solid rgba(255,107,107,.4);color:var(--red);
+  font-family:'Inter';font-size:12px;font-weight:600;padding:7px 12px;border-radius:999px;cursor:pointer; }
+.delete-btn:hover{background:rgba(255,107,107,.1)}
+
+.tabs{display:flex;gap:8px;border-bottom:1px solid var(--line);padding-bottom:10px}
+.tab-btn{ background:none;border:none;color:var(--muted);font-family:'Sora';font-weight:700;
+  font-size:14px;cursor:pointer;padding:8px 4px;border-bottom:2px solid transparent; }
+.tab-btn.active{color:var(--text);border-color:var(--accent)}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div class="brand-name">Modern Athlete <span>Lab · Coach</span></div>
+    </div>
+    <button class="logout-btn hidden" id="logoutBtn">Abmelden</button>
+  </header>
+
+  <!-- AUTH -->
+  <section class="screen auth-wrap active" id="screen-auth">
+    <div>
+      <div style="font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Coach-Zugang</div>
+      <h1 style="margin-top:8px">Anmelden</h1>
+    </div>
+    <input class="auth-field" id="authEmail" type="email" placeholder="E-Mail" autocomplete="email">
+    <input class="auth-field" id="authPassword" type="password" placeholder="Passwort" autocomplete="current-password">
+    <div class="auth-error" id="authError"></div>
+    <button class="cta" id="authSubmitBtn">Anmelden</button>
+  </section>
+
+  <!-- DASHBOARD -->
+  <section class="screen" id="screen-dash">
+    <h1>Coach-Dashboard</h1>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="overview">Übersicht</button>
+      <button class="tab-btn" data-tab="challenges">Challenges</button>
+    </div>
+
+    <div id="tab-overview">
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-num" id="statTotal">–</div><div class="stat-label">Klienten</div></div>
+        <div class="stat-card"><div class="stat-num" id="statToday">–</div><div class="stat-label">Heute eingecheckt</div></div>
+        <div class="stat-card"><div class="stat-num" id="statFlagged">–</div><div class="stat-label">Auffällig</div></div>
+      </div>
+      <h2>Hinweise</h2>
+      <div class="alerts" id="alertList"></div>
+      <h2>Klienten</h2>
+      <div class="client-list" id="clientList"></div>
+      <div class="empty-note" id="clientsEmpty" style="display:none">Noch keine registrierten Klienten.</div>
+    </div>
+
+    <div id="tab-challenges" class="hidden">
+      <h2>Neue Challenge anlegen</h2>
+      <div class="challenge-form">
+        <label>Titel</label>
+        <input id="chTitle" type="text" placeholder="z. B. 7 Tage Streak">
+        <label>Beschreibung (optional)</label>
+        <textarea id="chDesc" rows="2" placeholder="Kurze Erklärung für die Klienten"></textarea>
+        <div class="form-row">
+          <div>
+            <label>Ziel-Wert (Anzahl Check-ins im Zeitraum)</label>
+            <input id="chTarget" type="number" min="1" value="7">
+          </div>
+          <div></div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label>Start</label>
+            <input id="chStart" type="date">
+          </div>
+          <div>
+            <label>Ende</label>
+            <input id="chEnd" type="date">
+          </div>
+        </div>
+        <button class="cta" id="chCreateBtn" style="max-width:none">Challenge erstellen</button>
+        <div class="auth-error" id="chError"></div>
+      </div>
+      <h2>Bestehende Challenges</h2>
+      <div class="challenge-list" id="challengeMgmtList"></div>
+      <div class="empty-note" id="challengesEmpty" style="display:none">Noch keine Challenges angelegt.</div>
+    </div>
+  </section>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+import {
+  getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut
+} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+import {
+  getFirestore, doc, setDoc, deleteDoc, collection, getDocs, query, where, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAmNKAXWVxAanUpqB-1KQawyM7Wl-LR0vM",
+  authDomain: "rene-quiz.firebaseapp.com",
+  projectId: "rene-quiz",
+  storageBucket: "rene-quiz.firebasestorage.app",
+  messagingSenderId: "1050370639137",
+  appId: "1:1050370639137:web:7280095aaa905f0e806a60"
+};
+const COACH_EMAILS = ['rene.schneider1410@gmail.com'];
+
+const fbApp = initializeApp(firebaseConfig);
+const auth = getAuth(fbApp);
+const db = getFirestore(fbApp);
+
+const $ = s=>document.querySelector(s);
+const screens = { auth:$('#screen-auth'), dash:$('#screen-dash') };
+function show(name){
+  Object.values(screens).forEach(s=>s.classList.remove('active'));
+  screens[name].classList.add('active');
+}
+
+function todayStr(){
+  const d = new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+const round1 = n=>Math.round(n*10)/10;
+function zone(s){ return s>=7?'g':(s>=4?'y':'r'); }
+
+$('#authSubmitBtn').addEventListener('click', async ()=>{
+  const email = $('#authEmail').value.trim();
+  const password = $('#authPassword').value;
+  const errBox = $('#authError');
+  errBox.textContent = '';
+  if(!email || !password){ errBox.textContent = 'Bitte E-Mail und Passwort eingeben.'; return; }
+  if(!COACH_EMAILS.includes(email)){
+    errBox.textContent = 'Diese E-Mail hat keinen Coach-Zugang.';
+    return;
+  }
+  try{
+    await signInWithEmailAndPassword(auth,email,password);
+  }catch(e){
+    errBox.textContent = 'E-Mail oder Passwort ist falsch.';
+  }
+});
+$('#logoutBtn').addEventListener('click', ()=> signOut(auth));
+
+onAuthStateChanged(auth, async (user)=>{
+  if(user && COACH_EMAILS.includes(user.email)){
+    $('#logoutBtn').classList.remove('hidden');
+    show('dash');
+    await loadDashboard();
+    await loadChallengeManagement();
+  } else {
+    if(user) await signOut(auth);
+    $('#logoutBtn').classList.add('hidden');
+    show('auth');
+  }
+});
+
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const tab = btn.dataset.tab;
+    $('#tab-overview').classList.toggle('hidden', tab!=='overview');
+    $('#tab-challenges').classList.toggle('hidden', tab!=='challenges');
+  });
+});
+
+/* =========================================================
+   ÜBERSICHT — echte Klienten-Daten aus Firestore
+========================================================= */
+async function loadDashboard(){
+  const today = todayStr();
+  const usersSnap = await getDocs(collection(db,'users'));
+  const users = usersSnap.docs.map(d=>({ uid:d.id, ...d.data() }));
+
+  $('#statTotal').textContent = users.length;
+  $('#clientsEmpty').style.display = users.length ? 'none' : 'block';
+
+  const clients = [];
+  for(const u of users){
+    const cSnap = await getDocs(query(collection(db,'checkins'), where('uid','==',u.uid)));
+    const all = cSnap.docs.map(d=>d.data()).sort((a,b)=> a.dateStr < b.dateStr ? 1 : -1);
+    const last7 = all.slice(0,7);
+    const checkedInToday = all.some(c=>c.dateStr===today);
+    const ern = last7.map(c=>c.scores?.ern).filter(v=>v!=null);
+    const tra = last7.map(c=>c.scores?.tra).filter(v=>v!=null);
+    const rec = last7.map(c=>c.scores?.rec).filter(v=>v!=null);
+    const avg = arr => arr.length ? round1(arr.reduce((a,b)=>a+b,0)/arr.length) : 0;
+    const aE=avg(ern), aT=avg(tra), aR=avg(rec);
+
+    const flags = [];
+    if(!all.length) flags.push('Noch nie eingecheckt');
+    else if(!all.some(c=>c.dateStr >= addDays(today,-3))) flags.push('Kein Check-in seit 3+ Tagen');
+    const sleepLowCount = last7.filter(c=>c.answers?.sleepH===0).length;
+    if(sleepLowCount>=2) flags.push('Schlaf < 5 h ('+sleepLowCount+' von '+last7.length+' Tagen)');
+    const missedCount = last7.filter(c=>c.answers?.training===3).length;
+    if(missedCount>=3) flags.push('Training '+missedCount+'× verpasst in den letzten '+last7.length+' Check-ins');
+    if(last7[0]?.answers?.pain===3) flags.push('Starke Schmerzen beim letzten Check-in');
+
+    clients.push({ ...u, aE, aT, aR, flags, lastDate: all[0]?.dateStr || null, checkedInToday, checkinCount: all.length });
+  }
+
+  $('#statToday').textContent = clients.filter(c=>c.checkedInToday).length;
+  $('#statFlagged').textContent = clients.filter(c=>c.flags.length).length;
+
+  const alertBox = $('#alertList');
+  alertBox.innerHTML = '';
+  clients.forEach(c=>{
+    c.flags.forEach(f=>{
+      const el = document.createElement('div');
+      el.className='alert';
+      el.innerHTML = '<span class="dot"></span><div><strong>'+(c.name||c.email)+'</strong> · <span class="a-detail">'+f+'</span></div>';
+      alertBox.appendChild(el);
+    });
+  });
+
+  const sorted = clients.sort((a,b)=>{
+    if(b.flags.length!==a.flags.length) return b.flags.length-a.flags.length;
+    const wa = Math.min(a.aE,a.aT,a.aR), wb = Math.min(b.aE,b.aT,b.aR);
+    return wa-wb;
+  });
+
+  const list = $('#clientList');
+  list.innerHTML = '';
+  sorted.forEach(c=>{
+    const initials = (c.name || c.email || '?').split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase();
+    const card = document.createElement('div');
+    card.className = 'client'+(c.flags.length?' flagged':'');
+    card.innerHTML =
+      '<div class="client-row">'+
+        '<div class="avatar">'+initials+'</div>'+
+        '<div class="client-meta"><div class="client-name">'+(c.name||'(kein Name)')+'</div>'+
+        '<div class="client-last">'+c.email+' · Letzter Check-in: '+(c.lastDate||'nie')+'</div></div>'+
+        '<div class="pillar-dots">'+
+          '<span class="pdot '+zone(c.aE)+'"></span>'+
+          '<span class="pdot '+zone(c.aT)+'"></span>'+
+          '<span class="pdot '+zone(c.aR)+'"></span>'+
+        '</div>'+
+      '</div>'+
+      '<div class="client-detail">'+
+        '<div>Ø Ernährung: '+c.aE+' / 10 · Ø Training: '+c.aT+' / 10 · Ø Recovery: '+c.aR+' / 10</div>'+
+        (c.phone ? '<div class="client-note"><b>Telefon:</b> '+c.phone+'</div>' : '') +
+        (c.goals ? '<div class="client-goals"><b>Ziele:</b> '+c.goals+'</div>' : '') +
+      '</div>';
+    card.addEventListener('click', ()=>card.classList.toggle('open'));
+    list.appendChild(card);
+  });
+}
+
+function addDays(dateStr, delta){
+  const d = new Date(dateStr+'T00:00:00');
+  d.setDate(d.getDate()+delta);
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+/* =========================================================
+   CHALLENGE-VERWALTUNG
+========================================================= */
+$('#chCreateBtn').addEventListener('click', async ()=>{
+  const title = $('#chTitle').value.trim();
+  const description = $('#chDesc').value.trim();
+  const target = parseInt($('#chTarget').value,10);
+  const startDate = $('#chStart').value;
+  const endDate = $('#chEnd').value;
+  const errBox = $('#chError');
+  errBox.textContent = '';
+  if(!title || !target || !startDate || !endDate){
+    errBox.textContent = 'Bitte Titel, Ziel-Wert, Start- und Enddatum ausfüllen.';
+    return;
+  }
+  if(endDate < startDate){
+    errBox.textContent = 'Enddatum muss nach dem Startdatum liegen.';
+    return;
+  }
+  const id = 'ch_'+Date.now();
+  await setDoc(doc(db,'challenges',id), { title, description, target, startDate, endDate, createdAt: serverTimestamp() });
+  $('#chTitle').value=''; $('#chDesc').value=''; $('#chTarget').value='7'; $('#chStart').value=''; $('#chEnd').value='';
+  await loadChallengeManagement();
+});
+
+async function loadChallengeManagement(){
+  const snap = await getDocs(collection(db,'challenges'));
+  const challenges = snap.docs.map(d=>({ id:d.id, ...d.data() })).sort((a,b)=> a.startDate < b.startDate ? 1 : -1);
+  $('#challengesEmpty').style.display = challenges.length ? 'none' : 'block';
+
+  const list = $('#challengeMgmtList');
+  list.innerHTML = '';
+  for(const c of challenges){
+    const partSnap = await getDocs(query(collection(db,'challengeParticipants'), where('challengeId','==',c.id)));
+    const item = document.createElement('div');
+    item.className = 'challenge-item';
+    item.innerHTML =
+      '<div><div class="challenge-item-title">'+c.title+'</div>'+
+      '<div class="challenge-item-meta">'+c.startDate+' → '+c.endDate+' · Ziel: '+c.target+' · '+partSnap.size+' Teilnehmer</div></div>';
+    const delBtn = document.createElement('button');
+    delBtn.className = 'delete-btn';
+    delBtn.textContent = 'Löschen';
+    delBtn.addEventListener('click', async ()=>{
+      if(!confirm('Challenge "'+c.title+'" wirklich löschen?')) return;
+      await deleteDoc(doc(db,'challenges',c.id));
+      await loadChallengeManagement();
+    });
+    item.appendChild(delBtn);
+    list.appendChild(item);
+  }
+}
+</script>
+</body>
+</html>

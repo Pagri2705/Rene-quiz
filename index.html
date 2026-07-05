@@ -303,6 +303,29 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 .start > div:first-child{width:100%}
 .start p{max-width:34ch;margin:0 auto}
 .streak-chip{align-self:center}
+.community-chip{font-size:12.5px;color:var(--muted)}
+
+/* ---------- Settings ---------- */
+.settings{gap:10px;padding-bottom:24px}
+.field-label{font-size:12px;font-weight:600;color:var(--muted);margin-top:6px}
+
+/* ---------- Challenges ---------- */
+.challenges{gap:14px;padding-bottom:24px}
+.challenge-list{display:flex;flex-direction:column;gap:12px}
+.challenge-card{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px 18px;display:flex;flex-direction:column;gap:10px;
+}
+.challenge-title{font-family:'Sora';font-weight:700;font-size:16px}
+.challenge-desc{font-size:13px;color:var(--muted)}
+.challenge-progress-track{height:8px;border-radius:99px;background:var(--panel-2);overflow:hidden}
+.challenge-progress-fill{height:100%;background:var(--accent);border-radius:99px;transition:width .3s ease}
+.challenge-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.challenge-join-btn{
+  align-self:flex-start;background:none;border:1px solid var(--line);color:var(--text);
+  font-family:'Inter';font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:999px;cursor:pointer;
+}
+.challenge-join-btn.joined{border-color:var(--green);color:var(--green)}
 </style>
 </head>
 <body>
@@ -313,7 +336,7 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
       <div class="brand-mark">M</div>
       <div class="brand-name">Modern Athlete <span>Lab</span></div>
     </div>
-    <button class="view-switch hidden" id="viewSwitch">Coach-Ansicht</button>
+    <button class="view-switch hidden" id="settingsBtn">⚙ <span id="settingsBtnText">Einstellungen</span></button>
   </header>
 
   <div class="lang-switch" id="langSwitch">
@@ -348,10 +371,43 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
     </div>
     <p id="startPara">15 Fragen, nur Antippen. In 90 Sekunden weiß dein Coach genau, wo du stehst — und du auch.</p>
     <div class="streak-chip">🔥 <span id="streakChip">0 Tage in Folge</span></div>
+    <div class="community-chip" id="communityChip"></div>
     <button class="cta" id="startBtn">Check-in starten</button>
     <button class="cta" id="challengesBtn" style="background:var(--panel-2);color:var(--text);border:1px solid var(--line)">Challenges</button>
     <div class="start-hint" id="startHint">Dauert ca. 90 Sekunden · Fortschritt wird automatisch gespeichert</div>
     <button class="logout-btn" id="logoutBtn">Abmelden</button>
+  </section>
+
+  <!-- SETTINGS -->
+  <section class="screen settings" id="screen-settings">
+    <div class="progress">
+      <button class="back-btn" id="settingsBackBtn">← Zurück</button>
+      <div class="progress-track" style="visibility:hidden"></div>
+      <div style="width:44px"></div>
+    </div>
+    <h1 style="font-size:26px" id="settingsTitle">Einstellungen</h1>
+    <label class="field-label" id="labelName">Name</label>
+    <input class="auth-field" id="settingsName" type="text">
+    <label class="field-label" id="labelEmail">E-Mail</label>
+    <input class="auth-field" id="settingsEmail" type="email" disabled>
+    <label class="field-label" id="labelPhone">Telefonnummer (optional)</label>
+    <input class="auth-field" id="settingsPhone" type="tel">
+    <label class="field-label" id="labelGoals">Deine Ziele</label>
+    <textarea class="auth-field" id="settingsGoals" style="min-height:100px"></textarea>
+    <div class="auth-success" id="settingsSuccess"></div>
+    <button class="cta" id="settingsSaveBtn">Speichern</button>
+  </section>
+
+  <!-- CHALLENGES -->
+  <section class="screen challenges" id="screen-challenges">
+    <div class="progress">
+      <button class="back-btn" id="challengesBackBtn">← Zurück</button>
+      <div class="progress-track" style="visibility:hidden"></div>
+      <div style="width:44px"></div>
+    </div>
+    <h1 style="font-size:26px" id="challengesTitle">Challenges</h1>
+    <div class="challenge-list" id="challengeList"></div>
+    <div class="dash-footnote" id="challengesEmpty">Aktuell keine aktiven Challenges.</div>
   </section>
 
   <!-- CHECK-IN -->
@@ -398,19 +454,6 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
     <button class="cta" id="doneBtn">Fertig für heute</button>
   </section>
 
-  <!-- DASHBOARD -->
-  <section class="screen dash" id="screen-dash">
-    <h2>Coach-Dashboard</h2>
-    <div class="dash-sub">Ampeln = rollierender 7-Tage-Durchschnitt, nicht Einzeltage.</div>
-    <div class="alerts" id="alertList"></div>
-    <div class="legend">
-      <span><i style="background:var(--green)"></i> Stabil ≥ 7</span>
-      <span><i style="background:var(--amber)"></i> Beobachten 4–6,9</span>
-      <span><i style="background:var(--red)"></i> Eingreifen &lt; 4</span>
-    </div>
-    <div class="client-list" id="clientList"></div>
-    <div class="dash-footnote">Demo-Daten · Reihenfolge: Red Flags zuerst · Tippen für 7-Tage-Detail</div>
-  </section>
 
 </div>
 
@@ -427,8 +470,8 @@ import {
   createUserWithEmailAndPassword, signOut, sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 import {
-  getFirestore, doc, setDoc, collection, query, where,
-  getDocs, serverTimestamp
+  getFirestore, doc, setDoc, getDoc, deleteDoc, collection, query, where,
+  getDocs, serverTimestamp, runTransaction
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -524,7 +567,14 @@ de:{
     coachViewBtn:'Coach-Ansicht', clientViewBtn:'Client-Ansicht',
     backBtn:'Zurück', skipBtn:'Überspringen', noteDoneBtn:'Check-in abschließen', sliderNextBtn:'Weiter',
     resultEyebrow:'Scan abgeschlossen', resultTitle:'Dein Tag im Überblick', insightLabel:'Insight',
-    streakSubText:'in Folge eingecheckt — Konstanz schlägt Perfektion.', doneBtn:'Fertig für heute', daysWord:'Tage'
+    streakSubText:'in Folge eingecheckt — Konstanz schlägt Perfektion.', doneBtn:'Fertig für heute', daysWord:'Tage',
+    settingsBtn:'Einstellungen', settingsTitle:'Einstellungen',
+    labelName:'Name', labelEmail:'E-Mail', labelPhone:'Telefonnummer (optional)', labelGoals:'Deine Ziele',
+    settingsSaveBtn:'Speichern', settingsSaved:'Gespeichert.',
+    goalsPlaceholder:'Z. B. 5 kg abnehmen, 10 km laufen, mehr Energie im Alltag …',
+    challengesTitle:'Challenges', challengesEmpty:'Aktuell keine aktiven Challenges.',
+    challengeJoinBtn:'Teilnehmen', challengeLeaveBtn:'Verlassen', challengeJoinedLabel:'Dabei ✓',
+    challengeProgressLabel:'Fortschritt', communityToday:(n,total)=> n+' von '+total+' haben heute eingecheckt 🔥'
   },
   q:{
     feeling:{ title:'Wie fühlst du dich heute?', opts:[['😄','Sehr gut'],['🙂','Gut'],['😐','Okay'],['😕','Niedrig'],['😞','Schlecht']] },
@@ -600,7 +650,14 @@ en:{
     coachViewBtn:'Coach view', clientViewBtn:'Client view',
     backBtn:'Back', skipBtn:'Skip', noteDoneBtn:'Finish check-in', sliderNextBtn:'Next',
     resultEyebrow:'Scan complete', resultTitle:'Your day at a glance', insightLabel:'Insight',
-    streakSubText:'checked in in a row — consistency beats perfection.', doneBtn:'Done for today', daysWord:'days'
+    streakSubText:'checked in in a row — consistency beats perfection.', doneBtn:'Done for today', daysWord:'days',
+    settingsBtn:'Settings', settingsTitle:'Settings',
+    labelName:'Name', labelEmail:'Email', labelPhone:'Phone number (optional)', labelGoals:'Your goals',
+    settingsSaveBtn:'Save', settingsSaved:'Saved.',
+    goalsPlaceholder:'E.g. lose 5 kg, run 10 km, more energy day-to-day …',
+    challengesTitle:'Challenges', challengesEmpty:'No active challenges right now.',
+    challengeJoinBtn:'Join', challengeLeaveBtn:'Leave', challengeJoinedLabel:'Joined ✓',
+    challengeProgressLabel:'Progress', communityToday:(n,total)=> n+' of '+total+' checked in today 🔥'
   },
   q:{
     feeling:{ title:'How are you feeling today?', opts:[['😄','Great'],['🙂','Good'],['😐','Okay'],['😕','Low'],['😞','Bad']] },
@@ -676,7 +733,14 @@ zh:{
     coachViewBtn:'教練檢視', clientViewBtn:'學員檢視',
     backBtn:'返回', skipBtn:'跳過', noteDoneBtn:'完成打卡', sliderNextBtn:'繼續',
     resultEyebrow:'掃描完成', resultTitle:'你今天的總覽', insightLabel:'洞察',
-    streakSubText:'連續打卡 — 持之以恆勝過完美。', doneBtn:'今天就到這裡', daysWord:'天'
+    streakSubText:'連續打卡 — 持之以恆勝過完美。', doneBtn:'今天就到這裡', daysWord:'天',
+    settingsBtn:'設定', settingsTitle:'設定',
+    labelName:'姓名', labelEmail:'電子郵件', labelPhone:'電話號碼（可選填）', labelGoals:'你的目標',
+    settingsSaveBtn:'儲存', settingsSaved:'已儲存。',
+    goalsPlaceholder:'例如：減重5公斤、跑步10公里、每天更有活力……',
+    challengesTitle:'挑戰任務', challengesEmpty:'目前沒有進行中的挑戰任務。',
+    challengeJoinBtn:'參加', challengeLeaveBtn:'退出', challengeJoinedLabel:'已參加 ✓',
+    challengeProgressLabel:'進度', communityToday:(n,total)=> '今天有 '+n+' / '+total+' 人完成打卡 🔥'
   },
   q:{
     feeling:{ title:'你今天感覺如何？', opts:[['😄','很好'],['🙂','不錯'],['😐','普通'],['😕','偏低'],['😞','不好']] },
@@ -728,14 +792,13 @@ zh:{
    FLOW ENGINE
 ========================================================= */
 const $ = s=>document.querySelector(s);
-const screens = { auth:$('#screen-auth'), start:$('#screen-start'), checkin:$('#screen-checkin'), result:$('#screen-result'), dash:$('#screen-dash') };
+const screens = { auth:$('#screen-auth'), start:$('#screen-start'), checkin:$('#screen-checkin'), result:$('#screen-result'), settings:$('#screen-settings'), challenges:$('#screen-challenges') };
 let currentScreen = 'auth';
 
 function show(name){
   Object.values(screens).forEach(s=>s.classList.remove('active'));
   screens[name].classList.add('active');
   currentScreen = name;
-  $('#viewSwitch').textContent = name==='dash' ? T[state.lang].ui.clientViewBtn : T[state.lang].ui.coachViewBtn;
   window.scrollTo(0,0);
 }
 
@@ -758,6 +821,7 @@ function applyLanguage(lang){
   $('#authEmail').placeholder = t.authEmailPh;
   $('#authPassword').placeholder = t.authPasswordPh;
   $('#authForgotBtn').textContent = t.authForgotBtn;
+  $('#settingsGoals').placeholder = t.goalsPlaceholder;
   setAuthMode(authMode);
   $('#startTitle').innerHTML = t.startTitleHTML;
   $('#startPara').textContent = t.startPara;
@@ -766,7 +830,6 @@ function applyLanguage(lang){
   $('#startHint').textContent = t.startHint;
   $('#logoutBtn').textContent = t.logout;
   $('#streakChip').textContent = state.streak+' '+t.streakSuffix;
-  $('#viewSwitch').textContent = currentScreen==='dash' ? t.clientViewBtn : t.coachViewBtn;
   $('#backBtn').textContent = '← '+t.backBtn;
   $('#resultEyebrow').textContent = t.resultEyebrow;
   $('#resultTitle').textContent = t.resultTitle;
@@ -776,7 +839,20 @@ function applyLanguage(lang){
   $('#insightLabelText').textContent = t.insightLabel;
   $('#streakSub').textContent = t.streakSubText;
   $('#doneBtn').textContent = t.doneBtn;
+  $('#settingsBtnText').textContent = t.settingsBtn;
+  $('#settingsTitle').textContent = t.settingsTitle;
+  $('#labelName').textContent = t.labelName;
+  $('#labelEmail').textContent = t.labelEmail;
+  $('#labelPhone').textContent = t.labelPhone;
+  $('#labelGoals').textContent = t.labelGoals;
+  $('#settingsSaveBtn').textContent = t.settingsSaveBtn;
+  $('#settingsBackBtn').textContent = '← '+t.backBtn;
+  $('#challengesTitle').textContent = t.challengesTitle;
+  $('#challengesBackBtn').textContent = '← '+t.backBtn;
+  $('#challengesEmpty').textContent = t.challengesEmpty;
+  updateCommunityChip();
   if(currentScreen==='checkin') renderQuestion();
+  if(currentScreen==='challenges') renderChallenges();
 }
 document.querySelectorAll('.lang-btn').forEach(b=>{
   b.addEventListener('click',()=>applyLanguage(b.dataset.lang));
@@ -806,8 +882,17 @@ $('#authSubmitBtn').addEventListener('click', async ()=>{
   errBox.textContent = ''; $('#authSuccess').textContent = '';
   if(!email || !password){ errBox.textContent = T[state.lang].ui.authFillBoth; return; }
   try{
-    if(authMode==='login') await signInWithEmailAndPassword(auth,email,password);
-    else await createUserWithEmailAndPassword(auth,email,password);
+    if(authMode==='login'){
+      await signInWithEmailAndPassword(auth,email,password);
+    } else {
+      const cred = await createUserWithEmailAndPassword(auth,email,password);
+      await setDoc(doc(db,'users',cred.user.uid), { email, name:'', phone:'', goals:'', createdAt: serverTimestamp() });
+      await runTransaction(db, async (tx)=>{
+        const ref = doc(db,'stats','totals');
+        const snap = await tx.get(ref);
+        tx.set(ref, { userCount: (snap.exists()? snap.data().userCount||0 : 0) + 1 }, { merge:true });
+      });
+    }
   }catch(e){
     errBox.textContent = authErrorMessage(e.code);
   }
@@ -838,13 +923,14 @@ onAuthStateChanged(auth, async (user)=>{
   if(user){
     state.uid = user.uid;
     $('#authEmail').value=''; $('#authPassword').value=''; $('#authError').textContent='';
-    $('#viewSwitch').classList.remove('hidden');
+    $('#settingsBtn').classList.remove('hidden');
     await refreshStreak();
+    await updateCommunityChip();
     show('start');
   } else {
     state.uid = null;
     setAuthMode('login');
-    $('#viewSwitch').classList.add('hidden');
+    $('#settingsBtn').classList.add('hidden');
     show('auth');
   }
 });
@@ -862,9 +948,107 @@ function dateStrOf(d){
 
 async function saveCheckin(answers,scores){
   const dateStr = todayStr();
-  await setDoc(doc(db,'checkins',state.uid+'_'+dateStr),{
+  const ref = doc(db,'checkins',state.uid+'_'+dateStr);
+  const already = (await getDoc(ref)).exists();
+  await setDoc(ref,{
     uid: state.uid, dateStr, answers, scores, createdAt: serverTimestamp()
   });
+  if(!already){
+    await runTransaction(db, async (tx)=>{
+      const statRef = doc(db,'dailyStats',dateStr);
+      const snap = await tx.get(statRef);
+      tx.set(statRef, { checkinCount: (snap.exists()? snap.data().checkinCount||0 : 0) + 1 }, { merge:true });
+    });
+  }
+}
+
+async function updateCommunityChip(){
+  const chip = $('#communityChip');
+  if(!chip) return;
+  try{
+    const [dailySnap, totalsSnap] = await Promise.all([
+      getDoc(doc(db,'dailyStats',todayStr())),
+      getDoc(doc(db,'stats','totals'))
+    ]);
+    const n = dailySnap.exists() ? (dailySnap.data().checkinCount||0) : 0;
+    const total = totalsSnap.exists() ? (totalsSnap.data().userCount||0) : 0;
+    chip.textContent = total>0 ? T[state.lang].ui.communityToday(n,total) : '';
+  }catch(e){ chip.textContent=''; }
+}
+
+/* =========================================================
+   SETTINGS — Profil (Name, Telefon, Ziele) in users/{uid}
+========================================================= */
+$('#settingsBtn').addEventListener('click', async ()=>{
+  const snap = await getDoc(doc(db,'users',state.uid));
+  const data = snap.exists() ? snap.data() : {};
+  $('#settingsName').value = data.name || '';
+  $('#settingsEmail').value = auth.currentUser ? auth.currentUser.email : '';
+  $('#settingsPhone').value = data.phone || '';
+  $('#settingsGoals').value = data.goals || '';
+  $('#settingsSuccess').textContent = '';
+  show('settings');
+});
+$('#settingsBackBtn').addEventListener('click', ()=> show('start'));
+$('#settingsSaveBtn').addEventListener('click', async ()=>{
+  await setDoc(doc(db,'users',state.uid), {
+    name: $('#settingsName').value.trim(),
+    phone: $('#settingsPhone').value.trim(),
+    goals: $('#settingsGoals').value.trim()
+  }, { merge:true });
+  $('#settingsSuccess').textContent = T[state.lang].ui.settingsSaved;
+});
+
+/* =========================================================
+   CHALLENGES — vom Coach angelegt, Klienten treten bei
+========================================================= */
+$('#challengesBtn').addEventListener('click', async ()=>{
+  show('challenges');
+  await renderChallenges();
+});
+$('#challengesBackBtn').addEventListener('click', ()=> show('start'));
+
+async function renderChallenges(){
+  const list = $('#challengeList');
+  list.innerHTML = '';
+  const today = todayStr();
+  const snap = await getDocs(collection(db,'challenges'));
+  const active = snap.docs.map(d=>({ id:d.id, ...d.data() })).filter(c=> c.endDate >= today).sort((a,b)=> a.endDate < b.endDate ? -1 : 1);
+  $('#challengesEmpty').classList.toggle('hidden', active.length>0);
+  if(!active.length) return;
+
+  const myCheckinsSnap = await getDocs(query(collection(db,'checkins'), where('uid','==',state.uid)));
+  const myDates = myCheckinsSnap.docs.map(d=>d.data().dateStr);
+
+  for(const c of active){
+    const inRange = myDates.filter(d=> d>=c.startDate && d<=c.endDate).length;
+    const pct = Math.min(100, Math.round(inRange / c.target * 100));
+    const partRef = doc(db,'challengeParticipants', c.id+'_'+state.uid);
+    const partSnap = await getDoc(partRef);
+    const joined = partSnap.exists();
+
+    const t = T[state.lang].ui;
+    const card = document.createElement('div');
+    card.className = 'challenge-card';
+    card.innerHTML =
+      '<div class="challenge-title">'+c.title+'</div>'+
+      (c.description ? '<div class="challenge-desc">'+c.description+'</div>' : '') +
+      '<div class="challenge-progress-track"><div class="challenge-progress-fill" style="width:'+pct+'%"></div></div>'+
+      '<div class="challenge-meta"><span>'+t.challengeProgressLabel+': '+inRange+' / '+c.target+'</span><span>'+pct+'%</span></div>';
+    const btn = document.createElement('button');
+    btn.className = 'challenge-join-btn'+(joined?' joined':'');
+    btn.textContent = joined ? t.challengeJoinedLabel : t.challengeJoinBtn;
+    btn.addEventListener('click', async ()=>{
+      if(joined){
+        await deleteDoc(partRef);
+      } else {
+        await setDoc(partRef, { challengeId:c.id, uid:state.uid, joinedAt: serverTimestamp() });
+      }
+      renderChallenges();
+    });
+    card.appendChild(btn);
+    list.appendChild(card);
+  }
 }
 
 async function refreshStreak(){
@@ -1095,116 +1279,11 @@ function animateRing(ringId,scoreId,score){
 
 $('#doneBtn').addEventListener('click',()=>show('start'));
 $('#startBtn').addEventListener('click',startCheckin);
-$('#viewSwitch').addEventListener('click',()=>{
-  show(currentScreen==='dash' ? 'start' : 'dash');
-});
-
-/* =========================================================
-   COACH DASHBOARD — Demo-Daten
-   7-Tage-Werte pro Säule; Ampel = Durchschnitt.
-========================================================= */
-const clients = [
-  { name:'Lena K.', init:'LK', last:'Heute, 07:12',
-    ern:[8,7.5,8,7,8.5,8,9], tra:[8,9,7.5,8,8,9,8.5], rec:[7,7.5,8,7,8,7.5,8],
-    note:'Super Trainingswoche, Schlaf endlich stabil.', flags:[] },
-  { name:'Markus B.', init:'MB', last:'Heute, 06:48',
-    ern:[6,5.5,6,7,5,6,6.5], tra:[7,8,7,7.5,8,7,7], rec:[5,5.5,6,5,6,5.5,5],
-    note:'Projektabgabe nächste Woche — Stress hoch.', flags:[] },
-  { name:'Sarah W.', init:'SW', last:'Gestern, 21:30',
-    ern:[4,3.5,4,5,4,3,4], tra:[3,2,4,3,2,3,3.5], rec:[3,3.5,3,4,3,2.5,3],
-    note:'Motivation 2 Wochen in Folge ≤ 2. Reise steht an.',
-    flags:['Training 3× verpasst in 7 Tagen','Motivation 2 Wochen in Folge ≤ 2 — Dropout-Risiko'] },
-  { name:'Jonas T.', init:'JT', last:'Heute, 08:05',
-    ern:[7,7,6.5,7,8,7,7], tra:[6,7,6,5,6,6.5,6], rec:[3.5,3,4,3,3.5,3,3],
-    note:'Schläft seit Tagen unter 5 h — Neugeborenes zu Hause.',
-    flags:['Schlaf < 5 h (4 von 7 Tagen)','Erholung: Erschöpft (heute)'] },
-  { name:'Aylin D.', init:'AD', last:'Vor 3 Tagen',
-    ern:[6,6,5,0,0,0,0], tra:[5,6,5,0,0,0,0], rec:[5,5,4,0,0,0,0],
-    note:'Letzter Check-in vor 3 Tagen — kurze Nachricht schicken.',
-    flags:['Kein Check-in seit 3 Tagen'] }
-];
-
-function avg(arr){
-  const v = arr.filter(x=>x>0);
-  return v.length? round1(v.reduce((a,b)=>a+b,0)/v.length) : 0;
-}
-
-function renderDash(){
-  // Alerts
-  const alertBox = $('#alertList');
-  alertBox.innerHTML='';
-  clients.forEach(c=>{
-    c.flags.forEach(f=>{
-      const el = document.createElement('div');
-      el.className='alert';
-      el.innerHTML='<span class="dot"></span><div><strong>'+c.name+'</strong> · <span class="a-detail">'+f+'</span></div>';
-      alertBox.appendChild(el);
-    });
-  });
-
-  // Clients: Red Flags zuerst, dann nach schlechtestem Schnitt
-  const sorted = [...clients].sort((a,b)=>{
-    if(b.flags.length!==a.flags.length) return b.flags.length-a.flags.length;
-    const wa = Math.min(avg(a.ern),avg(a.tra),avg(a.rec));
-    const wb = Math.min(avg(b.ern),avg(b.tra),avg(b.rec));
-    return wa-wb;
-  });
-
-  const list = $('#clientList');
-  list.innerHTML='';
-  sorted.forEach(c=>{
-    const aE=avg(c.ern), aT=avg(c.tra), aR=avg(c.rec);
-    const card = document.createElement('div');
-    card.className='client'+(c.flags.length?' flagged':'');
-    card.setAttribute('role','button');
-    card.setAttribute('tabindex','0');
-    card.innerHTML =
-      '<div class="client-row">'+
-        '<div class="avatar">'+c.init+'</div>'+
-        '<div class="client-meta"><div class="client-name">'+c.name+'</div>'+
-        '<div class="client-last">Letzter Check-in: '+c.last+'</div></div>'+
-        '<div class="pillar-dots">'+
-          '<span class="pdot '+zone(aE)+'" title="Ernährung Ø '+aE+'"></span>'+
-          '<span class="pdot '+zone(aT)+'" title="Training Ø '+aT+'"></span>'+
-          '<span class="pdot '+zone(aR)+'" title="Recovery Ø '+aR+'"></span>'+
-        '</div>'+
-      '</div>'+
-      '<div class="client-detail">'+
-        trendHTML('Ernährung',c.ern,aE)+
-        trendHTML('Training',c.tra,aT)+
-        trendHTML('Recovery',c.rec,aR)+
-        '<div class="client-note"><b>Notiz:</b> '+c.note+'</div>'+
-      '</div>';
-    const toggle = ()=>card.classList.toggle('open');
-    card.addEventListener('click',toggle);
-    card.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();} });
-    list.appendChild(card);
-  });
-}
-
-function trendHTML(label,values,average){
-  const bars = values.map(v=>{
-    if(v===0) return '<div class="bar" style="height:3px"></div>';
-    const h = Math.max(8, v/10*100);
-    return '<div class="bar" style="height:'+h+'%;background:'+zoneColor[zone(v)]+'"></div>';
-  }).join('');
-  return '<div class="trend-group">'+
-    '<div class="trend-label"><span>'+label+'</span><span class="avg">Ø '+String(average).replace('.',',')+' / 10</span></div>'+
-    '<div class="bars">'+bars+'</div></div>';
-}
-
-/* =========================================================
-   CHALLENGES — Platzhalter, Feature folgt
-========================================================= */
-$('#challengesBtn').addEventListener('click', ()=>{
-  alert(state.lang==='de' ? 'Challenges kommen bald! 🚀' : state.lang==='en' ? 'Challenges are coming soon! 🚀' : '挑戰任務即將推出！🚀');
-});
 
 /* =========================================================
    INIT
 ========================================================= */
 applyLanguage('de');
-renderDash();
 </script>
 </body>
 </html>
