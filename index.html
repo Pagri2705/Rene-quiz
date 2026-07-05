@@ -1094,11 +1094,14 @@ async function updateEngagementBanners(){
   const user = auth.currentUser;
   if(!user) return;
   $('#verifyBanner').classList.toggle('hidden', user.emailVerified);
-
-  const todaySnap = await getDoc(doc(db,'checkins',state.uid+'_'+todayStr()));
-  const checkedInToday = todaySnap.exists();
-  const isEvening = new Date().getHours() >= 18;
-  $('#reminderBanner').classList.toggle('hidden', checkedInToday || !isEvening);
+  try{
+    const todaySnap = await getDoc(doc(db,'checkins',state.uid+'_'+todayStr()));
+    const checkedInToday = todaySnap.exists();
+    const isEvening = new Date().getHours() >= 18;
+    $('#reminderBanner').classList.toggle('hidden', checkedInToday || !isEvening);
+  }catch(e){
+    $('#reminderBanner').classList.add('hidden');
+  }
 }
 
 onAuthStateChanged(auth, async (user)=>{
@@ -1315,18 +1318,22 @@ async function renderChallenges(){
 }
 
 async function refreshStreak(){
-  const q = query(collection(db,'checkins'), where('uid','==',state.uid));
-  const snap = await getDocs(q);
-  const dates = new Set(snap.docs.map(d=>d.data().dateStr));
-  let streak = 0;
-  const cursor = new Date();
-  while(dates.has(dateStrOf(cursor))){
-    streak++;
-    cursor.setDate(cursor.getDate()-1);
+  try{
+    const q = query(collection(db,'checkins'), where('uid','==',state.uid));
+    const snap = await getDocs(q);
+    const dates = new Set(snap.docs.map(d=>d.data().dateStr));
+    let streak = 0;
+    const cursor = new Date();
+    while(dates.has(dateStrOf(cursor))){
+      streak++;
+      cursor.setDate(cursor.getDate()-1);
+    }
+    state.streak = streak;
+  }catch(e){
+    state.streak = 0;
   }
-  state.streak = streak;
   $('#streakChip').textContent = state.streak+' '+T[state.lang].ui.streakSuffix;
-  return streak;
+  return state.streak;
 }
 
 function insertAfter(qid, offset=0){

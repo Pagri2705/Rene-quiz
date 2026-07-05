@@ -11,7 +11,9 @@ service cloud.firestore {
     }
 
     match /checkins/{checkinId} {
-      allow read: if isSignedIn() && (request.auth.uid == resource.data.uid || isCoach());
+      // resource == null: Dokument existiert noch nicht (z.B. heutiger Check-in vor dem
+      // ersten Speichern) — Lesen erlauben, da es ohnehin keine Daten preisgibt.
+      allow read: if isSignedIn() && (resource == null || request.auth.uid == resource.data.uid || isCoach());
       allow update, delete: if isSignedIn() && request.auth.uid == resource.data.uid;
       allow create: if isSignedIn() && request.auth.uid == request.resource.data.uid;
     }
@@ -27,7 +29,7 @@ service cloud.firestore {
     }
 
     match /challengeParticipants/{participantId} {
-      allow read: if isSignedIn() && (resource.data.uid == request.auth.uid || isCoach());
+      allow read: if isSignedIn() && (resource == null || resource.data.uid == request.auth.uid || isCoach());
       allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
       allow delete: if isSignedIn() && resource.data.uid == request.auth.uid;
     }
