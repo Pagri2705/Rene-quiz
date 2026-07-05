@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Modern Athlete Lab — Daily Check-in</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0D1219;
+  --panel:#141B25;
+  --panel-2:#1A2230;
+  --line:#232D3D;
+  --text:#EDF1F7;
+  --muted:#8B97A8;
+  --accent:#8B9DFF;
+  --accent-strong:#A5B3FF;
+  --green:#3DDC97;
+  --amber:#FFC24B;
+  --red:#FF6B6B;
+  --radius:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:
+    radial-gradient(1200px 600px at 80% -10%, rgba(139,157,255,.08), transparent 60%),
+    var(--bg);
+  color:var(--text);
+  font-family:'Inter',system-ui,sans-serif;
+  font-size:16px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  display:flex;
+  justify-content:center;
+}
+.app{
+  width:100%;
+  max-width:440px;
+  min-height:100dvh;
+  display:flex;
+  flex-direction:column;
+  padding:0 20px calc(20px + env(safe-area-inset-bottom));
+  position:relative;
+}
+@media(min-width:520px){
+  .app{border-left:1px solid var(--line);border-right:1px solid var(--line)}
+}
+
+/* ---------- Header ---------- */
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 0 14px;
+}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-mark{
+  width:30px;height:30px;border-radius:9px;
+  background:linear-gradient(135deg,var(--accent),#5E6FE0);
+  display:grid;place-items:center;
+  font-family:'Sora';font-weight:800;font-size:14px;color:#0D1219;
+}
+.brand-name{font-family:'Sora';font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase}
+.brand-name span{color:var(--muted);font-weight:600}
+.view-switch{
+  background:var(--panel);border:1px solid var(--line);border-radius:999px;
+  color:var(--muted);font-size:12px;font-weight:600;font-family:'Inter';
+  padding:8px 14px;cursor:pointer;transition:color .15s,border-color .15s;
+}
+.view-switch:hover,.view-switch:focus-visible{color:var(--text);border-color:var(--accent)}
+
+/* ---------- Screens ---------- */
+.screen{display:none;flex:1;flex-direction:column;animation:fadeIn .35s ease}
+.screen.active{display:flex}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+
+/* ---------- Start ---------- */
+.start{justify-content:center;gap:28px;padding-bottom:60px}
+.date-eyebrow{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:'Sora';font-weight:800;font-size:34px;line-height:1.12;letter-spacing:-.01em}
+h1 em{font-style:normal;color:var(--accent)}
+.start p{color:var(--muted);font-size:15px;max-width:32ch}
+.streak-chip{
+  display:inline-flex;align-items:center;gap:8px;align-self:flex-start;
+  background:var(--panel);border:1px solid var(--line);border-radius:999px;
+  padding:8px 14px;font-size:13px;font-weight:600;
+}
+.cta{
+  appearance:none;border:none;cursor:pointer;
+  background:var(--accent);color:#0D1219;
+  font-family:'Sora';font-weight:700;font-size:16px;
+  border-radius:16px;padding:17px;width:100%;
+  transition:transform .12s ease,background .15s;
+}
+.cta:hover{background:var(--accent-strong)}
+.cta:active{transform:scale(.985)}
+.cta:focus-visible{outline:2px solid var(--text);outline-offset:2px}
+.start-hint{font-size:12px;color:var(--muted);text-align:center;margin-top:-14px}
+
+/* ---------- Progress ---------- */
+.progress{display:flex;align-items:center;gap:12px;padding:6px 0 22px}
+.progress-track{flex:1;height:4px;border-radius:99px;background:var(--panel-2);overflow:hidden}
+.progress-fill{height:100%;width:0%;background:var(--accent);border-radius:99px;transition:width .3s ease}
+.progress-count{font-family:'Sora';font-size:12px;font-weight:600;color:var(--muted);min-width:44px;text-align:right;font-variant-numeric:tabular-nums}
+.back-btn{
+  background:none;border:none;color:var(--muted);cursor:pointer;
+  font-size:13px;font-weight:600;font-family:'Inter';padding:4px 8px 4px 0;
+}
+.back-btn:hover,.back-btn:focus-visible{color:var(--text)}
+.back-btn[disabled]{opacity:0;pointer-events:none}
+
+/* ---------- Question ---------- */
+.q-wrap{flex:1;display:flex;flex-direction:column;animation:slideIn .3s ease}
+@keyframes slideIn{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
+.q-pillar{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
+.q-pillar.p-ern{color:var(--green)}
+.q-pillar.p-tra{color:var(--accent)}
+.q-pillar.p-rec{color:var(--amber)}
+.q-pillar.p-neutral{color:var(--muted)}
+.q-title{font-family:'Sora';font-weight:700;font-size:24px;line-height:1.25;margin-bottom:8px}
+.q-caption{font-size:13px;color:var(--muted);margin-bottom:22px}
+.q-title + .options,.q-title + .slider-block,.q-title + textarea{margin-top:16px}
+
+.options{display:flex;flex-direction:column;gap:10px}
+.options.grid-2{display:grid;grid-template-columns:1fr 1fr}
+.opt{
+  appearance:none;cursor:pointer;text-align:left;
+  background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  color:var(--text);font-family:'Inter';font-size:15px;font-weight:500;
+  padding:15px 16px;min-height:52px;
+  display:flex;align-items:center;gap:10px;
+  transition:border-color .15s,background .15s,transform .1s;
+}
+.opt .ico{font-size:17px;flex-shrink:0}
+.opt:hover{border-color:#3A465C;background:var(--panel-2)}
+.opt:active{transform:scale(.985)}
+.opt:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.opt.selected{border-color:var(--accent);background:rgba(139,157,255,.1)}
+
+/* ---------- Slider ---------- */
+.slider-block{display:flex;flex-direction:column;gap:18px;padding:8px 4px}
+.slider-value{
+  font-family:'Sora';font-weight:800;font-size:56px;text-align:center;
+  color:var(--accent);font-variant-numeric:tabular-nums;line-height:1;
+}
+.slider-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:99px;
+  background:var(--panel-2);outline:none;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:30px;height:30px;border-radius:50%;
+  background:var(--accent);border:4px solid var(--bg);cursor:pointer;
+  box-shadow:0 0 0 1px var(--accent);
+}
+input[type=range]::-moz-range-thumb{
+  width:22px;height:22px;border-radius:50%;background:var(--accent);
+  border:4px solid var(--bg);cursor:pointer;box-shadow:0 0 0 1px var(--accent);
+}
+input[type=range]:focus-visible{outline:2px solid var(--accent);outline-offset:6px}
+
+/* ---------- Note ---------- */
+textarea{
+  width:100%;min-height:130px;resize:vertical;
+  background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  color:var(--text);font-family:'Inter';font-size:15px;padding:14px 16px;
+}
+textarea::placeholder{color:#5B6779}
+textarea:focus-visible{outline:none;border-color:var(--accent)}
+
+.q-footer{padding-top:22px;display:flex;flex-direction:column;gap:10px}
+.skip-btn{
+  background:none;border:none;color:var(--muted);cursor:pointer;
+  font-size:13px;font-weight:600;font-family:'Inter';padding:10px;
+}
+.skip-btn:hover,.skip-btn:focus-visible{color:var(--text)}
+.hidden{display:none!important}
+
+/* ---------- Result ---------- */
+.result{gap:22px;padding-bottom:24px}
+.result-head{padding-top:14px}
+.result-eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.rings{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.ring-card{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px 10px 14px;display:flex;flex-direction:column;align-items:center;gap:10px;
+}
+.ring{
+  --p:0; --c:var(--green);
+  width:78px;height:78px;border-radius:50%;
+  background:conic-gradient(var(--c) calc(var(--p)*1%), var(--panel-2) 0);
+  display:grid;place-items:center;
+  transition:background .2s;
+}
+.ring::before{content:"";position:absolute;width:78px;height:78px;border-radius:50%}
+.ring-inner{
+  width:60px;height:60px;border-radius:50%;background:var(--panel);
+  display:grid;place-items:center;
+  font-family:'Sora';font-weight:800;font-size:19px;font-variant-numeric:tabular-nums;
+}
+.ring-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:center}
+.insight{
+  background:linear-gradient(135deg,rgba(139,157,255,.12),rgba(139,157,255,.04));
+  border:1px solid rgba(139,157,255,.3);border-radius:var(--radius);
+  padding:16px 18px;font-size:14.5px;
+}
+.insight strong{font-family:'Sora';font-weight:700;display:block;margin-bottom:4px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.streak-big{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px 18px;display:flex;align-items:center;gap:14px;
+}
+.streak-num{font-family:'Sora';font-weight:800;font-size:30px;font-variant-numeric:tabular-nums}
+.streak-sub{font-size:13px;color:var(--muted)}
+.result .cta{margin-top:auto}
+
+/* ---------- Dashboard ---------- */
+.dash{gap:18px;padding-bottom:24px}
+.dash h2{font-family:'Sora';font-weight:800;font-size:24px;letter-spacing:-.01em}
+.dash-sub{font-size:13px;color:var(--muted);margin-top:-12px}
+.alerts{display:flex;flex-direction:column;gap:8px}
+.alert{
+  display:flex;align-items:flex-start;gap:10px;
+  background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.35);
+  border-radius:14px;padding:12px 14px;font-size:13.5px;
+}
+.alert .dot{width:8px;height:8px;border-radius:50%;background:var(--red);margin-top:6px;flex-shrink:0}
+.alert strong{font-weight:600}
+.alert .a-detail{color:var(--muted)}
+.legend{display:flex;gap:14px;font-size:11.5px;color:var(--muted);font-weight:600}
+.legend span{display:flex;align-items:center;gap:5px}
+.legend i{width:8px;height:8px;border-radius:50%;display:inline-block}
+.client-list{display:flex;flex-direction:column;gap:10px}
+.client{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:14px 16px;cursor:pointer;transition:border-color .15s;
+}
+.client:hover{border-color:#3A465C}
+.client.flagged{border-color:rgba(255,107,107,.45)}
+.client-row{display:flex;align-items:center;gap:12px}
+.avatar{
+  width:38px;height:38px;border-radius:12px;flex-shrink:0;
+  background:var(--panel-2);display:grid;place-items:center;
+  font-family:'Sora';font-weight:700;font-size:13px;color:var(--accent);
+}
+.client-meta{flex:1;min-width:0}
+.client-name{font-weight:600;font-size:15px}
+.client-last{font-size:12px;color:var(--muted)}
+.pillar-dots{display:flex;gap:7px}
+.pdot{width:13px;height:13px;border-radius:50%}
+.pdot.g{background:var(--green)}
+.pdot.y{background:var(--amber)}
+.pdot.r{background:var(--red)}
+.client-detail{
+  display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--line);
+  flex-direction:column;gap:14px;
+}
+.client.open .client-detail{display:flex}
+.trend-group{display:flex;flex-direction:column;gap:6px}
+.trend-label{display:flex;justify-content:space-between;font-size:12px;font-weight:600}
+.trend-label .avg{color:var(--muted);font-variant-numeric:tabular-nums}
+.bars{display:flex;gap:5px;align-items:flex-end;height:36px}
+.bar{flex:1;border-radius:4px 4px 2px 2px;min-height:3px;background:var(--panel-2)}
+.client-note{font-size:13px;color:var(--muted);background:var(--panel-2);border-radius:12px;padding:10px 12px}
+.client-note b{color:var(--text);font-weight:600}
+.dash-footnote{font-size:11.5px;color:var(--muted);text-align:center;padding-top:4px}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div class="brand-name">Modern Athlete <span>Lab</span></div>
+    </div>
+    <button class="view-switch" id="viewSwitch">Coach-Ansicht</button>
+  </header>
+
+  <!-- START -->
+  <section class="screen start active" id="screen-start">
+    <div>
+      <div class="date-eyebrow" id="todayLabel"></div>
+      <h1 style="margin-top:10px">Dein täglicher<br><em>Performance-Scan</em></h1>
+    </div>
+    <p>15 Fragen, nur Antippen. In 90 Sekunden weiß dein Coach genau, wo du stehst — und du auch.</p>
+    <div class="streak-chip">🔥 <span id="streakChip">6 Tage in Folge</span></div>
+    <button class="cta" id="startBtn">Check-in starten</button>
+    <div class="start-hint">Dauert ca. 90 Sekunden · Fortschritt wird automatisch gespeichert</div>
+  </section>
+
+  <!-- CHECK-IN -->
+  <section class="screen" id="screen-checkin">
+    <div class="progress">
+      <button class="back-btn" id="backBtn">← Zurück</button>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-count" id="progressCount">1/15</div>
+    </div>
+    <div class="q-wrap" id="qWrap"></div>
+  </section>
+
+  <!-- RESULT -->
+  <section class="screen result" id="screen-result">
+    <div class="result-head">
+      <div class="result-eyebrow">Scan abgeschlossen</div>
+      <h1 style="font-size:28px">Dein Tag im Überblick</h1>
+    </div>
+    <div class="rings">
+      <div class="ring-card">
+        <div class="ring" id="ringErn"><div class="ring-inner" id="scoreErn">–</div></div>
+        <div class="ring-label">Ernährung</div>
+      </div>
+      <div class="ring-card">
+        <div class="ring" id="ringTra"><div class="ring-inner" id="scoreTra">–</div></div>
+        <div class="ring-label">Training</div>
+      </div>
+      <div class="ring-card">
+        <div class="ring" id="ringRec"><div class="ring-inner" id="scoreRec">–</div></div>
+        <div class="ring-label">Recovery</div>
+      </div>
+    </div>
+    <div class="insight" id="insightBox">
+      <strong>Insight</strong>
+      <span id="insightText"></span>
+    </div>
+    <div class="streak-big">
+      <div style="font-size:28px">🔥</div>
+      <div>
+        <div class="streak-num" id="streakBig">7 Tage</div>
+        <div class="streak-sub">in Folge eingecheckt — Konstanz schlägt Perfektion.</div>
+      </div>
+    </div>
+    <button class="cta" id="doneBtn">Fertig für heute</button>
+  </section>
+
+  <!-- DASHBOARD -->
+  <section class="screen dash" id="screen-dash">
+    <h2>Coach-Dashboard</h2>
+    <div class="dash-sub">Ampeln = rollierender 7-Tage-Durchschnitt, nicht Einzeltage.</div>
+    <div class="alerts" id="alertList"></div>
+    <div class="legend">
+      <span><i style="background:var(--green)"></i> Stabil ≥ 7</span>
+      <span><i style="background:var(--amber)"></i> Beobachten 4–6,9</span>
+      <span><i style="background:var(--red)"></i> Eingreifen &lt; 4</span>
+    </div>
+    <div class="client-list" id="clientList"></div>
+    <div class="dash-footnote">Demo-Daten · Reihenfolge: Red Flags zuerst · Tippen für 7-Tage-Detail</div>
+  </section>
+
+</div>
+
+<script>
+/* =========================================================
+   STATE (in-memory — kein localStorage)
+========================================================= */
+const state = { answers:{}, queue:[], idx:0, streak:6 };
+
+/* =========================================================
+   QUESTION DEFINITIONS
+   type: options | slider | note
+   Conditional follow-ups werden dynamisch in die Queue
+   eingefügt (insertAfter).
+========================================================= */
+const Q = {
+  feeling:{ id:'feeling', pillar:'Check-in', pClass:'p-neutral',
+    title:'Wie fühlst du dich heute?',
+    opts:[['😄','Sehr gut'],['🙂','Gut'],['😐','Okay'],['😕','Niedrig'],['😞','Schlecht']] },
+
+  water:{ id:'water', pillar:'Ernährung', pClass:'p-ern',
+    title:'Wie viel Wasser hast du heute getrunken?',
+    caption:'Richtwert — bei Hitze, Schwitzen, viel Aktivität oder höherem Körpergewicht brauchst du mehr.',
+    opts:[['','Sehr wenig · unter 1 L'],['','Wenig · 1–1,5 L'],['','Okay · 1,5–2 L'],['','Gut · 2–3 L'],['','Viel · 3+ L']] },
+
+  protein:{ id:'protein', pillar:'Ernährung', pClass:'p-ern',
+    title:'Hattest du Protein zu den meisten Mahlzeiten?',
+    caption:'Z. B. Eier, Hähnchen, Fisch, Fleisch, Tofu, Skyr, Hülsenfrüchte, Shake.',
+    opts:[['✅','Ja, zu den meisten'],['〰️','Etwas, aber zu wenig'],['✖️','Kaum bis gar nicht']] },
+
+  veg:{ id:'veg', pillar:'Ernährung', pClass:'p-ern',
+    title:'Wie war dein Gemüse- & Ballaststoff-Anteil?',
+    caption:'1 Portion ≈ eine Handvoll oder eine kleine Schüssel.',
+    opts:[['','Kaum'],['','Etwas · 1 Portion'],['','Gut · 2–3 Portionen'],['','Sehr gut · 4+ Portionen']] },
+
+  quality:{ id:'quality', pillar:'Ernährung', pClass:'p-ern',
+    title:'Wie bewertest du deine Ernährung heute insgesamt?',
+    opts:[['🎯','On track'],['🙂','Okay'],['↩️','Off track']] },
+
+  hunger:{ id:'hunger', pillar:'Ernährung', pClass:'p-ern',
+    title:'Hunger & Cravings heute?',
+    opts:[['','Kein Thema'],['','Normal'],['','Stärker als sonst'],['','Ständig Heißhunger']] },
+
+  digestion:{ id:'digestion', pillar:'Ernährung', pClass:'p-ern',
+    title:'Wie war deine Verdauung heute?',
+    opts:[['👍','Gut & normal'],['🎈','Aufgebläht'],['💧','Weicher Stuhl'],['🧱','Verstopfung'],['⚡','Schmerzen / Unwohlsein']],
+    onAnswer:(v)=>{ if(v>0) insertAfter('digestTrigger'); } },
+
+  digestTrigger:{ id:'digestTrigger', pillar:'Ernährung', pClass:'p-ern', conditional:true,
+    title:'Vermuteter Auslöser?',
+    grid:true,
+    opts:[['','Große Mahlzeit'],['','Milchprodukte'],['','Gluten'],['','Viele Ballaststoffe'],['','Fettiges Essen'],['','Stress'],['','Keine Ahnung'],['','Sonstiges']] },
+
+  alc:{ id:'alc', pillar:'Ernährung', pClass:'p-ern',
+    title:'Alkohol oder spätes Koffein heute?',
+    caption:'Beides drückt messbar Schlafqualität und Erholung — deshalb fragen wir.',
+    opts:[['','Nein'],['☕','Koffein nach 15 Uhr'],['🍷','Alkohol'],['','Beides']] },
+
+  training:{ id:'training', pillar:'Training & Bewegung', pClass:'p-tra',
+    title:'Hast du dein geplantes Training absolviert?',
+    opts:[['✅','Ja'],['➗','Teilweise'],['🛋️','Rest Day (geplant)'],['✖️','Verpasst']],
+    onAnswer:(v)=>{ if(v===3) insertAfter('missReason'); } },
+
+  missReason:{ id:'missReason', pillar:'Training & Bewegung', pClass:'p-tra', conditional:true,
+    title:'Was war der Hauptgrund?',
+    grid:true,
+    opts:[['','Keine Zeit'],['','Keine Energie'],['','Schmerzen'],['','Stress'],['','Motivation'],['','Arbeit & Reisen'],['','Sonstiges'],['','—']] },
+
+  steps:{ id:'steps', pillar:'Training & Bewegung', pClass:'p-tra',
+    title:'Wie viele Schritte bist du heute gegangen?',
+    caption:'Kein Tracker? Wähl, was am ehesten passt.',
+    opts:[['','Sehr inaktiv · unter 2.000'],['','Wenig · 2.000–5.000'],['','Moderat · 5.000–8.000'],['','Aktiv · 8.000–12.000'],['','Sehr aktiv · 12.000+']] },
+
+  mobility:{ id:'mobility', pillar:'Training & Bewegung', pClass:'p-tra',
+    title:'Mobility oder Stretching gemacht?',
+    opts:[['','Nein'],['','Ja · 5 Min'],['','Ja · 10–15 Min'],['','Ja · 15+ Min']] },
+
+  pain:{ id:'pain', pillar:'Training & Bewegung', pClass:'p-tra',
+    title:'Schmerzen oder Beschwerden heute?',
+    opts:[['','Keine'],['','Leicht'],['','Mittel'],['','Stark']],
+    onAnswer:(v)=>{ if(v>=2){ insertAfter('painWhere'); insertAfter('painImpact',1);} } },
+
+  painWhere:{ id:'painWhere', pillar:'Training & Bewegung', pClass:'p-tra', conditional:true,
+    title:'Wo?',
+    grid:true,
+    opts:[['','Nacken & Schultern'],['','Ellbogen & Handgelenk'],['','Unterer Rücken'],['','Hüfte'],['','Knie'],['','Fuß & Sprunggelenk'],['','Sonstiges'],['','—']] },
+
+  painImpact:{ id:'painImpact', pillar:'Training & Bewegung', pClass:'p-tra', conditional:true,
+    title:'Hat es deine Bewegung oder dein Training beeinflusst?',
+    opts:[['','Nein'],['','Ein wenig'],['','Ja, musste anpassen'],['','Ja, musste abbrechen']] },
+
+  sleepH:{ id:'sleepH', pillar:'Recovery', pClass:'p-rec',
+    title:'Wie viele Stunden hast du geschlafen?',
+    opts:[['','Sehr wenig · unter 5 h'],['','Wenig · 5–6 h'],['','Okay · 6–7 h'],['','Gut · 7–8 h'],['','Top · 8+ h']] },
+
+  sleepQ:{ id:'sleepQ', pillar:'Recovery', pClass:'p-rec',
+    title:'Wie war deine Schlafqualität?',
+    opts:[['','Sehr gut'],['','Gut'],['','Okay'],['','Schlecht'],['','Sehr schlecht']] },
+
+  energy:{ id:'energy', pillar:'Recovery', pClass:'p-rec', type:'slider',
+    title:'Energie heute?', min:1,max:5, lo:'Komplett leer', hi:'Voll da' },
+
+  stress:{ id:'stress', pillar:'Recovery', pClass:'p-rec', type:'slider',
+    title:'Stresslevel heute?', min:1,max:5, lo:'Tiefenentspannt', hi:'Am Limit' },
+
+  soreness:{ id:'soreness', pillar:'Recovery', pClass:'p-rec',
+    title:'Wie erholt fühlt sich dein Körper an?',
+    opts:[['🌱','Frisch'],['','Normal'],['','Müde'],['','Starker Muskelkater'],['','Erschöpft']] },
+
+  motivation:{ id:'motivation', pillar:'Recovery', pClass:'p-rec', type:'slider',
+    title:'Motivation gerade?', min:1,max:5, lo:'Gar keine', hi:'Voll dabei' },
+
+  note:{ id:'note', pillar:'Abschluss', pClass:'p-neutral', type:'note',
+    title:'Gibt es etwas, das dein Coach wissen sollte?',
+    caption:'Optional — du kannst auch überspringen.',
+    placeholder:'Z. B. stressiger Arbeitstag, schlecht geschlafen, super Training, unterwegs …' }
+};
+
+const BASE_QUEUE = ['feeling','water','protein','veg','quality','hunger','digestion','alc',
+  'training','steps','mobility','pain','sleepH','sleepQ','energy','stress','soreness','motivation','note'];
+
+/* =========================================================
+   FLOW ENGINE
+========================================================= */
+const $ = s=>document.querySelector(s);
+const screens = { start:$('#screen-start'), checkin:$('#screen-checkin'), result:$('#screen-result'), dash:$('#screen-dash') };
+let currentScreen = 'start';
+
+function show(name){
+  Object.values(screens).forEach(s=>s.classList.remove('active'));
+  screens[name].classList.add('active');
+  currentScreen = name;
+  $('#viewSwitch').textContent = name==='dash' ? 'Client-Ansicht' : 'Coach-Ansicht';
+  window.scrollTo(0,0);
+}
+
+function insertAfter(qid, offset=0){
+  const pos = state.idx + 1 + offset;
+  if(!state.queue.includes(qid)) state.queue.splice(pos,0,qid);
+}
+
+function startCheckin(){
+  state.answers = {};
+  state.queue = [...BASE_QUEUE];
+  state.idx = 0;
+  show('checkin');
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const q = Q[state.queue[state.idx]];
+  const total = state.queue.length;
+  $('#progressFill').style.width = ((state.idx)/total*100)+'%';
+  $('#progressCount').textContent = (state.idx+1)+'/'+total;
+  $('#backBtn').disabled = state.idx===0;
+
+  const wrap = $('#qWrap');
+  wrap.innerHTML = '';
+  wrap.style.animation='none'; void wrap.offsetWidth; wrap.style.animation='';
+
+  const pillar = document.createElement('div');
+  pillar.className = 'q-pillar '+q.pClass;
+  pillar.textContent = q.pillar;
+  wrap.appendChild(pillar);
+
+  const title = document.createElement('div');
+  title.className='q-title';
+  title.textContent = q.title;
+  wrap.appendChild(title);
+
+  if(q.caption){
+    const cap = document.createElement('div');
+    cap.className='q-caption';
+    cap.textContent=q.caption;
+    wrap.appendChild(cap);
+  }
+
+  if(q.type==='slider'){
+    renderSlider(wrap,q);
+  } else if(q.type==='note'){
+    renderNote(wrap,q);
+  } else {
+    renderOptions(wrap,q);
+  }
+}
+
+function renderOptions(wrap,q){
+  const box = document.createElement('div');
+  box.className='options'+(q.grid?' grid-2':'');
+  q.opts.forEach(([ico,label],i)=>{
+    if(label==='—') return;
+    const b = document.createElement('button');
+    b.className='opt';
+    b.innerHTML = (ico?'<span class="ico">'+ico+'</span>':'')+'<span>'+label+'</span>';
+    b.addEventListener('click',()=>{
+      b.classList.add('selected');
+      state.answers[q.id]=i;
+      if(q.onAnswer) q.onAnswer(i);
+      setTimeout(next, 190);
+    });
+    box.appendChild(b);
+  });
+  wrap.appendChild(box);
+}
+
+function renderSlider(wrap,q){
+  const block = document.createElement('div');
+  block.className='slider-block';
+  const val = document.createElement('div');
+  val.className='slider-value';
+  const start = 3;
+  val.textContent = start;
+  const range = document.createElement('input');
+  range.type='range'; range.min=q.min; range.max=q.max; range.value=start; range.step=1;
+  range.setAttribute('aria-label',q.title);
+  range.addEventListener('input',()=>{ val.textContent=range.value; });
+  const labels = document.createElement('div');
+  labels.className='slider-labels';
+  labels.innerHTML='<span>'+q.lo+'</span><span>'+q.hi+'</span>';
+  block.append(val,range,labels);
+  wrap.appendChild(block);
+
+  const foot = document.createElement('div');
+  foot.className='q-footer';
+  const btn = document.createElement('button');
+  btn.className='cta';
+  btn.textContent='Weiter';
+  btn.addEventListener('click',()=>{
+    state.answers[q.id]=parseInt(range.value,10);
+    next();
+  });
+  foot.appendChild(btn);
+  wrap.appendChild(foot);
+}
+
+function renderNote(wrap,q){
+  const ta = document.createElement('textarea');
+  ta.placeholder=q.placeholder;
+  wrap.appendChild(ta);
+  const foot = document.createElement('div');
+  foot.className='q-footer';
+  const btn = document.createElement('button');
+  btn.className='cta';
+  btn.textContent='Check-in abschließen';
+  btn.addEventListener('click',()=>{ state.answers.note=ta.value.trim(); finish(); });
+  const skip = document.createElement('button');
+  skip.className='skip-btn';
+  skip.textContent='Überspringen';
+  skip.addEventListener('click',()=>{ state.answers.note=''; finish(); });
+  foot.append(btn,skip);
+  wrap.appendChild(foot);
+}
+
+function next(){
+  if(state.idx < state.queue.length-1){
+    state.idx++;
+    renderQuestion();
+  } else {
+    finish();
+  }
+}
+$('#backBtn').addEventListener('click',()=>{
+  if(state.idx>0){ state.idx--; renderQuestion(); }
+});
+
+/* =========================================================
+   SCORING — deterministisch, exakt nach Spec
+========================================================= */
+function computeScores(a){
+  const waterPts=[0,.5,1,2,2], protPts=[2,1,0], vegPts=[0,.5,1.5,2], qualPts=[2,1,0];
+  const digest = a.digestion===0?1:(a.digestion===4?0:.5);
+  const alcPts=[1,.5,.25,0];
+  let ern = waterPts[a.water]+protPts[a.protein]+vegPts[a.veg]+qualPts[a.quality]+digest+alcPts[a.alc];
+
+  const trainPts=[4,2,4,0], stepPts=[0,1,2,3,3], mobPts=[0,.5,1,1], painPts=[2,1.5,.5,0];
+  let tra = trainPts[a.training]+stepPts[a.steps]+mobPts[a.mobility]+painPts[a.pain];
+
+  const sleepPts=[0,.5,1,2,2], sqPts=[2,1.5,1,.5,0], sorePts=[2,1.5,1,.5,0];
+  let rec = sleepPts[a.sleepH]+sqPts[a.sleepQ]+((a.energy-1)/2)+((5-a.stress)/2)+sorePts[a.soreness];
+
+  return { ern:round1(ern), tra:round1(tra), rec:round1(rec) };
+}
+const round1 = n=>Math.round(n*10)/10;
+function zone(s){ return s>=7?'g':(s>=4?'y':'r'); }
+const zoneColor = { g:'var(--green)', y:'var(--amber)', r:'var(--red)' };
+
+/* =========================================================
+   INSIGHT — regelbasiert, Priorität nach Dringlichkeit
+========================================================= */
+function buildInsight(a,s){
+  if(a.pain===3) return 'Starke Schmerzen sind ein Stopp-Signal, kein Durchbeißen-Signal. Dein Coach meldet sich — bei anhaltenden Schmerzen bitte ärztlich abklären.';
+  if(a.sleepH===0) return 'Unter 5 Stunden Schlaf — heute keine Intensität erzwingen. Früher ins Bett zahlt direkt auf Training und Heißhunger-Kontrolle ein.';
+  if(a.stress===5 && a.energy<=2) return 'Stress am Limit, Tank fast leer. Heute zählt Regeneration mehr als jedes Workout: Spaziergang, Protein, früh schlafen.';
+  if(a.soreness===4) return 'Erschöpft ist ein Datenpunkt, kein Versagen. Plan heute bewusst runterfahren — Erholung ist Teil des Trainings.';
+  if(a.alc>=2) return 'Alkohol drückt heute Nacht messbar deine Schlafqualität. Extra Wasser und früher ins Bett fangen das teilweise ab.';
+  if(a.hunger===3) return 'Ständiger Heißhunger deutet oft auf zu wenig Protein oder Schlaf hin — check die letzten Tage im Verlauf.';
+  const worst = Math.min(s.ern,s.tra,s.rec);
+  if(worst===s.rec && zone(s.rec)!=='g') return 'Recovery ist heute dein schwächster Bereich. Eine Stunde früher schlafen ist der schnellste Hebel für morgen.';
+  if(worst===s.ern && zone(s.ern)!=='g') return 'Ernährung war heute wacklig — morgen reicht ein Fokus: Protein zu jeder Mahlzeit. Ein Hebel, große Wirkung.';
+  if(worst===s.tra && zone(s.tra)!=='g') return 'Bewegung kam heute zu kurz. Morgen 20 Minuten Gehen einplanen — Konstanz schlägt Intensität.';
+  return 'Starker Tag über alle drei Säulen. Genau diese Konstanz macht am Ende den Unterschied. 💪';
+}
+
+/* =========================================================
+   RESULT SCREEN
+========================================================= */
+function finish(){
+  const a = state.answers;
+  const s = computeScores(a);
+  show('result');
+  state.streak++;
+  $('#streakBig').textContent = state.streak+' Tage';
+  $('#streakChip').textContent = state.streak+' Tage in Folge';
+  $('#insightText').textContent = buildInsight(a,s);
+
+  animateRing('ringErn','scoreErn',s.ern);
+  animateRing('ringTra','scoreTra',s.tra);
+  animateRing('ringRec','scoreRec',s.rec);
+}
+
+function animateRing(ringId,scoreId,score){
+  const ring = $('#'+ringId), inner = $('#'+scoreId);
+  const c = zoneColor[zone(score)];
+  ring.style.setProperty('--c',c);
+  inner.style.color = c;
+  const target = score*10;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduced){
+    ring.style.setProperty('--p',target);
+    inner.textContent = score.toFixed(1).replace('.',',');
+    return;
+  }
+  let p=0;
+  const t0 = performance.now();
+  function step(t){
+    const k = Math.min((t-t0)/900,1);
+    const e = 1-Math.pow(1-k,3);
+    p = target*e;
+    ring.style.setProperty('--p',p);
+    inner.textContent = (score*e).toFixed(1).replace('.',',');
+    if(k<1) requestAnimationFrame(step);
+    else inner.textContent = score.toFixed(1).replace('.',',');
+  }
+  requestAnimationFrame(step);
+}
+
+$('#doneBtn').addEventListener('click',()=>show('start'));
+$('#startBtn').addEventListener('click',startCheckin);
+$('#viewSwitch').addEventListener('click',()=>{
+  show(currentScreen==='dash' ? 'start' : 'dash');
+});
+
+/* =========================================================
+   COACH DASHBOARD — Demo-Daten
+   7-Tage-Werte pro Säule; Ampel = Durchschnitt.
+========================================================= */
+const clients = [
+  { name:'Lena K.', init:'LK', last:'Heute, 07:12',
+    ern:[8,7.5,8,7,8.5,8,9], tra:[8,9,7.5,8,8,9,8.5], rec:[7,7.5,8,7,8,7.5,8],
+    note:'Super Trainingswoche, Schlaf endlich stabil.', flags:[] },
+  { name:'Markus B.', init:'MB', last:'Heute, 06:48',
+    ern:[6,5.5,6,7,5,6,6.5], tra:[7,8,7,7.5,8,7,7], rec:[5,5.5,6,5,6,5.5,5],
+    note:'Projektabgabe nächste Woche — Stress hoch.', flags:[] },
+  { name:'Sarah W.', init:'SW', last:'Gestern, 21:30',
+    ern:[4,3.5,4,5,4,3,4], tra:[3,2,4,3,2,3,3.5], rec:[3,3.5,3,4,3,2.5,3],
+    note:'Motivation 2 Wochen in Folge ≤ 2. Reise steht an.',
+    flags:['Training 3× verpasst in 7 Tagen','Motivation 2 Wochen in Folge ≤ 2 — Dropout-Risiko'] },
+  { name:'Jonas T.', init:'JT', last:'Heute, 08:05',
+    ern:[7,7,6.5,7,8,7,7], tra:[6,7,6,5,6,6.5,6], rec:[3.5,3,4,3,3.5,3,3],
+    note:'Schläft seit Tagen unter 5 h — Neugeborenes zu Hause.',
+    flags:['Schlaf < 5 h (4 von 7 Tagen)','Erholung: Erschöpft (heute)'] },
+  { name:'Aylin D.', init:'AD', last:'Vor 3 Tagen',
+    ern:[6,6,5,0,0,0,0], tra:[5,6,5,0,0,0,0], rec:[5,5,4,0,0,0,0],
+    note:'Letzter Check-in vor 3 Tagen — kurze Nachricht schicken.',
+    flags:['Kein Check-in seit 3 Tagen'] }
+];
+
+function avg(arr){
+  const v = arr.filter(x=>x>0);
+  return v.length? round1(v.reduce((a,b)=>a+b,0)/v.length) : 0;
+}
+
+function renderDash(){
+  // Alerts
+  const alertBox = $('#alertList');
+  alertBox.innerHTML='';
+  clients.forEach(c=>{
+    c.flags.forEach(f=>{
+      const el = document.createElement('div');
+      el.className='alert';
+      el.innerHTML='<span class="dot"></span><div><strong>'+c.name+'</strong> · <span class="a-detail">'+f+'</span></div>';
+      alertBox.appendChild(el);
+    });
+  });
+
+  // Clients: Red Flags zuerst, dann nach schlechtestem Schnitt
+  const sorted = [...clients].sort((a,b)=>{
+    if(b.flags.length!==a.flags.length) return b.flags.length-a.flags.length;
+    const wa = Math.min(avg(a.ern),avg(a.tra),avg(a.rec));
+    const wb = Math.min(avg(b.ern),avg(b.tra),avg(b.rec));
+    return wa-wb;
+  });
+
+  const list = $('#clientList');
+  list.innerHTML='';
+  sorted.forEach(c=>{
+    const aE=avg(c.ern), aT=avg(c.tra), aR=avg(c.rec);
+    const card = document.createElement('div');
+    card.className='client'+(c.flags.length?' flagged':'');
+    card.setAttribute('role','button');
+    card.setAttribute('tabindex','0');
+    card.innerHTML =
+      '<div class="client-row">'+
+        '<div class="avatar">'+c.init+'</div>'+
+        '<div class="client-meta"><div class="client-name">'+c.name+'</div>'+
+        '<div class="client-last">Letzter Check-in: '+c.last+'</div></div>'+
+        '<div class="pillar-dots">'+
+          '<span class="pdot '+zone(aE)+'" title="Ernährung Ø '+aE+'"></span>'+
+          '<span class="pdot '+zone(aT)+'" title="Training Ø '+aT+'"></span>'+
+          '<span class="pdot '+zone(aR)+'" title="Recovery Ø '+aR+'"></span>'+
+        '</div>'+
+      '</div>'+
+      '<div class="client-detail">'+
+        trendHTML('Ernährung',c.ern,aE)+
+        trendHTML('Training',c.tra,aT)+
+        trendHTML('Recovery',c.rec,aR)+
+        '<div class="client-note"><b>Notiz:</b> '+c.note+'</div>'+
+      '</div>';
+    const toggle = ()=>card.classList.toggle('open');
+    card.addEventListener('click',toggle);
+    card.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();} });
+    list.appendChild(card);
+  });
+}
+
+function trendHTML(label,values,average){
+  const bars = values.map(v=>{
+    if(v===0) return '<div class="bar" style="height:3px"></div>';
+    const h = Math.max(8, v/10*100);
+    return '<div class="bar" style="height:'+h+'%;background:'+zoneColor[zone(v)]+'"></div>';
+  }).join('');
+  return '<div class="trend-group">'+
+    '<div class="trend-label"><span>'+label+'</span><span class="avg">Ø '+String(average).replace('.',',')+' / 10</span></div>'+
+    '<div class="bars">'+bars+'</div></div>';
+}
+
+/* =========================================================
+   INIT
+========================================================= */
+const days=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+const months=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+const now=new Date();
+$('#todayLabel').textContent = days[now.getDay()]+', '+now.getDate()+'. '+months[now.getMonth()];
+renderDash();
+</script>
+</body>
+</html>
