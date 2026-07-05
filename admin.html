@@ -143,6 +143,7 @@ h2{font-family:'Sora';font-weight:700;font-size:18px;margin-top:8px}
     <div class="tabs">
       <button class="tab-btn active" data-tab="overview">Übersicht</button>
       <button class="tab-btn" data-tab="challenges">Challenges</button>
+      <button class="tab-btn" data-tab="account">Konto</button>
     </div>
 
     <div id="tab-overview">
@@ -190,6 +191,19 @@ h2{font-family:'Sora';font-weight:700;font-size:18px;margin-top:8px}
       <div class="challenge-list" id="challengeMgmtList"></div>
       <div class="empty-note" id="challengesEmpty" style="display:none">Noch keine Challenges angelegt.</div>
     </div>
+
+    <div id="tab-account" class="hidden">
+      <h2 style="margin-top:0">Passwort ändern</h2>
+      <div class="challenge-form" style="max-width:340px">
+        <label>Aktuelles Passwort</label>
+        <input id="curPw" type="password" autocomplete="current-password">
+        <label>Neues Passwort</label>
+        <input id="newPw" type="password" autocomplete="new-password">
+        <div class="auth-error" id="pwError"></div>
+        <div class="auth-error" id="pwSuccess" style="color:var(--green)"></div>
+        <button class="cta" id="pwSaveBtn" style="max-width:none">Speichern</button>
+      </div>
+    </div>
   </section>
 
 </div>
@@ -197,7 +211,8 @@ h2{font-family:'Sora';font-weight:700;font-size:18px;margin-top:8px}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
 import {
-  getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut
+  getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut,
+  EmailAuthProvider, reauthenticateWithCredential, updatePassword
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 import {
   getFirestore, doc, setDoc, deleteDoc, collection, getDocs, query, where, serverTimestamp
@@ -269,7 +284,26 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
     const tab = btn.dataset.tab;
     $('#tab-overview').classList.toggle('hidden', tab!=='overview');
     $('#tab-challenges').classList.toggle('hidden', tab!=='challenges');
+    $('#tab-account').classList.toggle('hidden', tab!=='account');
   });
+});
+
+$('#pwSaveBtn').addEventListener('click', async ()=>{
+  const current = $('#curPw').value;
+  const next = $('#newPw').value;
+  const errBox = $('#pwError'); const okBox = $('#pwSuccess');
+  errBox.textContent=''; okBox.textContent='';
+  if(!current || !next){ errBox.textContent = 'Bitte beide Felder ausfüllen.'; return; }
+  if(next.length < 6){ errBox.textContent = 'Neues Passwort braucht mindestens 6 Zeichen.'; return; }
+  try{
+    const cred = EmailAuthProvider.credential(auth.currentUser.email, current);
+    await reauthenticateWithCredential(auth.currentUser, cred);
+    await updatePassword(auth.currentUser, next);
+    $('#curPw').value=''; $('#newPw').value='';
+    okBox.textContent = 'Passwort geändert.';
+  }catch(e){
+    errBox.textContent = (e.code==='auth/invalid-credential'||e.code==='auth/wrong-password') ? 'Aktuelles Passwort ist falsch.' : 'Etwas ist schiefgelaufen.';
+  }
 });
 
 /* =========================================================

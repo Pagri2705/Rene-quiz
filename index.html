@@ -451,6 +451,24 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
       <button class="theme-btn" data-theme="light" id="themeLightBtn">☀️ <span id="themeLightLabel">Hell</span></button>
     </div>
     <button class="cta secondary-btn" id="personalInfoBtn" style="margin-top:12px">👤 <span id="personalInfoBtnText">Persönliche Informationen</span></button>
+    <button class="cta secondary-btn" id="changePasswordBtn">🔒 <span id="changePasswordBtnText">Passwort ändern</span></button>
+  </section>
+
+  <!-- CHANGE PASSWORD -->
+  <section class="screen settings" id="screen-password">
+    <div class="progress">
+      <button class="back-btn" id="passwordBackBtn">← Zurück</button>
+      <div class="progress-track" style="visibility:hidden"></div>
+      <div style="width:44px"></div>
+    </div>
+    <h1 style="font-size:26px" id="passwordTitle">Passwort ändern</h1>
+    <label class="field-label" id="labelCurrentPassword">Aktuelles Passwort</label>
+    <input class="auth-field" id="currentPassword" type="password" autocomplete="current-password">
+    <label class="field-label" id="labelNewPassword">Neues Passwort</label>
+    <input class="auth-field" id="newPassword" type="password" autocomplete="new-password">
+    <div class="auth-error" id="passwordError"></div>
+    <div class="auth-success" id="passwordSuccess"></div>
+    <button class="cta" id="passwordSaveBtn">Speichern</button>
   </section>
 
   <!-- PERSONAL INFO -->
@@ -543,7 +561,8 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
 import {
   getAuth, onAuthStateChanged, signInWithEmailAndPassword,
-  createUserWithEmailAndPassword, signOut, sendPasswordResetEmail, sendEmailVerification
+  createUserWithEmailAndPassword, signOut, sendPasswordResetEmail, sendEmailVerification,
+  EmailAuthProvider, reauthenticateWithCredential, updatePassword
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 import {
   getFirestore, doc, setDoc, getDoc, deleteDoc, collection, query, where,
@@ -656,7 +675,11 @@ de:{
     reminderBannerText:'Du hast heute noch nicht eingecheckt — jetzt nachholen?',
     labelTheme:'Darstellung', themeDarkLabel:'Dunkel', themeLightLabel:'Hell',
     personalInfoBtnText:'Persönliche Informationen', personalTitle:'Persönliche Informationen',
-    greetingHello:(name)=> name ? 'Hallo '+name+' 👋' : 'Hallo 👋'
+    greetingHello:(name)=> name ? 'Hallo '+name+' 👋' : 'Hallo 👋',
+    changePasswordBtnText:'Passwort ändern', passwordTitle:'Passwort ändern',
+    labelCurrentPassword:'Aktuelles Passwort', labelNewPassword:'Neues Passwort',
+    passwordFillBoth:'Bitte beide Felder ausfüllen.', passwordTooShort:'Neues Passwort braucht mindestens 6 Zeichen.',
+    passwordSaved:'Passwort geändert.', passwordWrongCurrent:'Aktuelles Passwort ist falsch.'
   },
   q:{
     feeling:{ title:'Wie fühlst du dich heute?', opts:[['😄','Sehr gut'],['🙂','Gut'],['😐','Okay'],['😕','Niedrig'],['😞','Schlecht']] },
@@ -745,7 +768,11 @@ en:{
     reminderBannerText:"You haven't checked in today yet — catch up now?",
     labelTheme:'Appearance', themeDarkLabel:'Dark', themeLightLabel:'Light',
     personalInfoBtnText:'Personal Information', personalTitle:'Personal Information',
-    greetingHello:(name)=> name ? 'Hi '+name+' 👋' : 'Hi 👋'
+    greetingHello:(name)=> name ? 'Hi '+name+' 👋' : 'Hi 👋',
+    changePasswordBtnText:'Change password', passwordTitle:'Change password',
+    labelCurrentPassword:'Current password', labelNewPassword:'New password',
+    passwordFillBoth:'Please fill in both fields.', passwordTooShort:'New password needs at least 6 characters.',
+    passwordSaved:'Password changed.', passwordWrongCurrent:'Current password is incorrect.'
   },
   q:{
     feeling:{ title:'How are you feeling today?', opts:[['😄','Great'],['🙂','Good'],['😐','Okay'],['😕','Low'],['😞','Bad']] },
@@ -834,7 +861,11 @@ zh:{
     reminderBannerText:'你今天還沒有打卡 — 現在補上嗎？',
     labelTheme:'外觀', themeDarkLabel:'深色', themeLightLabel:'淺色',
     personalInfoBtnText:'個人資訊', personalTitle:'個人資訊',
-    greetingHello:(name)=> name ? '哈囉 '+name+' 👋' : '哈囉 👋'
+    greetingHello:(name)=> name ? '哈囉 '+name+' 👋' : '哈囉 👋',
+    changePasswordBtnText:'變更密碼', passwordTitle:'變更密碼',
+    labelCurrentPassword:'目前密碼', labelNewPassword:'新密碼',
+    passwordFillBoth:'請填寫兩個欄位。', passwordTooShort:'新密碼至少需要6個字元。',
+    passwordSaved:'密碼已變更。', passwordWrongCurrent:'目前密碼不正確。'
   },
   q:{
     feeling:{ title:'你今天感覺如何？', opts:[['😄','很好'],['🙂','不錯'],['😐','普通'],['😕','偏低'],['😞','不好']] },
@@ -886,7 +917,7 @@ zh:{
    FLOW ENGINE
 ========================================================= */
 const $ = s=>document.querySelector(s);
-const screens = { auth:$('#screen-auth'), start:$('#screen-start'), checkin:$('#screen-checkin'), result:$('#screen-result'), settings:$('#screen-settings'), personal:$('#screen-personal'), challenges:$('#screen-challenges') };
+const screens = { auth:$('#screen-auth'), start:$('#screen-start'), checkin:$('#screen-checkin'), result:$('#screen-result'), settings:$('#screen-settings'), personal:$('#screen-personal'), password:$('#screen-password'), challenges:$('#screen-challenges') };
 let currentScreen = 'auth';
 
 function show(name){
@@ -953,6 +984,12 @@ function applyLanguage(lang){
   $('#personalInfoBtnText').textContent = t.personalInfoBtnText;
   $('#personalTitle').textContent = t.personalTitle;
   $('#personalBackBtn').textContent = '← '+t.backBtn;
+  $('#changePasswordBtnText').textContent = t.changePasswordBtnText;
+  $('#passwordTitle').textContent = t.passwordTitle;
+  $('#labelCurrentPassword').textContent = t.labelCurrentPassword;
+  $('#labelNewPassword').textContent = t.labelNewPassword;
+  $('#passwordSaveBtn').textContent = t.settingsSaveBtn;
+  $('#passwordBackBtn').textContent = '← '+t.backBtn;
   updateGreeting();
   updateCommunityChip();
   if(currentScreen==='checkin') renderQuestion();
@@ -1149,6 +1186,32 @@ $('#personalInfoBtn').addEventListener('click', async ()=>{
   show('personal');
 });
 $('#personalBackBtn').addEventListener('click', ()=> show('settings'));
+
+$('#changePasswordBtn').addEventListener('click', ()=>{
+  $('#currentPassword').value=''; $('#newPassword').value='';
+  $('#passwordError').textContent=''; $('#passwordSuccess').textContent='';
+  show('password');
+});
+$('#passwordBackBtn').addEventListener('click', ()=> show('settings'));
+
+$('#passwordSaveBtn').addEventListener('click', async ()=>{
+  const t = T[state.lang].ui;
+  const current = $('#currentPassword').value;
+  const next = $('#newPassword').value;
+  const errBox = $('#passwordError'); const okBox = $('#passwordSuccess');
+  errBox.textContent=''; okBox.textContent='';
+  if(!current || !next){ errBox.textContent = t.passwordFillBoth; return; }
+  if(next.length < 6){ errBox.textContent = t.passwordTooShort; return; }
+  try{
+    const cred = EmailAuthProvider.credential(auth.currentUser.email, current);
+    await reauthenticateWithCredential(auth.currentUser, cred);
+    await updatePassword(auth.currentUser, next);
+    $('#currentPassword').value=''; $('#newPassword').value='';
+    okBox.textContent = t.passwordSaved;
+  }catch(e){
+    errBox.textContent = (e.code==='auth/invalid-credential'||e.code==='auth/wrong-password') ? t.passwordWrongCurrent : authErrorMessage(e.code);
+  }
+});
 $('#settingsSaveBtn').addEventListener('click', async ()=>{
   const name = $('#settingsName').value.trim();
   await setDoc(doc(db,'users',state.uid), {
