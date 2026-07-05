@@ -247,7 +247,7 @@ const round1 = n=>Math.round(n*10)/10;
 function zone(s){ return s>=7?'g':(s>=4?'y':'r'); }
 
 $('#authSubmitBtn').addEventListener('click', async ()=>{
-  const email = $('#authEmail').value.trim();
+  const email = $('#authEmail').value.trim().toLowerCase();
   const password = $('#authPassword').value;
   const errBox = $('#authError');
   errBox.textContent = '';

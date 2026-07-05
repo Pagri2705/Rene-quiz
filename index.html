@@ -1024,7 +1024,7 @@ $('#passwordToggleBtn').addEventListener('click', ()=>{
 });
 
 $('#authSubmitBtn').addEventListener('click', async ()=>{
-  const email = $('#authEmail').value.trim();
+  const email = $('#authEmail').value.trim().toLowerCase();
   const password = $('#authPassword').value;
   const errBox = $('#authError');
   const btn = $('#authSubmitBtn');
@@ -1056,7 +1056,7 @@ $('#authSubmitBtn').addEventListener('click', async ()=>{
 
 $('#authForgotBtn').addEventListener('click', async ()=>{
   const t = T[state.lang].ui;
-  const email = $('#authEmail').value.trim();
+  const email = $('#authEmail').value.trim().toLowerCase();
   const errBox = $('#authError'); const okBox = $('#authSuccess');
   errBox.textContent = ''; okBox.textContent = '';
   if(!email){ errBox.textContent = t.authFillEmail; return; }
