@@ -374,6 +374,17 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
   cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
 }
 .theme-btn.active{border-color:var(--accent);background:rgba(76,142,255,.1);color:var(--accent)}
+.theme-fab{
+  position:fixed;left:16px;bottom:16px;z-index:50;
+  display:flex;flex-direction:column;gap:6px;
+  background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px;
+  box-shadow:0 4px 16px rgba(0,0,0,.15);
+}
+.theme-fab-btn{
+  width:36px;height:36px;border-radius:50%;border:none;background:none;cursor:pointer;
+  font-size:16px;display:grid;place-items:center;
+}
+.theme-fab-btn.active{background:var(--accent);box-shadow:0 0 0 2px var(--accent-strong) inset}
 .secondary-btn{background:var(--panel-2)!important;color:var(--text)!important;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;gap:8px}
 .brand{cursor:pointer}
 
@@ -400,6 +411,8 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 .action-arrow{align-self:flex-end;font-size:18px;color:var(--accent);font-weight:800}
 
 /* ---------- Leaderboard ---------- */
+.leaderboard-inline{width:100%;display:flex;flex-direction:column;gap:10px;text-align:left}
+.leaderboard-inline-title{font-family:'Sora';font-weight:700;font-size:15px}
 .leaderboard-list{display:flex;flex-direction:column;gap:10px}
 .lb-row{
   display:flex;align-items:center;gap:12px;
@@ -415,6 +428,10 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 </style>
 </head>
 <body>
+<div class="theme-fab" id="themeFab">
+  <button class="theme-fab-btn" id="fabLightBtn" aria-label="Hell">☀️</button>
+  <button class="theme-fab-btn" id="fabDarkBtn" aria-label="Dunkel">🌙</button>
+</div>
 <div class="app">
 
   <header>
@@ -488,7 +505,10 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
         </div>
       </button>
     </div>
-    <button class="cta secondary-btn" id="leaderboardBtn">🏆 <span id="leaderboardBtnText">Bestenliste</span></button>
+    <div class="leaderboard-inline">
+      <div class="leaderboard-inline-title">🏆 <span id="leaderboardTitle">Bestenliste</span></div>
+      <div class="leaderboard-list" id="leaderboardList"></div>
+    </div>
     <div class="start-hint" id="startHint">Dauert ca. 90 Sekunden · Fortschritt wird automatisch gespeichert</div>
     <button class="logout-btn" id="logoutBtn">Abmelden</button>
   </section>
@@ -557,18 +577,6 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
     <h1 style="font-size:26px" id="challengesTitle">Challenges</h1>
     <div class="challenge-list" id="challengeList"></div>
     <div class="dash-footnote" id="challengesEmpty">Aktuell keine aktiven Challenges.</div>
-  </section>
-
-  <!-- LEADERBOARD -->
-  <section class="screen challenges" id="screen-leaderboard">
-    <div class="progress">
-      <button class="back-btn" id="leaderboardBackBtn">← Zurück</button>
-      <div class="progress-track" style="visibility:hidden"></div>
-      <div style="width:44px"></div>
-    </div>
-    <h1 style="font-size:26px" id="leaderboardTitle">Bestenliste</h1>
-    <div class="leaderboard-list" id="leaderboardList"></div>
-    <div class="dash-footnote" id="leaderboardEmpty">Noch keine Streaks vorhanden.</div>
   </section>
 
   <!-- CHECK-IN -->
@@ -1001,7 +1009,7 @@ zh:{
    FLOW ENGINE
 ========================================================= */
 const $ = s=>document.querySelector(s);
-const screens = { auth:$('#screen-auth'), start:$('#screen-start'), checkin:$('#screen-checkin'), result:$('#screen-result'), settings:$('#screen-settings'), personal:$('#screen-personal'), password:$('#screen-password'), challenges:$('#screen-challenges'), leaderboard:$('#screen-leaderboard') };
+const screens = { auth:$('#screen-auth'), start:$('#screen-start'), checkin:$('#screen-checkin'), result:$('#screen-result'), settings:$('#screen-settings'), personal:$('#screen-personal'), password:$('#screen-password'), challenges:$('#screen-challenges') };
 let currentScreen = 'auth';
 
 function show(name){
@@ -1079,12 +1087,10 @@ function applyLanguage(lang){
   $('#passwordSaveBtn').textContent = t.settingsSaveBtn;
   $('#passwordBackBtn').textContent = '← '+t.backBtn;
   $('#rememberMeLabel').textContent = t.rememberMeLabel;
-  $('#leaderboardBtnText').textContent = t.leaderboardBtnText;
   $('#leaderboardTitle').textContent = t.leaderboardTitle;
-  $('#leaderboardEmpty').textContent = t.leaderboardEmpty;
-  $('#leaderboardBackBtn').textContent = '← '+t.backBtn;
   updateGreeting();
   updateCommunityChip();
+  renderLeaderboard();
   if(currentScreen==='checkin') renderQuestion();
   if(currentScreen==='challenges') renderChallenges();
 }
@@ -1258,9 +1264,13 @@ function applyTheme(theme){
   document.documentElement.setAttribute('data-theme', theme);
   $('#themeDarkBtn').classList.toggle('active', theme==='dark');
   $('#themeLightBtn').classList.toggle('active', theme==='light');
+  $('#fabLightBtn').classList.toggle('active', theme==='light');
+  $('#fabDarkBtn').classList.toggle('active', theme==='dark');
 }
 $('#themeDarkBtn').addEventListener('click', ()=>applyTheme('dark'));
 $('#themeLightBtn').addEventListener('click', ()=>applyTheme('light'));
+$('#fabLightBtn').addEventListener('click', ()=>applyTheme('light'));
+$('#fabDarkBtn').addEventListener('click', ()=>applyTheme('dark'));
 
 /* =========================================================
    SETTINGS / PERSÖNLICHE INFORMATIONEN — users/{uid}
@@ -1362,22 +1372,29 @@ $('#challengesBackBtn').addEventListener('click', ()=> show('start'));
 
 /* =========================================================
    BESTENLISTE — Name + Streak aller Klienten
+   (zeigt zusätzlich 8 Demo-Einträge, solange wenige echte Klienten aktiv sind)
 ========================================================= */
-$('#leaderboardBtn').addEventListener('click', async ()=>{
-  show('leaderboard');
-  await renderLeaderboard();
-});
-$('#leaderboardBackBtn').addEventListener('click', ()=> show('start'));
+const FAKE_LEADERBOARD = [
+  { uid:'fake1', name:'Lena K.', streak:14 },
+  { uid:'fake2', name:'Markus B.', streak:11 },
+  { uid:'fake3', name:'Sarah W.', streak:9 },
+  { uid:'fake4', name:'Jonas T.', streak:8 },
+  { uid:'fake5', name:'Aylin D.', streak:6 },
+  { uid:'fake6', name:'Tim H.', streak:5 },
+  { uid:'fake7', name:'Nina R.', streak:3 },
+  { uid:'fake8', name:'Paul S.', streak:2 }
+];
 
 async function renderLeaderboard(){
   const list = $('#leaderboardList');
+  if(!list) return;
   list.innerHTML = '';
-  let entries = [];
+  let realEntries = [];
   try{
     const snap = await getDocs(collection(db,'leaderboard'));
-    entries = snap.docs.map(d=>({ uid:d.id, ...d.data() })).filter(e=>e.streak>0).sort((a,b)=>b.streak-a.streak);
+    realEntries = snap.docs.map(d=>({ uid:d.id, ...d.data() })).filter(e=>e.streak>0);
   }catch(e){}
-  $('#leaderboardEmpty').classList.toggle('hidden', entries.length>0);
+  const entries = [...FAKE_LEADERBOARD, ...realEntries].sort((a,b)=>b.streak-a.streak);
   entries.forEach((e,i)=>{
     const row = document.createElement('div');
     row.className = 'lb-row'+(e.uid===state.uid?' lb-me':'');
@@ -1683,7 +1700,7 @@ $('#startBtn').addEventListener('click',startCheckin);
 /* =========================================================
    INIT
 ========================================================= */
-applyTheme('dark');
+applyTheme('light');
 applyLanguage('de');
 </script>
 </body>
