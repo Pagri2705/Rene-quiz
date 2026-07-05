@@ -22,6 +22,14 @@
   --red:#FF6B6B;
   --radius:18px;
 }
+:root[data-theme="light"]{
+  --bg:#F4F6FA;
+  --panel:#FFFFFF;
+  --panel-2:#EEF1F7;
+  --line:#DDE3EE;
+  --text:#151B26;
+  --muted:#5B6779;
+}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{
@@ -336,13 +344,34 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
   font-family:'Inter';font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:999px;cursor:pointer;
 }
 .challenge-join-btn.joined{border-color:var(--green);color:var(--green)}
+
+/* ---------- Greeting ---------- */
+.greeting{font-size:15px;font-weight:600;margin-bottom:4px}
+
+/* ---------- Check-in exit ---------- */
+.exit-btn{
+  background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;
+  padding:4px 8px;line-height:1;
+}
+.exit-btn:hover,.exit-btn:focus-visible{color:var(--text)}
+
+/* ---------- Theme switch ---------- */
+.theme-switch{display:flex;gap:10px}
+.theme-btn{
+  flex:1;background:var(--panel);border:1px solid var(--line);color:var(--text);
+  font-family:'Inter';font-size:14px;font-weight:600;padding:14px;border-radius:14px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.theme-btn.active{border-color:var(--accent);background:rgba(76,142,255,.1);color:var(--accent)}
+.secondary-btn{background:var(--panel-2)!important;color:var(--text)!important;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;gap:8px}
+.brand{cursor:pointer}
 </style>
 </head>
 <body>
 <div class="app">
 
   <header>
-    <div class="brand">
+    <div class="brand" id="brandLogo" role="button" tabindex="0">
       <div class="brand-mark">M</div>
       <div class="brand-name">Modern Athlete <span>Lab</span></div>
     </div>
@@ -376,6 +405,7 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
   <!-- START -->
   <section class="screen start" id="screen-start">
     <div>
+      <div class="greeting" id="greetingText"></div>
       <div class="date-eyebrow" id="todayLabel"></div>
       <h1 style="margin-top:10px" id="startTitle">Dein täglicher<br><em>Performance-Scan</em></h1>
     </div>
@@ -403,6 +433,22 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
       <div style="width:44px"></div>
     </div>
     <h1 style="font-size:26px" id="settingsTitle">Einstellungen</h1>
+    <label class="field-label" id="labelTheme">Darstellung</label>
+    <div class="theme-switch">
+      <button class="theme-btn" data-theme="dark" id="themeDarkBtn">🌙 <span id="themeDarkLabel">Dunkel</span></button>
+      <button class="theme-btn" data-theme="light" id="themeLightBtn">☀️ <span id="themeLightLabel">Hell</span></button>
+    </div>
+    <button class="cta secondary-btn" id="personalInfoBtn" style="margin-top:12px">👤 <span id="personalInfoBtnText">Persönliche Informationen</span></button>
+  </section>
+
+  <!-- PERSONAL INFO -->
+  <section class="screen settings" id="screen-personal">
+    <div class="progress">
+      <button class="back-btn" id="personalBackBtn">← Zurück</button>
+      <div class="progress-track" style="visibility:hidden"></div>
+      <div style="width:44px"></div>
+    </div>
+    <h1 style="font-size:26px" id="personalTitle">Persönliche Informationen</h1>
     <label class="field-label" id="labelName">Name</label>
     <input class="auth-field" id="settingsName" type="text">
     <label class="field-label" id="labelEmail">E-Mail</label>
@@ -433,6 +479,7 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
       <button class="back-btn" id="backBtn">← Zurück</button>
       <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
       <div class="progress-count" id="progressCount">1/15</div>
+      <button class="exit-btn" id="checkinExitBtn">✕</button>
     </div>
     <div class="q-wrap" id="qWrap"></div>
   </section>
@@ -594,7 +641,10 @@ de:{
     challengeProgressLabel:'Fortschritt', communityToday:(n,total)=> n+' von '+total+' haben heute eingecheckt 🔥',
     verifyBannerText:'Bitte bestätige deine E-Mail-Adresse — check dein Postfach.',
     verifyResendBtn:'Erneut senden', verifyResendSent:'E-Mail verschickt.',
-    reminderBannerText:'Du hast heute noch nicht eingecheckt — jetzt nachholen?'
+    reminderBannerText:'Du hast heute noch nicht eingecheckt — jetzt nachholen?',
+    labelTheme:'Darstellung', themeDarkLabel:'Dunkel', themeLightLabel:'Hell',
+    personalInfoBtnText:'Persönliche Informationen', personalTitle:'Persönliche Informationen',
+    greetingHello:(name)=> name ? 'Hallo '+name+' 👋' : 'Hallo 👋'
   },
   q:{
     feeling:{ title:'Wie fühlst du dich heute?', opts:[['😄','Sehr gut'],['🙂','Gut'],['😐','Okay'],['😕','Niedrig'],['😞','Schlecht']] },
@@ -680,7 +730,10 @@ en:{
     challengeProgressLabel:'Progress', communityToday:(n,total)=> n+' of '+total+' checked in today 🔥',
     verifyBannerText:'Please verify your email address — check your inbox.',
     verifyResendBtn:'Resend', verifyResendSent:'Email sent.',
-    reminderBannerText:"You haven't checked in today yet — catch up now?"
+    reminderBannerText:"You haven't checked in today yet — catch up now?",
+    labelTheme:'Appearance', themeDarkLabel:'Dark', themeLightLabel:'Light',
+    personalInfoBtnText:'Personal Information', personalTitle:'Personal Information',
+    greetingHello:(name)=> name ? 'Hi '+name+' 👋' : 'Hi 👋'
   },
   q:{
     feeling:{ title:'How are you feeling today?', opts:[['😄','Great'],['🙂','Good'],['😐','Okay'],['😕','Low'],['😞','Bad']] },
@@ -766,7 +819,10 @@ zh:{
     challengeProgressLabel:'進度', communityToday:(n,total)=> '今天有 '+n+' / '+total+' 人完成打卡 🔥',
     verifyBannerText:'請驗證你的電子郵件地址 — 請查看你的信箱。',
     verifyResendBtn:'重新寄送', verifyResendSent:'郵件已寄出。',
-    reminderBannerText:'你今天還沒有打卡 — 現在補上嗎？'
+    reminderBannerText:'你今天還沒有打卡 — 現在補上嗎？',
+    labelTheme:'外觀', themeDarkLabel:'深色', themeLightLabel:'淺色',
+    personalInfoBtnText:'個人資訊', personalTitle:'個人資訊',
+    greetingHello:(name)=> name ? '哈囉 '+name+' 👋' : '哈囉 👋'
   },
   q:{
     feeling:{ title:'你今天感覺如何？', opts:[['😄','很好'],['🙂','不錯'],['😐','普通'],['😕','偏低'],['😞','不好']] },
@@ -818,7 +874,7 @@ zh:{
    FLOW ENGINE
 ========================================================= */
 const $ = s=>document.querySelector(s);
-const screens = { auth:$('#screen-auth'), start:$('#screen-start'), checkin:$('#screen-checkin'), result:$('#screen-result'), settings:$('#screen-settings'), challenges:$('#screen-challenges') };
+const screens = { auth:$('#screen-auth'), start:$('#screen-start'), checkin:$('#screen-checkin'), result:$('#screen-result'), settings:$('#screen-settings'), personal:$('#screen-personal'), challenges:$('#screen-challenges') };
 let currentScreen = 'auth';
 
 function show(name){
@@ -879,6 +935,13 @@ function applyLanguage(lang){
   $('#verifyBannerText').textContent = t.verifyBannerText;
   $('#verifyResendBtn').textContent = t.verifyResendBtn;
   $('#reminderBannerText').textContent = t.reminderBannerText;
+  $('#labelTheme').textContent = t.labelTheme;
+  $('#themeDarkLabel').textContent = t.themeDarkLabel;
+  $('#themeLightLabel').textContent = t.themeLightLabel;
+  $('#personalInfoBtnText').textContent = t.personalInfoBtnText;
+  $('#personalTitle').textContent = t.personalTitle;
+  $('#personalBackBtn').textContent = '← '+t.backBtn;
+  updateGreeting();
   updateCommunityChip();
   if(currentScreen==='checkin') renderQuestion();
   if(currentScreen==='challenges') renderChallenges();
@@ -971,12 +1034,15 @@ onAuthStateChanged(auth, async (user)=>{
     state.uid = user.uid;
     $('#authEmail').value=''; $('#authPassword').value=''; $('#authError').textContent='';
     $('#settingsBtn').classList.remove('hidden');
+    state.userName = undefined;
     await refreshStreak();
     await updateCommunityChip();
     await updateEngagementBanners();
+    await updateGreeting();
     show('start');
   } else {
     state.uid = null;
+    state.userName = undefined;
     setAuthMode('login');
     $('#settingsBtn').classList.add('hidden');
     show('auth');
@@ -1025,27 +1091,78 @@ async function updateCommunityChip(){
 }
 
 /* =========================================================
-   SETTINGS — Profil (Name, Telefon, Ziele) in users/{uid}
+   THEME — Dunkel / Hell
 ========================================================= */
-$('#settingsBtn').addEventListener('click', async ()=>{
-  const snap = await getDoc(doc(db,'users',state.uid));
-  const data = snap.exists() ? snap.data() : {};
-  $('#settingsName').value = data.name || '';
-  $('#settingsEmail').value = auth.currentUser ? auth.currentUser.email : '';
-  $('#settingsPhone').value = data.phone || '';
-  $('#settingsGoals').value = data.goals || '';
-  $('#settingsSuccess').textContent = '';
-  show('settings');
-});
+function applyTheme(theme){
+  state.theme = theme;
+  document.documentElement.setAttribute('data-theme', theme);
+  $('#themeDarkBtn').classList.toggle('active', theme==='dark');
+  $('#themeLightBtn').classList.toggle('active', theme==='light');
+}
+$('#themeDarkBtn').addEventListener('click', ()=>applyTheme('dark'));
+$('#themeLightBtn').addEventListener('click', ()=>applyTheme('light'));
+
+/* =========================================================
+   SETTINGS / PERSÖNLICHE INFORMATIONEN — users/{uid}
+========================================================= */
+$('#settingsBtn').addEventListener('click', ()=> show('settings'));
 $('#settingsBackBtn').addEventListener('click', ()=> show('start'));
+
+$('#personalInfoBtn').addEventListener('click', async ()=>{
+  try{
+    const snap = await getDoc(doc(db,'users',state.uid));
+    const data = snap.exists() ? snap.data() : {};
+    $('#settingsName').value = data.name || '';
+    $('#settingsEmail').value = auth.currentUser ? auth.currentUser.email : '';
+    $('#settingsPhone').value = data.phone || '';
+    $('#settingsGoals').value = data.goals || '';
+    $('#settingsSuccess').textContent = '';
+  }catch(e){
+    $('#settingsSuccess').textContent = '';
+  }
+  show('personal');
+});
+$('#personalBackBtn').addEventListener('click', ()=> show('settings'));
 $('#settingsSaveBtn').addEventListener('click', async ()=>{
+  const name = $('#settingsName').value.trim();
   await setDoc(doc(db,'users',state.uid), {
-    name: $('#settingsName').value.trim(),
+    name,
     phone: $('#settingsPhone').value.trim(),
     goals: $('#settingsGoals').value.trim()
   }, { merge:true });
+  state.userName = name;
+  updateGreeting();
   $('#settingsSuccess').textContent = T[state.lang].ui.settingsSaved;
 });
+
+/* =========================================================
+   GREETING — Begrüßung mit Name auf der Startseite
+========================================================= */
+async function updateGreeting(){
+  const box = $('#greetingText');
+  if(!box) return;
+  if(!state.uid){ box.textContent=''; return; }
+  if(state.userName === undefined){
+    try{
+      const snap = await getDoc(doc(db,'users',state.uid));
+      state.userName = snap.exists() ? (snap.data().name||'') : '';
+    }catch(e){ state.userName=''; }
+  }
+  box.textContent = T[state.lang].ui.greetingHello(state.userName);
+}
+
+/* =========================================================
+   LOGO — zurück zur Startseite
+========================================================= */
+$('#brandLogo').addEventListener('click', ()=>{ if(state.uid) show('start'); });
+$('#brandLogo').addEventListener('keydown', e=>{
+  if((e.key==='Enter'||e.key===' ') && state.uid){ e.preventDefault(); show('start'); }
+});
+
+/* =========================================================
+   CHECK-IN ABBRECHEN
+========================================================= */
+$('#checkinExitBtn').addEventListener('click', ()=> show('start'));
 
 /* =========================================================
    CHALLENGES — vom Coach angelegt, Klienten treten bei
@@ -1331,6 +1448,7 @@ $('#startBtn').addEventListener('click',startCheckin);
 /* =========================================================
    INIT
 ========================================================= */
+applyTheme('dark');
 applyLanguage('de');
 </script>
 </body>
