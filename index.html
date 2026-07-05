@@ -71,12 +71,14 @@ header{
 }
 .brand-name{font-family:'Sora';font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase}
 .brand-name span{color:var(--muted);font-weight:600}
-.view-switch{
-  background:var(--panel);border:1px solid var(--line);border-radius:999px;
-  color:var(--muted);font-size:12px;font-weight:600;font-family:'Inter';
-  padding:8px 14px;cursor:pointer;transition:color .15s,border-color .15s;
+.header-right{display:flex;align-items:center;gap:10px}
+.settings-icon-btn{
+  background:var(--panel);border:1px solid var(--line);border-radius:50%;
+  color:var(--muted);font-size:20px;cursor:pointer;
+  width:40px;height:40px;display:grid;place-items:center;
+  transition:color .15s,border-color .15s;
 }
-.view-switch:hover,.view-switch:focus-visible{color:var(--text);border-color:var(--accent)}
+.settings-icon-btn:hover,.settings-icon-btn:focus-visible{color:var(--text);border-color:var(--accent)}
 
 /* ---------- Screens ---------- */
 .screen{display:none;flex:1;flex-direction:column;animation:fadeIn .35s ease}
@@ -119,7 +121,6 @@ h1 em{font-style:normal;color:var(--accent)}
   font-size:13px;font-weight:600;font-family:'Inter';padding:4px 8px 4px 0;
 }
 .back-btn:hover,.back-btn:focus-visible{color:var(--text)}
-.back-btn[disabled]{opacity:0;pointer-events:none}
 
 /* ---------- Question ---------- */
 .q-wrap{flex:1;display:flex;flex-direction:column;animation:slideIn .3s ease}
@@ -308,7 +309,7 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 .auth-success{font-size:13px;color:var(--green);min-height:18px}
 
 /* ---------- Language switch ---------- */
-.lang-switch{display:flex;gap:6px;justify-content:flex-end;padding-bottom:12px}
+.lang-switch{display:flex;gap:6px}
 .lang-btn{
   background:var(--panel);border:1px solid var(--line);color:var(--muted);
   font-family:'Inter';font-size:12px;font-weight:700;padding:6px 12px;
@@ -359,13 +360,6 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 /* ---------- Greeting ---------- */
 .greeting{font-size:15px;font-weight:600;margin-bottom:4px}
 
-/* ---------- Check-in exit ---------- */
-.exit-btn{
-  background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;
-  padding:4px 8px;line-height:1;
-}
-.exit-btn:hover,.exit-btn:focus-visible{color:var(--text)}
-
 /* ---------- Theme switch ---------- */
 .theme-switch{display:flex;gap:10px}
 .theme-btn{
@@ -385,6 +379,7 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
   font-size:16px;display:grid;place-items:center;
 }
 .theme-fab-btn.active{background:var(--accent);box-shadow:0 0 0 2px var(--accent-strong) inset}
+#fabDarkBtn.active{background:#5C6BC0;box-shadow:0 0 0 2px #7986CB inset}
 .secondary-btn{background:var(--panel-2)!important;color:var(--text)!important;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;gap:8px}
 .brand{cursor:pointer}
 
@@ -413,6 +408,10 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 /* ---------- Leaderboard ---------- */
 .leaderboard-inline{width:100%;display:flex;flex-direction:column;gap:10px;text-align:left}
 .leaderboard-inline-title{font-family:'Sora';font-weight:700;font-size:15px}
+.leaderboard-prize{
+  font-size:12.5px;color:var(--amber);background:rgba(255,194,75,.1);
+  border:1px solid rgba(255,194,75,.35);border-radius:12px;padding:8px 12px;
+}
 .leaderboard-list{display:flex;flex-direction:column;gap:10px}
 .lb-row{
   display:flex;align-items:center;gap:12px;
@@ -439,14 +438,15 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
       <div class="brand-mark">M</div>
       <div class="brand-name">Modern Athlete <span>Lab</span></div>
     </div>
-    <button class="view-switch hidden" id="settingsBtn">⚙ <span id="settingsBtnText">Einstellungen</span></button>
+    <div class="header-right">
+      <button class="settings-icon-btn hidden" id="settingsBtn" aria-label="Einstellungen">⚙</button>
+      <div class="lang-switch" id="langSwitch">
+        <button class="lang-btn" data-lang="de">DE</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="zh">中文</button>
+      </div>
+    </div>
   </header>
-
-  <div class="lang-switch" id="langSwitch">
-    <button class="lang-btn" data-lang="de">DE</button>
-    <button class="lang-btn" data-lang="en">EN</button>
-    <button class="lang-btn" data-lang="zh">中文</button>
-  </div>
 
   <!-- AUTH -->
   <section class="screen auth active" id="screen-auth">
@@ -507,6 +507,7 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
     </div>
     <div class="leaderboard-inline">
       <div class="leaderboard-inline-title">🏆 <span id="leaderboardTitle">Bestenliste</span></div>
+      <div class="leaderboard-prize" id="leaderboardPrize">🎁 Platz 1–3 kriegen ein Geschenk! Stichtag: 10.08.2026</div>
       <div class="leaderboard-list" id="leaderboardList"></div>
     </div>
     <div class="start-hint" id="startHint">Dauert ca. 90 Sekunden · Fortschritt wird automatisch gespeichert</div>
@@ -585,7 +586,6 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
       <button class="back-btn" id="backBtn">← Zurück</button>
       <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
       <div class="progress-count" id="progressCount">1/15</div>
-      <button class="exit-btn" id="checkinExitBtn">✕</button>
     </div>
     <div class="q-wrap" id="qWrap"></div>
   </section>
@@ -733,7 +733,7 @@ de:{
       'auth/wrong-password':'Falsches Passwort.'
     },
     startTitleHTML:'Dein täglicher <em>Performance-Scan</em>',
-    startPara:'15 Fragen, nur Antippen. In 90 Sekunden weiß dein Coach genau, wo du stehst — und du auch.',
+    startPara:'15 Fragen, nur Antippen.<br>In 90 Sekunden weiß dein Coach genau, wo du stehst — und du auch.',
     streakSuffix:'Tage in Folge', ctaStart:'Check-in starten', challengesBtn:'Challenges',
     startHint:'Dauert ca. 90 Sekunden · Fortschritt wird automatisch gespeichert', logout:'Abmelden',
     coachViewBtn:'Coach-Ansicht', clientViewBtn:'Client-Ansicht',
@@ -831,7 +831,7 @@ en:{
       'auth/wrong-password':'Incorrect password.'
     },
     startTitleHTML:'Your daily <em>Performance Scan</em>',
-    startPara:'15 questions, just tap. In 90 seconds your coach knows exactly where you stand — and so do you.',
+    startPara:'15 questions, just tap.<br>In 90 seconds your coach knows exactly where you stand — and so do you.',
     streakSuffix:'days in a row', ctaStart:'Start check-in', challengesBtn:'Challenges',
     startHint:'Takes about 90 seconds · Progress is saved automatically', logout:'Log out',
     coachViewBtn:'Coach view', clientViewBtn:'Client view',
@@ -1060,7 +1060,7 @@ function applyLanguage(lang){
   $('#insightLabelText').textContent = t.insightLabel;
   $('#streakSub').textContent = t.streakSubText;
   $('#doneBtn').textContent = t.doneBtn;
-  $('#settingsBtnText').textContent = t.settingsBtn;
+  $('#settingsBtn').setAttribute('aria-label', t.settingsBtn);
   $('#settingsTitle').textContent = t.settingsTitle;
   $('#labelName').textContent = t.labelName;
   $('#labelEmail').textContent = t.labelEmail;
@@ -1138,7 +1138,7 @@ $('#authSubmitBtn').addEventListener('click', async ()=>{
       await signInWithEmailAndPassword(auth,email,password);
     } else {
       const cred = await createUserWithEmailAndPassword(auth,email,password);
-      await sendEmailVerification(cred.user);
+      await sendEmailVerification(cred.user, { url: window.location.origin + '/verify.html' });
       await setDoc(doc(db,'users',cred.user.uid), { email, name:'', phone:'', goals:'', createdAt: serverTimestamp() });
       await runTransaction(db, async (tx)=>{
         const ref = doc(db,'stats','totals');
@@ -1177,7 +1177,7 @@ $('#logoutBtn').addEventListener('click', ()=> signOut(auth));
 
 $('#verifyResendBtn').addEventListener('click', async ()=>{
   if(!auth.currentUser) return;
-  await sendEmailVerification(auth.currentUser);
+  await sendEmailVerification(auth.currentUser, { url: window.location.origin + '/verify.html' });
   $('#verifyResendBtn').textContent = T[state.lang].ui.verifyResendSent;
 });
 
@@ -1194,6 +1194,15 @@ async function updateEngagementBanners(){
     $('#reminderBanner').classList.add('hidden');
   }
 }
+
+document.addEventListener('visibilitychange', async ()=>{
+  if(document.visibilityState==='visible' && auth.currentUser && !auth.currentUser.emailVerified){
+    try{
+      await auth.currentUser.reload();
+      $('#verifyBanner').classList.toggle('hidden', auth.currentUser.emailVerified);
+    }catch(e){}
+  }
+});
 
 onAuthStateChanged(auth, async (user)=>{
   if(user){
@@ -1359,7 +1368,6 @@ $('#brandLogo').addEventListener('keydown', e=>{
 /* =========================================================
    CHECK-IN ABBRECHEN
 ========================================================= */
-$('#checkinExitBtn').addEventListener('click', ()=> show('start'));
 
 /* =========================================================
    CHALLENGES — vom Coach angelegt, Klienten treten bei
@@ -1502,7 +1510,6 @@ function renderQuestion(){
   const total = state.queue.length;
   $('#progressFill').style.width = ((state.idx)/total*100)+'%';
   $('#progressCount').textContent = (state.idx+1)+'/'+total;
-  $('#backBtn').disabled = state.idx===0;
 
   const wrap = $('#qWrap');
   wrap.innerHTML = '';
@@ -1611,6 +1618,7 @@ function next(){
 }
 $('#backBtn').addEventListener('click',()=>{
   if(state.idx>0){ state.idx--; renderQuestion(); }
+  else { show('start'); }
 });
 
 /* =========================================================
