@@ -284,6 +284,25 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
   font-size:12px;font-weight:600;font-family:'Inter';padding:4px 0;margin-top:-6px;
 }
 .logout-btn:hover,.logout-btn:focus-visible{color:var(--text)}
+.auth-forgot{background:none;border:none;color:var(--muted);cursor:pointer;font-size:12.5px;font-weight:600;font-family:'Inter';padding:0;text-align:center}
+.auth-forgot:hover,.auth-forgot:focus-visible{color:var(--text)}
+.auth-success{font-size:13px;color:var(--green);min-height:18px}
+
+/* ---------- Language switch ---------- */
+.lang-switch{display:flex;gap:6px;justify-content:flex-end;padding-bottom:12px}
+.lang-btn{
+  background:var(--panel);border:1px solid var(--line);color:var(--muted);
+  font-family:'Inter';font-size:12px;font-weight:700;padding:6px 12px;
+  border-radius:999px;cursor:pointer;transition:color .15s,border-color .15s,background .15s;
+}
+.lang-btn:hover{color:var(--text);border-color:#3A465C}
+.lang-btn.active{color:#0D1219;background:var(--accent);border-color:var(--accent)}
+
+/* ---------- Start centering ---------- */
+.start{align-items:center;text-align:center}
+.start > div:first-child{width:100%}
+.start p{max-width:34ch;margin:0 auto}
+.streak-chip{align-self:center}
 </style>
 </head>
 <body>
@@ -297,17 +316,25 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
     <button class="view-switch hidden" id="viewSwitch">Coach-Ansicht</button>
   </header>
 
+  <div class="lang-switch" id="langSwitch">
+    <button class="lang-btn" data-lang="de">DE</button>
+    <button class="lang-btn" data-lang="en">EN</button>
+    <button class="lang-btn" data-lang="zh">中文</button>
+  </div>
+
   <!-- AUTH -->
   <section class="screen auth active" id="screen-auth">
     <div>
-      <div class="date-eyebrow">Willkommen</div>
-      <h1 style="margin-top:10px">Melde dich <em>an</em></h1>
+      <div class="date-eyebrow" id="authEyebrow">Willkommen</div>
+      <h1 style="margin-top:10px" id="authTitle">Melde dich <em>an</em></h1>
     </div>
     <p id="authIntro">Mit E-Mail und Passwort anmelden, um deinen Check-in-Verlauf zu speichern.</p>
     <input class="auth-field" id="authEmail" type="email" placeholder="E-Mail" autocomplete="email">
     <input class="auth-field" id="authPassword" type="password" placeholder="Passwort" autocomplete="current-password">
     <div class="auth-error" id="authError"></div>
+    <div class="auth-success" id="authSuccess"></div>
     <button class="cta" id="authSubmitBtn">Anmelden</button>
+    <button class="auth-forgot" id="authForgotBtn">Passwort vergessen?</button>
     <div class="auth-switch">
       <span id="authSwitchText">Noch kein Konto?</span> <button id="authSwitchBtn">Registrieren</button>
     </div>
@@ -317,12 +344,13 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
   <section class="screen start" id="screen-start">
     <div>
       <div class="date-eyebrow" id="todayLabel"></div>
-      <h1 style="margin-top:10px">Dein täglicher<br><em>Performance-Scan</em></h1>
+      <h1 style="margin-top:10px" id="startTitle">Dein täglicher<br><em>Performance-Scan</em></h1>
     </div>
-    <p>15 Fragen, nur Antippen. In 90 Sekunden weiß dein Coach genau, wo du stehst — und du auch.</p>
+    <p id="startPara">15 Fragen, nur Antippen. In 90 Sekunden weiß dein Coach genau, wo du stehst — und du auch.</p>
     <div class="streak-chip">🔥 <span id="streakChip">0 Tage in Folge</span></div>
     <button class="cta" id="startBtn">Check-in starten</button>
-    <div class="start-hint">Dauert ca. 90 Sekunden · Fortschritt wird automatisch gespeichert</div>
+    <button class="cta" id="challengesBtn" style="background:var(--panel-2);color:var(--text);border:1px solid var(--line)">Challenges</button>
+    <div class="start-hint" id="startHint">Dauert ca. 90 Sekunden · Fortschritt wird automatisch gespeichert</div>
     <button class="logout-btn" id="logoutBtn">Abmelden</button>
   </section>
 
@@ -339,32 +367,32 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
   <!-- RESULT -->
   <section class="screen result" id="screen-result">
     <div class="result-head">
-      <div class="result-eyebrow">Scan abgeschlossen</div>
-      <h1 style="font-size:28px">Dein Tag im Überblick</h1>
+      <div class="result-eyebrow" id="resultEyebrow">Scan abgeschlossen</div>
+      <h1 style="font-size:28px" id="resultTitle">Dein Tag im Überblick</h1>
     </div>
     <div class="rings">
       <div class="ring-card">
         <div class="ring" id="ringErn"><div class="ring-inner" id="scoreErn">–</div></div>
-        <div class="ring-label">Ernährung</div>
+        <div class="ring-label" id="ringLabelErn">Ernährung</div>
       </div>
       <div class="ring-card">
         <div class="ring" id="ringTra"><div class="ring-inner" id="scoreTra">–</div></div>
-        <div class="ring-label">Training</div>
+        <div class="ring-label" id="ringLabelTra">Training</div>
       </div>
       <div class="ring-card">
         <div class="ring" id="ringRec"><div class="ring-inner" id="scoreRec">–</div></div>
-        <div class="ring-label">Recovery</div>
+        <div class="ring-label" id="ringLabelRec">Recovery</div>
       </div>
     </div>
     <div class="insight" id="insightBox">
-      <strong>Insight</strong>
+      <strong id="insightLabelText">Insight</strong>
       <span id="insightText"></span>
     </div>
     <div class="streak-big">
       <div style="font-size:28px">🔥</div>
       <div>
         <div class="streak-num" id="streakBig">7 Tage</div>
-        <div class="streak-sub">in Folge eingecheckt — Konstanz schlägt Perfektion.</div>
+        <div class="streak-sub" id="streakSub">in Folge eingecheckt — Konstanz schlägt Perfektion.</div>
       </div>
     </div>
     <button class="cta" id="doneBtn">Fertig für heute</button>
@@ -396,7 +424,7 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
 import {
   getAuth, onAuthStateChanged, signInWithEmailAndPassword,
-  createUserWithEmailAndPassword, signOut
+  createUserWithEmailAndPassword, signOut, sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 import {
   getFirestore, doc, setDoc, collection, query, where,
@@ -418,119 +446,283 @@ const db = getFirestore(fbApp);
 /* =========================================================
    STATE (in-memory — Check-ins werden in Firestore persistiert)
 ========================================================= */
-const state = { answers:{}, queue:[], idx:0, streak:0, uid:null };
+const state = { answers:{}, queue:[], idx:0, streak:0, uid:null, lang:'de' };
 
 /* =========================================================
-   QUESTION DEFINITIONS
-   type: options | slider | note
-   Conditional follow-ups werden dynamisch in die Queue
-   eingefügt (insertAfter).
+   QUESTION STRUCTURE (sprachneutral)
+   Texte (title/caption/opts/lo/hi/placeholder) liegen in T[lang].q[id]
 ========================================================= */
 const Q = {
-  feeling:{ id:'feeling', pillar:'Check-in', pClass:'p-neutral',
-    title:'Wie fühlst du dich heute?',
-    opts:[['😄','Sehr gut'],['🙂','Gut'],['😐','Okay'],['😕','Niedrig'],['😞','Schlecht']] },
-
-  water:{ id:'water', pillar:'Ernährung', pClass:'p-ern',
-    title:'Wie viel Wasser hast du heute getrunken?',
-    caption:'Richtwert — bei Hitze, Schwitzen, viel Aktivität oder höherem Körpergewicht brauchst du mehr.',
-    opts:[['','Sehr wenig · unter 1 L'],['','Wenig · 1–1,5 L'],['','Okay · 1,5–2 L'],['','Gut · 2–3 L'],['','Viel · 3+ L']] },
-
-  protein:{ id:'protein', pillar:'Ernährung', pClass:'p-ern',
-    title:'Hattest du Protein zu den meisten Mahlzeiten?',
-    caption:'Z. B. Eier, Hähnchen, Fisch, Fleisch, Tofu, Skyr, Hülsenfrüchte, Shake.',
-    opts:[['✅','Ja, zu den meisten'],['〰️','Etwas, aber zu wenig'],['✖️','Kaum bis gar nicht']] },
-
-  veg:{ id:'veg', pillar:'Ernährung', pClass:'p-ern',
-    title:'Wie war dein Gemüse- & Ballaststoff-Anteil?',
-    caption:'1 Portion ≈ eine Handvoll oder eine kleine Schüssel.',
-    opts:[['','Kaum'],['','Etwas · 1 Portion'],['','Gut · 2–3 Portionen'],['','Sehr gut · 4+ Portionen']] },
-
-  quality:{ id:'quality', pillar:'Ernährung', pClass:'p-ern',
-    title:'Wie bewertest du deine Ernährung heute insgesamt?',
-    opts:[['🎯','On track'],['🙂','Okay'],['↩️','Off track']] },
-
-  hunger:{ id:'hunger', pillar:'Ernährung', pClass:'p-ern',
-    title:'Hunger & Cravings heute?',
-    opts:[['','Kein Thema'],['','Normal'],['','Stärker als sonst'],['','Ständig Heißhunger']] },
-
-  digestion:{ id:'digestion', pillar:'Ernährung', pClass:'p-ern',
-    title:'Wie war deine Verdauung heute?',
-    opts:[['👍','Gut & normal'],['🎈','Aufgebläht'],['💧','Weicher Stuhl'],['🧱','Verstopfung'],['⚡','Schmerzen / Unwohlsein']],
+  feeling:{ id:'feeling', pillarKey:'checkin', pClass:'p-neutral' },
+  water:{ id:'water', pillarKey:'nutrition', pClass:'p-ern' },
+  protein:{ id:'protein', pillarKey:'nutrition', pClass:'p-ern' },
+  veg:{ id:'veg', pillarKey:'nutrition', pClass:'p-ern' },
+  quality:{ id:'quality', pillarKey:'nutrition', pClass:'p-ern' },
+  hunger:{ id:'hunger', pillarKey:'nutrition', pClass:'p-ern' },
+  digestion:{ id:'digestion', pillarKey:'nutrition', pClass:'p-ern',
     onAnswer:(v)=>{ if(v>0) insertAfter('digestTrigger'); } },
+  digestTrigger:{ id:'digestTrigger', pillarKey:'nutrition', pClass:'p-ern', conditional:true, grid:true },
+  alc:{ id:'alc', pillarKey:'nutrition', pClass:'p-ern' },
 
-  digestTrigger:{ id:'digestTrigger', pillar:'Ernährung', pClass:'p-ern', conditional:true,
-    title:'Vermuteter Auslöser?',
-    grid:true,
-    opts:[['','Große Mahlzeit'],['','Milchprodukte'],['','Gluten'],['','Viele Ballaststoffe'],['','Fettiges Essen'],['','Stress'],['','Keine Ahnung'],['','Sonstiges']] },
-
-  alc:{ id:'alc', pillar:'Ernährung', pClass:'p-ern',
-    title:'Alkohol oder spätes Koffein heute?',
-    caption:'Beides drückt messbar Schlafqualität und Erholung — deshalb fragen wir.',
-    opts:[['','Nein'],['☕','Koffein nach 15 Uhr'],['🍷','Alkohol'],['','Beides']] },
-
-  training:{ id:'training', pillar:'Training & Bewegung', pClass:'p-tra',
-    title:'Hast du dein geplantes Training absolviert?',
-    opts:[['✅','Ja'],['➗','Teilweise'],['🛋️','Rest Day (geplant)'],['✖️','Verpasst']],
+  training:{ id:'training', pillarKey:'training', pClass:'p-tra',
     onAnswer:(v)=>{ if(v===3) insertAfter('missReason'); } },
-
-  missReason:{ id:'missReason', pillar:'Training & Bewegung', pClass:'p-tra', conditional:true,
-    title:'Was war der Hauptgrund?',
-    grid:true,
-    opts:[['','Keine Zeit'],['','Keine Energie'],['','Schmerzen'],['','Stress'],['','Motivation'],['','Arbeit & Reisen'],['','Sonstiges'],['','—']] },
-
-  steps:{ id:'steps', pillar:'Training & Bewegung', pClass:'p-tra',
-    title:'Wie viele Schritte bist du heute gegangen?',
-    caption:'Kein Tracker? Wähl, was am ehesten passt.',
-    opts:[['','Sehr inaktiv · unter 2.000'],['','Wenig · 2.000–5.000'],['','Moderat · 5.000–8.000'],['','Aktiv · 8.000–12.000'],['','Sehr aktiv · 12.000+']] },
-
-  mobility:{ id:'mobility', pillar:'Training & Bewegung', pClass:'p-tra',
-    title:'Mobility oder Stretching gemacht?',
-    opts:[['','Nein'],['','Ja · 5 Min'],['','Ja · 10–15 Min'],['','Ja · 15+ Min']] },
-
-  pain:{ id:'pain', pillar:'Training & Bewegung', pClass:'p-tra',
-    title:'Schmerzen oder Beschwerden heute?',
-    opts:[['','Keine'],['','Leicht'],['','Mittel'],['','Stark']],
+  missReason:{ id:'missReason', pillarKey:'training', pClass:'p-tra', conditional:true, grid:true },
+  steps:{ id:'steps', pillarKey:'training', pClass:'p-tra' },
+  mobility:{ id:'mobility', pillarKey:'training', pClass:'p-tra' },
+  pain:{ id:'pain', pillarKey:'training', pClass:'p-tra',
     onAnswer:(v)=>{ if(v>=2){ insertAfter('painWhere'); insertAfter('painImpact',1);} } },
+  painWhere:{ id:'painWhere', pillarKey:'training', pClass:'p-tra', conditional:true, grid:true },
+  painImpact:{ id:'painImpact', pillarKey:'training', pClass:'p-tra', conditional:true },
 
-  painWhere:{ id:'painWhere', pillar:'Training & Bewegung', pClass:'p-tra', conditional:true,
-    title:'Wo?',
-    grid:true,
-    opts:[['','Nacken & Schultern'],['','Ellbogen & Handgelenk'],['','Unterer Rücken'],['','Hüfte'],['','Knie'],['','Fuß & Sprunggelenk'],['','Sonstiges'],['','—']] },
+  sleepH:{ id:'sleepH', pillarKey:'recovery', pClass:'p-rec' },
+  sleepQ:{ id:'sleepQ', pillarKey:'recovery', pClass:'p-rec' },
+  energy:{ id:'energy', pillarKey:'recovery', pClass:'p-rec', type:'slider', min:1,max:5 },
+  stress:{ id:'stress', pillarKey:'recovery', pClass:'p-rec', type:'slider', min:1,max:5 },
+  soreness:{ id:'soreness', pillarKey:'recovery', pClass:'p-rec' },
+  motivation:{ id:'motivation', pillarKey:'recovery', pClass:'p-rec', type:'slider', min:1,max:5 },
 
-  painImpact:{ id:'painImpact', pillar:'Training & Bewegung', pClass:'p-tra', conditional:true,
-    title:'Hat es deine Bewegung oder dein Training beeinflusst?',
-    opts:[['','Nein'],['','Ein wenig'],['','Ja, musste anpassen'],['','Ja, musste abbrechen']] },
-
-  sleepH:{ id:'sleepH', pillar:'Recovery', pClass:'p-rec',
-    title:'Wie viele Stunden hast du geschlafen?',
-    opts:[['','Sehr wenig · unter 5 h'],['','Wenig · 5–6 h'],['','Okay · 6–7 h'],['','Gut · 7–8 h'],['','Top · 8+ h']] },
-
-  sleepQ:{ id:'sleepQ', pillar:'Recovery', pClass:'p-rec',
-    title:'Wie war deine Schlafqualität?',
-    opts:[['','Sehr gut'],['','Gut'],['','Okay'],['','Schlecht'],['','Sehr schlecht']] },
-
-  energy:{ id:'energy', pillar:'Recovery', pClass:'p-rec', type:'slider',
-    title:'Energie heute?', min:1,max:5, lo:'Komplett leer', hi:'Voll da' },
-
-  stress:{ id:'stress', pillar:'Recovery', pClass:'p-rec', type:'slider',
-    title:'Stresslevel heute?', min:1,max:5, lo:'Tiefenentspannt', hi:'Am Limit' },
-
-  soreness:{ id:'soreness', pillar:'Recovery', pClass:'p-rec',
-    title:'Wie erholt fühlt sich dein Körper an?',
-    opts:[['🌱','Frisch'],['','Normal'],['','Müde'],['','Starker Muskelkater'],['','Erschöpft']] },
-
-  motivation:{ id:'motivation', pillar:'Recovery', pClass:'p-rec', type:'slider',
-    title:'Motivation gerade?', min:1,max:5, lo:'Gar keine', hi:'Voll dabei' },
-
-  note:{ id:'note', pillar:'Abschluss', pClass:'p-neutral', type:'note',
-    title:'Gibt es etwas, das dein Coach wissen sollte?',
-    caption:'Optional — du kannst auch überspringen.',
-    placeholder:'Z. B. stressiger Arbeitstag, schlecht geschlafen, super Training, unterwegs …' }
+  note:{ id:'note', pillarKey:'done', pClass:'p-neutral', type:'note' }
 };
 
 const BASE_QUEUE = ['feeling','water','protein','veg','quality','hunger','digestion','alc',
   'training','steps','mobility','pain','sleepH','sleepQ','energy','stress','soreness','motivation','note'];
+
+/* =========================================================
+   ÜBERSETZUNGEN — de / en / zh (Taiwan, Traditionell)
+========================================================= */
+const LOCALE_MAP = { de:'de-DE', en:'en-US', zh:'zh-TW' };
+const HTML_LANG = { de:'de', en:'en', zh:'zh-Hant-TW' };
+
+const T = {
+de:{
+  pillars:{ checkin:'Check-in', nutrition:'Ernährung', training:'Training & Bewegung', recovery:'Recovery', done:'Abschluss' },
+  ui:{
+    authEyebrow:'Willkommen', authTitleHTML:'Melde dich <em>an</em>',
+    authIntroLogin:'Mit E-Mail und Passwort anmelden, um deinen Check-in-Verlauf zu speichern.',
+    authIntroRegister:'Neues Konto erstellen — Passwort braucht mindestens 6 Zeichen.',
+    authEmailPh:'E-Mail', authPasswordPh:'Passwort',
+    authSubmitLogin:'Anmelden', authSubmitRegister:'Konto erstellen',
+    authSwitchTextLogin:'Noch kein Konto?', authSwitchTextRegister:'Schon registriert?',
+    authSwitchBtnToRegister:'Registrieren', authSwitchBtnToLogin:'Anmelden',
+    authForgotBtn:'Passwort vergessen?', authFillBoth:'Bitte E-Mail und Passwort eingeben.',
+    authFillEmail:'Bitte zuerst deine E-Mail-Adresse eingeben.',
+    authResetSent:'E-Mail zum Zurücksetzen wurde verschickt — bitte Posteingang prüfen.',
+    authErrorFallback:'Etwas ist schiefgelaufen. Bitte erneut versuchen.',
+    authErrors:{
+      'auth/invalid-email':'Ungültige E-Mail-Adresse.',
+      'auth/missing-password':'Bitte ein Passwort eingeben.',
+      'auth/weak-password':'Passwort braucht mindestens 6 Zeichen.',
+      'auth/email-already-in-use':'Für diese E-Mail existiert bereits ein Konto.',
+      'auth/invalid-credential':'E-Mail oder Passwort ist falsch.',
+      'auth/user-not-found':'Kein Konto mit dieser E-Mail gefunden.',
+      'auth/wrong-password':'Falsches Passwort.'
+    },
+    startTitleHTML:'Dein täglicher<br><em>Performance-Scan</em>',
+    startPara:'15 Fragen, nur Antippen. In 90 Sekunden weiß dein Coach genau, wo du stehst — und du auch.',
+    streakSuffix:'Tage in Folge', ctaStart:'Check-in starten', challengesBtn:'Challenges',
+    startHint:'Dauert ca. 90 Sekunden · Fortschritt wird automatisch gespeichert', logout:'Abmelden',
+    coachViewBtn:'Coach-Ansicht', clientViewBtn:'Client-Ansicht',
+    backBtn:'Zurück', skipBtn:'Überspringen', noteDoneBtn:'Check-in abschließen', sliderNextBtn:'Weiter',
+    resultEyebrow:'Scan abgeschlossen', resultTitle:'Dein Tag im Überblick', insightLabel:'Insight',
+    streakSubText:'in Folge eingecheckt — Konstanz schlägt Perfektion.', doneBtn:'Fertig für heute', daysWord:'Tage'
+  },
+  q:{
+    feeling:{ title:'Wie fühlst du dich heute?', opts:[['😄','Sehr gut'],['🙂','Gut'],['😐','Okay'],['😕','Niedrig'],['😞','Schlecht']] },
+    water:{ title:'Wie viel Wasser hast du heute getrunken?', caption:'Richtwert — bei Hitze, Schwitzen, viel Aktivität oder höherem Körpergewicht brauchst du mehr.',
+      opts:[['','Sehr wenig · unter 1 L'],['','Wenig · 1–1,5 L'],['','Okay · 1,5–2 L'],['','Gut · 2–3 L'],['','Viel · 3+ L']] },
+    protein:{ title:'Hattest du Protein zu den meisten Mahlzeiten?', caption:'Z. B. Eier, Hähnchen, Fisch, Fleisch, Tofu, Skyr, Hülsenfrüchte, Shake.',
+      opts:[['✅','Ja, zu den meisten'],['〰️','Etwas, aber zu wenig'],['✖️','Kaum bis gar nicht']] },
+    veg:{ title:'Wie war dein Gemüse- & Ballaststoff-Anteil?', caption:'1 Portion ≈ eine Handvoll oder eine kleine Schüssel.',
+      opts:[['','Kaum'],['','Etwas · 1 Portion'],['','Gut · 2–3 Portionen'],['','Sehr gut · 4+ Portionen']] },
+    quality:{ title:'Wie bewertest du deine Ernährung heute insgesamt?', opts:[['🎯','On track'],['🙂','Okay'],['↩️','Off track']] },
+    hunger:{ title:'Hunger & Cravings heute?', opts:[['','Kein Thema'],['','Normal'],['','Stärker als sonst'],['','Ständig Heißhunger']] },
+    digestion:{ title:'Wie war deine Verdauung heute?', opts:[['👍','Gut & normal'],['🎈','Aufgebläht'],['💧','Weicher Stuhl'],['🧱','Verstopfung'],['⚡','Schmerzen / Unwohlsein']] },
+    digestTrigger:{ title:'Vermuteter Auslöser?', opts:[['','Große Mahlzeit'],['','Milchprodukte'],['','Gluten'],['','Viele Ballaststoffe'],['','Fettiges Essen'],['','Stress'],['','Keine Ahnung'],['','Sonstiges']] },
+    alc:{ title:'Alkohol oder spätes Koffein heute?', caption:'Beides drückt messbar Schlafqualität und Erholung — deshalb fragen wir.',
+      opts:[['','Nein'],['☕','Koffein nach 15 Uhr'],['🍷','Alkohol'],['','Beides']] },
+    training:{ title:'Hast du dein geplantes Training absolviert?', opts:[['✅','Ja'],['➗','Teilweise'],['🛋️','Rest Day (geplant)'],['✖️','Verpasst']] },
+    missReason:{ title:'Was war der Hauptgrund?', opts:[['','Keine Zeit'],['','Keine Energie'],['','Schmerzen'],['','Stress'],['','Motivation'],['','Arbeit & Reisen'],['','Sonstiges'],['','—']] },
+    steps:{ title:'Wie viele Schritte bist du heute gegangen?', caption:'Kein Tracker? Wähl, was am ehesten passt.',
+      opts:[['','Sehr inaktiv · unter 2.000'],['','Wenig · 2.000–5.000'],['','Moderat · 5.000–8.000'],['','Aktiv · 8.000–12.000'],['','Sehr aktiv · 12.000+']] },
+    mobility:{ title:'Mobility oder Stretching gemacht?', opts:[['','Nein'],['','Ja · 5 Min'],['','Ja · 10–15 Min'],['','Ja · 15+ Min']] },
+    pain:{ title:'Schmerzen oder Beschwerden heute?', opts:[['','Keine'],['','Leicht'],['','Mittel'],['','Stark']] },
+    painWhere:{ title:'Wo?', opts:[['','Nacken & Schultern'],['','Ellbogen & Handgelenk'],['','Unterer Rücken'],['','Hüfte'],['','Knie'],['','Fuß & Sprunggelenk'],['','Sonstiges'],['','—']] },
+    painImpact:{ title:'Hat es deine Bewegung oder dein Training beeinflusst?', opts:[['','Nein'],['','Ein wenig'],['','Ja, musste anpassen'],['','Ja, musste abbrechen']] },
+    sleepH:{ title:'Wie viele Stunden hast du geschlafen?', opts:[['','Sehr wenig · unter 5 h'],['','Wenig · 5–6 h'],['','Okay · 6–7 h'],['','Gut · 7–8 h'],['','Top · 8+ h']] },
+    sleepQ:{ title:'Wie war deine Schlafqualität?', opts:[['','Sehr gut'],['','Gut'],['','Okay'],['','Schlecht'],['','Sehr schlecht']] },
+    energy:{ title:'Energie heute?', lo:'Komplett leer', hi:'Voll da' },
+    stress:{ title:'Stresslevel heute?', lo:'Tiefenentspannt', hi:'Am Limit' },
+    soreness:{ title:'Wie erholt fühlt sich dein Körper an?', opts:[['🌱','Frisch'],['','Normal'],['','Müde'],['','Starker Muskelkater'],['','Erschöpft']] },
+    motivation:{ title:'Motivation gerade?', lo:'Gar keine', hi:'Voll dabei' },
+    note:{ title:'Gibt es etwas, das dein Coach wissen sollte?', caption:'Optional — du kannst auch überspringen.',
+      placeholder:'Z. B. stressiger Arbeitstag, schlecht geschlafen, super Training, unterwegs …' }
+  },
+  insights:{
+    painSevere:'Starke Schmerzen sind ein Stopp-Signal, kein Durchbeißen-Signal. Dein Coach meldet sich — bei anhaltenden Schmerzen bitte ärztlich abklären.',
+    sleepLow:'Unter 5 Stunden Schlaf — heute keine Intensität erzwingen. Früher ins Bett zahlt direkt auf Training und Heißhunger-Kontrolle ein.',
+    stressEnergyLow:'Stress am Limit, Tank fast leer. Heute zählt Regeneration mehr als jedes Workout: Spaziergang, Protein, früh schlafen.',
+    exhausted:'Erschöpft ist ein Datenpunkt, kein Versagen. Plan heute bewusst runterfahren — Erholung ist Teil des Trainings.',
+    alcohol:'Alkohol drückt heute Nacht messbar deine Schlafqualität. Extra Wasser und früher ins Bett fangen das teilweise ab.',
+    hungerConstant:'Ständiger Heißhunger deutet oft auf zu wenig Protein oder Schlaf hin — check die letzten Tage im Verlauf.',
+    worstRecovery:'Recovery ist heute dein schwächster Bereich. Eine Stunde früher schlafen ist der schnellste Hebel für morgen.',
+    worstNutrition:'Ernährung war heute wacklig — morgen reicht ein Fokus: Protein zu jeder Mahlzeit. Ein Hebel, große Wirkung.',
+    worstTraining:'Bewegung kam heute zu kurz. Morgen 20 Minuten Gehen einplanen — Konstanz schlägt Intensität.',
+    allGood:'Starker Tag über alle drei Säulen. Genau diese Konstanz macht am Ende den Unterschied. 💪'
+  }
+},
+en:{
+  pillars:{ checkin:'Check-in', nutrition:'Nutrition', training:'Training & Movement', recovery:'Recovery', done:'Wrap-up' },
+  ui:{
+    authEyebrow:'Welcome', authTitleHTML:'Sign <em>in</em>',
+    authIntroLogin:'Sign in with email and password to save your check-in history.',
+    authIntroRegister:'Create a new account — password needs at least 6 characters.',
+    authEmailPh:'Email', authPasswordPh:'Password',
+    authSubmitLogin:'Sign in', authSubmitRegister:'Create account',
+    authSwitchTextLogin:"Don't have an account yet?", authSwitchTextRegister:'Already registered?',
+    authSwitchBtnToRegister:'Register', authSwitchBtnToLogin:'Sign in',
+    authForgotBtn:'Forgot password?', authFillBoth:'Please enter email and password.',
+    authFillEmail:'Please enter your email address first.',
+    authResetSent:'Password reset email sent — please check your inbox.',
+    authErrorFallback:'Something went wrong. Please try again.',
+    authErrors:{
+      'auth/invalid-email':'Invalid email address.',
+      'auth/missing-password':'Please enter a password.',
+      'auth/weak-password':'Password needs at least 6 characters.',
+      'auth/email-already-in-use':'An account already exists for this email.',
+      'auth/invalid-credential':'Email or password is incorrect.',
+      'auth/user-not-found':'No account found with this email.',
+      'auth/wrong-password':'Incorrect password.'
+    },
+    startTitleHTML:'Your daily<br><em>Performance Scan</em>',
+    startPara:'15 questions, just tap. In 90 seconds your coach knows exactly where you stand — and so do you.',
+    streakSuffix:'days in a row', ctaStart:'Start check-in', challengesBtn:'Challenges',
+    startHint:'Takes about 90 seconds · Progress is saved automatically', logout:'Log out',
+    coachViewBtn:'Coach view', clientViewBtn:'Client view',
+    backBtn:'Back', skipBtn:'Skip', noteDoneBtn:'Finish check-in', sliderNextBtn:'Next',
+    resultEyebrow:'Scan complete', resultTitle:'Your day at a glance', insightLabel:'Insight',
+    streakSubText:'checked in in a row — consistency beats perfection.', doneBtn:'Done for today', daysWord:'days'
+  },
+  q:{
+    feeling:{ title:'How are you feeling today?', opts:[['😄','Great'],['🙂','Good'],['😐','Okay'],['😕','Low'],['😞','Bad']] },
+    water:{ title:'How much water did you drink today?', caption:'Rule of thumb — you need more in heat, when sweating a lot, with high activity, or a higher body weight.',
+      opts:[['','Very little · under 1 L'],['','Little · 1–1.5 L'],['','Okay · 1.5–2 L'],['','Good · 2–3 L'],['','A lot · 3+ L']] },
+    protein:{ title:'Did you have protein with most meals?', caption:'E.g. eggs, chicken, fish, meat, tofu, skyr, legumes, shake.',
+      opts:[['✅','Yes, with most'],['〰️','Some, but too little'],['✖️','Barely or not at all']] },
+    veg:{ title:'How was your vegetable & fiber intake?', caption:'1 serving ≈ a handful or a small bowl.',
+      opts:[['','Barely any'],['','Some · 1 serving'],['','Good · 2–3 servings'],['','Great · 4+ servings']] },
+    quality:{ title:'How would you rate your nutrition today overall?', opts:[['🎯','On track'],['🙂','Okay'],['↩️','Off track']] },
+    hunger:{ title:'Hunger & cravings today?', opts:[['','No issue'],['','Normal'],['','Stronger than usual'],['','Constant cravings']] },
+    digestion:{ title:'How was your digestion today?', opts:[['👍','Good & normal'],['🎈','Bloated'],['💧','Loose stool'],['🧱','Constipated'],['⚡','Pain / discomfort']] },
+    digestTrigger:{ title:'Suspected trigger?', opts:[['','Large meal'],['','Dairy'],['','Gluten'],['','Lots of fiber'],['','Fatty food'],['','Stress'],['','No idea'],['','Other']] },
+    alc:{ title:'Alcohol or late caffeine today?', caption:"Both measurably reduce sleep quality and recovery — that's why we ask.",
+      opts:[['','No'],['☕','Caffeine after 3pm'],['🍷','Alcohol'],['','Both']] },
+    training:{ title:'Did you complete your planned training?', opts:[['✅','Yes'],['➗','Partially'],['🛋️','Rest day (planned)'],['✖️','Missed']] },
+    missReason:{ title:'What was the main reason?', opts:[['','No time'],['','No energy'],['','Pain'],['','Stress'],['','Motivation'],['','Work & travel'],['','Other'],['','—']] },
+    steps:{ title:'How many steps did you take today?', caption:'No tracker? Pick whatever fits best.',
+      opts:[['','Very inactive · under 2,000'],['','Low · 2,000–5,000'],['','Moderate · 5,000–8,000'],['','Active · 8,000–12,000'],['','Very active · 12,000+']] },
+    mobility:{ title:'Did you do mobility or stretching?', opts:[['','No'],['','Yes · 5 min'],['','Yes · 10–15 min'],['','Yes · 15+ min']] },
+    pain:{ title:'Pain or discomfort today?', opts:[['','None'],['','Mild'],['','Moderate'],['','Severe']] },
+    painWhere:{ title:'Where?', opts:[['','Neck & shoulders'],['','Elbow & wrist'],['','Lower back'],['','Hip'],['','Knee'],['','Foot & ankle'],['','Other'],['','—']] },
+    painImpact:{ title:'Did it affect your movement or training?', opts:[['','No'],['','A little'],['','Yes, had to adjust'],['','Yes, had to stop']] },
+    sleepH:{ title:'How many hours did you sleep?', opts:[['','Very little · under 5 h'],['','Little · 5–6 h'],['','Okay · 6–7 h'],['','Good · 7–8 h'],['','Great · 8+ h']] },
+    sleepQ:{ title:'How was your sleep quality?', opts:[['','Very good'],['','Good'],['','Okay'],['','Bad'],['','Very bad']] },
+    energy:{ title:'Energy today?', lo:'Completely empty', hi:'Fully charged' },
+    stress:{ title:'Stress level today?', lo:'Totally relaxed', hi:'At my limit' },
+    soreness:{ title:'How recovered does your body feel?', opts:[['🌱','Fresh'],['','Normal'],['','Tired'],['','Very sore'],['','Exhausted']] },
+    motivation:{ title:'Motivation right now?', lo:'None at all', hi:'Fully in' },
+    note:{ title:'Anything your coach should know?', caption:'Optional — you can also skip this.',
+      placeholder:'E.g. stressful work day, slept badly, great training session, traveling …' }
+  },
+  insights:{
+    painSevere:'Severe pain is a stop signal, not a push-through signal. Your coach will reach out — if pain persists, please see a doctor.',
+    sleepLow:"Under 5 hours of sleep — don't force intensity today. Going to bed earlier pays off directly for training and craving control.",
+    stressEnergyLow:'Stress at its limit, tank almost empty. Today, recovery matters more than any workout: a walk, protein, early sleep.',
+    exhausted:'Exhausted is a data point, not a failure. Deliberately scale back today — recovery is part of training.',
+    alcohol:'Alcohol will measurably reduce your sleep quality tonight. Extra water and going to bed earlier can partly offset it.',
+    hungerConstant:'Constant cravings often point to too little protein or sleep — check the past few days in your history.',
+    worstRecovery:'Recovery is your weakest area today. Sleeping an hour earlier is the fastest lever for tomorrow.',
+    worstNutrition:'Nutrition was shaky today — tomorrow, just focus on one thing: protein with every meal. One lever, big impact.',
+    worstTraining:'Movement was too short today. Plan for a 20-minute walk tomorrow — consistency beats intensity.',
+    allGood:'A strong day across all three pillars. This kind of consistency is what makes the difference in the end. 💪'
+  }
+},
+zh:{
+  pillars:{ checkin:'每日打卡', nutrition:'飲食', training:'訓練與活動', recovery:'恢復', done:'結尾' },
+  ui:{
+    authEyebrow:'歡迎', authTitleHTML:'登入<em>帳號</em>',
+    authIntroLogin:'使用電子郵件與密碼登入，以儲存你的打卡紀錄。',
+    authIntroRegister:'建立新帳號 — 密碼至少需要6個字元。',
+    authEmailPh:'電子郵件', authPasswordPh:'密碼',
+    authSubmitLogin:'登入', authSubmitRegister:'建立帳號',
+    authSwitchTextLogin:'還沒有帳號？', authSwitchTextRegister:'已經有帳號了？',
+    authSwitchBtnToRegister:'註冊', authSwitchBtnToLogin:'登入',
+    authForgotBtn:'忘記密碼？', authFillBoth:'請輸入電子郵件與密碼。',
+    authFillEmail:'請先輸入你的電子郵件地址。',
+    authResetSent:'重設密碼的電子郵件已寄出 — 請查收你的信箱。',
+    authErrorFallback:'發生錯誤，請再試一次。',
+    authErrors:{
+      'auth/invalid-email':'電子郵件地址無效。',
+      'auth/missing-password':'請輸入密碼。',
+      'auth/weak-password':'密碼至少需要6個字元。',
+      'auth/email-already-in-use':'此電子郵件已經有帳號存在。',
+      'auth/invalid-credential':'電子郵件或密碼錯誤。',
+      'auth/user-not-found':'找不到使用此電子郵件的帳號。',
+      'auth/wrong-password':'密碼錯誤。'
+    },
+    startTitleHTML:'你的每日<br><em>表現掃描</em>',
+    startPara:'15個問題，只需點選即可。90秒內，教練就能清楚知道你的狀態 — 你自己也是。',
+    streakSuffix:'天連續打卡', ctaStart:'開始打卡', challengesBtn:'挑戰任務',
+    startHint:'大約需要90秒 · 進度會自動儲存', logout:'登出',
+    coachViewBtn:'教練檢視', clientViewBtn:'學員檢視',
+    backBtn:'返回', skipBtn:'跳過', noteDoneBtn:'完成打卡', sliderNextBtn:'繼續',
+    resultEyebrow:'掃描完成', resultTitle:'你今天的總覽', insightLabel:'洞察',
+    streakSubText:'連續打卡 — 持之以恆勝過完美。', doneBtn:'今天就到這裡', daysWord:'天'
+  },
+  q:{
+    feeling:{ title:'你今天感覺如何？', opts:[['😄','很好'],['🙂','不錯'],['😐','普通'],['😕','偏低'],['😞','不好']] },
+    water:{ title:'你今天喝了多少水？', caption:'僅供參考 — 天氣炎熱、大量流汗、活動量大或體重較高時，你需要喝更多水。',
+      opts:[['','非常少 · 少於1公升'],['','偏少 · 1–1.5公升'],['','還可以 · 1.5–2公升'],['','不錯 · 2–3公升'],['','很多 · 3公升以上']] },
+    protein:{ title:'你這天大部分餐點都有攝取蛋白質嗎？', caption:'例如：雞蛋、雞肉、魚肉、肉類、豆腐、優格、豆類、蛋白飲。',
+      opts:[['✅','是，大部分都有'],['〰️','有一些，但不夠'],['✖️','幾乎沒有']] },
+    veg:{ title:'你的蔬菜與纖維攝取量如何？', caption:'1份 ≈ 一手掌大小或一小碗。',
+      opts:[['','幾乎沒有'],['','一些 · 1份'],['','不錯 · 2–3份'],['','很好 · 4份以上']] },
+    quality:{ title:'你今天整體的飲食表現如何？', opts:[['🎯','在軌道上'],['🙂','還可以'],['↩️','偏離軌道']] },
+    hunger:{ title:'今天的飢餓感與渴望食物的程度？', opts:[['','沒問題'],['','正常'],['','比平常強烈'],['','一直很想吃東西']] },
+    digestion:{ title:'你今天的消化狀況如何？', opts:[['👍','良好正常'],['🎈','脹氣'],['💧','軟便'],['🧱','便秘'],['⚡','疼痛／不適']] },
+    digestTrigger:{ title:'你認為可能的原因？', opts:[['','份量太大'],['','乳製品'],['','麩質'],['','纖維攝取過多'],['','油膩食物'],['','壓力'],['','不清楚'],['','其他']] },
+    alc:{ title:'今天有喝酒或很晚攝取咖啡因嗎？', caption:'這兩者都會明顯降低睡眠品質與恢復程度，所以我們會詢問。',
+      opts:[['','沒有'],['☕','下午3點後喝咖啡因'],['🍷','喝酒'],['','兩者都有']] },
+    training:{ title:'你完成計畫中的訓練了嗎？', opts:[['✅','是的'],['➗','部分完成'],['🛋️','休息日（計畫中）'],['✖️','沒有完成']] },
+    missReason:{ title:'主要原因是什麼？', opts:[['','沒有時間'],['','沒有精力'],['','疼痛'],['','壓力'],['','動力不足'],['','工作與出差'],['','其他'],['','—']] },
+    steps:{ title:'你今天走了多少步？', caption:'沒有計步器？選一個最接近的選項。',
+      opts:[['','非常不活動 · 少於2,000步'],['','偏少 · 2,000–5,000步'],['','中等 · 5,000–8,000步'],['','活躍 · 8,000–12,000步'],['','非常活躍 · 12,000步以上']] },
+    mobility:{ title:'你有做活動度訓練或伸展嗎？', opts:[['','沒有'],['','有 · 5分鐘'],['','有 · 10–15分鐘'],['','有 · 15分鐘以上']] },
+    pain:{ title:'今天有疼痛或不適嗎？', opts:[['','沒有'],['','輕微'],['','中等'],['','嚴重']] },
+    painWhere:{ title:'哪個部位？', opts:[['','頸部與肩膀'],['','手肘與手腕'],['','下背部'],['','髖部'],['','膝蓋'],['','腳與腳踝'],['','其他'],['','—']] },
+    painImpact:{ title:'這是否影響了你的活動或訓練？', opts:[['','沒有'],['','有一點'],['','有，必須調整'],['','有，必須中止']] },
+    sleepH:{ title:'你睡了幾個小時？', opts:[['','非常少 · 少於5小時'],['','偏少 · 5–6小時'],['','還可以 · 6–7小時'],['','不錯 · 7–8小時'],['','很棒 · 8小時以上']] },
+    sleepQ:{ title:'你的睡眠品質如何？', opts:[['','非常好'],['','好'],['','普通'],['','不好'],['','非常不好']] },
+    energy:{ title:'今天的精力如何？', lo:'完全沒電', hi:'滿滿活力' },
+    stress:{ title:'今天的壓力程度？', lo:'非常放鬆', hi:'已達極限' },
+    soreness:{ title:'你的身體恢復狀況如何？', opts:[['🌱','很清爽'],['','正常'],['','疲累'],['','肌肉痠痛嚴重'],['','精疲力盡']] },
+    motivation:{ title:'現在的動力如何？', lo:'完全沒有', hi:'幹勁十足' },
+    note:{ title:'有什麼是教練需要知道的嗎？', caption:'可選填 — 你也可以跳過。',
+      placeholder:'例如：今天工作壓力大、睡不好、訓練表現很棒、正在出差……' }
+  },
+  insights:{
+    painSevere:'嚴重疼痛是停止的訊號，而不是硬撐的訊號。你的教練會與你聯繫 — 如果疼痛持續，請就醫檢查。',
+    sleepLow:'睡眠不足5小時 — 今天不要勉強高強度訓練。提早睡覺會直接改善訓練表現與食慾控制。',
+    stressEnergyLow:'壓力已達極限，能量幾乎耗盡。今天恢復比任何訓練都重要：散步、攝取蛋白質、早點睡。',
+    exhausted:'精疲力盡只是一個數據點，不是失敗。今天請刻意放慢步調 — 恢復也是訓練的一部分。',
+    alcohol:'今晚的酒精攝取會明顯降低你的睡眠品質。多喝水並提早睡覺可以部分緩解影響。',
+    hungerConstant:'持續的強烈食慾通常代表蛋白質或睡眠攝取不足 — 可以檢視一下最近幾天的紀錄。',
+    worstRecovery:'恢復是你今天最弱的一環。提早一小時睡覺是明天最快見效的方法。',
+    worstNutrition:'今天的飲食狀況不太穩定 — 明天只要專注一件事：每餐都攝取蛋白質。一個改變，效果顯著。',
+    worstTraining:'今天的活動量不夠。明天安排20分鐘的散步 — 持之以恆勝過強度。',
+    allGood:'三個面向今天都表現出色。正是這樣的持續一致，最終造就了差異。💪'
+  }
+}
+};
 
 /* =========================================================
    FLOW ENGINE
@@ -543,9 +735,52 @@ function show(name){
   Object.values(screens).forEach(s=>s.classList.remove('active'));
   screens[name].classList.add('active');
   currentScreen = name;
-  $('#viewSwitch').textContent = name==='dash' ? 'Client-Ansicht' : 'Coach-Ansicht';
+  $('#viewSwitch').textContent = name==='dash' ? T[state.lang].ui.clientViewBtn : T[state.lang].ui.coachViewBtn;
   window.scrollTo(0,0);
 }
+
+/* =========================================================
+   SPRACHUMSCHALTUNG
+========================================================= */
+function updateDateLabel(){
+  const now = new Date();
+  $('#todayLabel').textContent = now.toLocaleDateString(LOCALE_MAP[state.lang], {weekday:'long', day:'numeric', month:'long'});
+}
+
+function applyLanguage(lang){
+  state.lang = lang;
+  document.documentElement.setAttribute('lang', HTML_LANG[lang]);
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active', b.dataset.lang===lang));
+  const t = T[lang].ui;
+  updateDateLabel();
+  $('#authEyebrow').textContent = t.authEyebrow;
+  $('#authTitle').innerHTML = t.authTitleHTML;
+  $('#authEmail').placeholder = t.authEmailPh;
+  $('#authPassword').placeholder = t.authPasswordPh;
+  $('#authForgotBtn').textContent = t.authForgotBtn;
+  setAuthMode(authMode);
+  $('#startTitle').innerHTML = t.startTitleHTML;
+  $('#startPara').textContent = t.startPara;
+  $('#startBtn').textContent = t.ctaStart;
+  $('#challengesBtn').textContent = t.challengesBtn;
+  $('#startHint').textContent = t.startHint;
+  $('#logoutBtn').textContent = t.logout;
+  $('#streakChip').textContent = state.streak+' '+t.streakSuffix;
+  $('#viewSwitch').textContent = currentScreen==='dash' ? t.clientViewBtn : t.coachViewBtn;
+  $('#backBtn').textContent = '← '+t.backBtn;
+  $('#resultEyebrow').textContent = t.resultEyebrow;
+  $('#resultTitle').textContent = t.resultTitle;
+  $('#ringLabelErn').textContent = T[lang].pillars.nutrition;
+  $('#ringLabelTra').textContent = T[lang].pillars.training;
+  $('#ringLabelRec').textContent = T[lang].pillars.recovery;
+  $('#insightLabelText').textContent = t.insightLabel;
+  $('#streakSub').textContent = t.streakSubText;
+  $('#doneBtn').textContent = t.doneBtn;
+  if(currentScreen==='checkin') renderQuestion();
+}
+document.querySelectorAll('.lang-btn').forEach(b=>{
+  b.addEventListener('click',()=>applyLanguage(b.dataset.lang));
+});
 
 /* =========================================================
    AUTH — E-Mail/Passwort, Login/Registrierung im selben Screen
@@ -554,13 +789,13 @@ let authMode = 'login';
 
 function setAuthMode(mode){
   authMode = mode;
-  $('#authSubmitBtn').textContent = mode==='login' ? 'Anmelden' : 'Konto erstellen';
-  $('#authIntro').textContent = mode==='login'
-    ? 'Mit E-Mail und Passwort anmelden, um deinen Check-in-Verlauf zu speichern.'
-    : 'Neues Konto erstellen — Passwort braucht mindestens 6 Zeichen.';
-  $('#authSwitchText').textContent = mode==='login' ? 'Noch kein Konto?' : 'Schon registriert?';
-  $('#authSwitchBtn').textContent = mode==='login' ? 'Registrieren' : 'Anmelden';
+  const t = T[state.lang].ui;
+  $('#authSubmitBtn').textContent = mode==='login' ? t.authSubmitLogin : t.authSubmitRegister;
+  $('#authIntro').textContent = mode==='login' ? t.authIntroLogin : t.authIntroRegister;
+  $('#authSwitchText').textContent = mode==='login' ? t.authSwitchTextLogin : t.authSwitchTextRegister;
+  $('#authSwitchBtn').textContent = mode==='login' ? t.authSwitchBtnToRegister : t.authSwitchBtnToLogin;
   $('#authError').textContent = '';
+  $('#authSuccess').textContent = '';
 }
 $('#authSwitchBtn').addEventListener('click',()=>setAuthMode(authMode==='login'?'register':'login'));
 
@@ -568,8 +803,8 @@ $('#authSubmitBtn').addEventListener('click', async ()=>{
   const email = $('#authEmail').value.trim();
   const password = $('#authPassword').value;
   const errBox = $('#authError');
-  errBox.textContent = '';
-  if(!email || !password){ errBox.textContent = 'Bitte E-Mail und Passwort eingeben.'; return; }
+  errBox.textContent = ''; $('#authSuccess').textContent = '';
+  if(!email || !password){ errBox.textContent = T[state.lang].ui.authFillBoth; return; }
   try{
     if(authMode==='login') await signInWithEmailAndPassword(auth,email,password);
     else await createUserWithEmailAndPassword(auth,email,password);
@@ -578,17 +813,23 @@ $('#authSubmitBtn').addEventListener('click', async ()=>{
   }
 });
 
+$('#authForgotBtn').addEventListener('click', async ()=>{
+  const t = T[state.lang].ui;
+  const email = $('#authEmail').value.trim();
+  const errBox = $('#authError'); const okBox = $('#authSuccess');
+  errBox.textContent = ''; okBox.textContent = '';
+  if(!email){ errBox.textContent = t.authFillEmail; return; }
+  try{
+    await sendPasswordResetEmail(auth,email);
+    okBox.textContent = t.authResetSent;
+  }catch(e){
+    errBox.textContent = authErrorMessage(e.code);
+  }
+});
+
 function authErrorMessage(code){
-  const map = {
-    'auth/invalid-email':'Ungültige E-Mail-Adresse.',
-    'auth/missing-password':'Bitte ein Passwort eingeben.',
-    'auth/weak-password':'Passwort braucht mindestens 6 Zeichen.',
-    'auth/email-already-in-use':'Für diese E-Mail existiert bereits ein Konto.',
-    'auth/invalid-credential':'E-Mail oder Passwort ist falsch.',
-    'auth/user-not-found':'Kein Konto mit dieser E-Mail gefunden.',
-    'auth/wrong-password':'Falsches Passwort.'
-  };
-  return map[code] || 'Etwas ist schiefgelaufen. Bitte erneut versuchen.';
+  const t = T[state.lang].ui;
+  return t.authErrors[code] || t.authErrorFallback;
 }
 
 $('#logoutBtn').addEventListener('click', ()=> signOut(auth));
@@ -637,7 +878,7 @@ async function refreshStreak(){
     cursor.setDate(cursor.getDate()-1);
   }
   state.streak = streak;
-  $('#streakChip').textContent = state.streak+' Tage in Folge';
+  $('#streakChip').textContent = state.streak+' '+T[state.lang].ui.streakSuffix;
   return streak;
 }
 
@@ -656,6 +897,7 @@ function startCheckin(){
 
 function renderQuestion(){
   const q = Q[state.queue[state.idx]];
+  const qt = T[state.lang].q[q.id];
   const total = state.queue.length;
   $('#progressFill').style.width = ((state.idx)/total*100)+'%';
   $('#progressCount').textContent = (state.idx+1)+'/'+total;
@@ -667,34 +909,34 @@ function renderQuestion(){
 
   const pillar = document.createElement('div');
   pillar.className = 'q-pillar '+q.pClass;
-  pillar.textContent = q.pillar;
+  pillar.textContent = T[state.lang].pillars[q.pillarKey];
   wrap.appendChild(pillar);
 
   const title = document.createElement('div');
   title.className='q-title';
-  title.textContent = q.title;
+  title.textContent = qt.title;
   wrap.appendChild(title);
 
-  if(q.caption){
+  if(qt.caption){
     const cap = document.createElement('div');
     cap.className='q-caption';
-    cap.textContent=q.caption;
+    cap.textContent=qt.caption;
     wrap.appendChild(cap);
   }
 
   if(q.type==='slider'){
-    renderSlider(wrap,q);
+    renderSlider(wrap,q,qt);
   } else if(q.type==='note'){
-    renderNote(wrap,q);
+    renderNote(wrap,q,qt);
   } else {
-    renderOptions(wrap,q);
+    renderOptions(wrap,q,qt);
   }
 }
 
-function renderOptions(wrap,q){
+function renderOptions(wrap,q,qt){
   const box = document.createElement('div');
   box.className='options'+(q.grid?' grid-2':'');
-  q.opts.forEach(([ico,label],i)=>{
+  qt.opts.forEach(([ico,label],i)=>{
     if(label==='—') return;
     const b = document.createElement('button');
     b.className='opt';
@@ -710,7 +952,7 @@ function renderOptions(wrap,q){
   wrap.appendChild(box);
 }
 
-function renderSlider(wrap,q){
+function renderSlider(wrap,q,qt){
   const block = document.createElement('div');
   block.className='slider-block';
   const val = document.createElement('div');
@@ -719,11 +961,11 @@ function renderSlider(wrap,q){
   val.textContent = start;
   const range = document.createElement('input');
   range.type='range'; range.min=q.min; range.max=q.max; range.value=start; range.step=1;
-  range.setAttribute('aria-label',q.title);
+  range.setAttribute('aria-label',qt.title);
   range.addEventListener('input',()=>{ val.textContent=range.value; });
   const labels = document.createElement('div');
   labels.className='slider-labels';
-  labels.innerHTML='<span>'+q.lo+'</span><span>'+q.hi+'</span>';
+  labels.innerHTML='<span>'+qt.lo+'</span><span>'+qt.hi+'</span>';
   block.append(val,range,labels);
   wrap.appendChild(block);
 
@@ -731,7 +973,7 @@ function renderSlider(wrap,q){
   foot.className='q-footer';
   const btn = document.createElement('button');
   btn.className='cta';
-  btn.textContent='Weiter';
+  btn.textContent=T[state.lang].ui.sliderNextBtn;
   btn.addEventListener('click',()=>{
     state.answers[q.id]=parseInt(range.value,10);
     next();
@@ -740,19 +982,19 @@ function renderSlider(wrap,q){
   wrap.appendChild(foot);
 }
 
-function renderNote(wrap,q){
+function renderNote(wrap,q,qt){
   const ta = document.createElement('textarea');
-  ta.placeholder=q.placeholder;
+  ta.placeholder=qt.placeholder;
   wrap.appendChild(ta);
   const foot = document.createElement('div');
   foot.className='q-footer';
   const btn = document.createElement('button');
   btn.className='cta';
-  btn.textContent='Check-in abschließen';
+  btn.textContent=T[state.lang].ui.noteDoneBtn;
   btn.addEventListener('click',()=>{ state.answers.note=ta.value.trim(); finish(); });
   const skip = document.createElement('button');
   skip.className='skip-btn';
-  skip.textContent='Überspringen';
+  skip.textContent=T[state.lang].ui.skipBtn;
   skip.addEventListener('click',()=>{ state.answers.note=''; finish(); });
   foot.append(btn,skip);
   wrap.appendChild(foot);
@@ -795,17 +1037,17 @@ const zoneColor = { g:'var(--green)', y:'var(--amber)', r:'var(--red)' };
    INSIGHT — regelbasiert, Priorität nach Dringlichkeit
 ========================================================= */
 function buildInsight(a,s){
-  if(a.pain===3) return 'Starke Schmerzen sind ein Stopp-Signal, kein Durchbeißen-Signal. Dein Coach meldet sich — bei anhaltenden Schmerzen bitte ärztlich abklären.';
-  if(a.sleepH===0) return 'Unter 5 Stunden Schlaf — heute keine Intensität erzwingen. Früher ins Bett zahlt direkt auf Training und Heißhunger-Kontrolle ein.';
-  if(a.stress===5 && a.energy<=2) return 'Stress am Limit, Tank fast leer. Heute zählt Regeneration mehr als jedes Workout: Spaziergang, Protein, früh schlafen.';
-  if(a.soreness===4) return 'Erschöpft ist ein Datenpunkt, kein Versagen. Plan heute bewusst runterfahren — Erholung ist Teil des Trainings.';
-  if(a.alc>=2) return 'Alkohol drückt heute Nacht messbar deine Schlafqualität. Extra Wasser und früher ins Bett fangen das teilweise ab.';
-  if(a.hunger===3) return 'Ständiger Heißhunger deutet oft auf zu wenig Protein oder Schlaf hin — check die letzten Tage im Verlauf.';
+  if(a.pain===3) return 'painSevere';
+  if(a.sleepH===0) return 'sleepLow';
+  if(a.stress===5 && a.energy<=2) return 'stressEnergyLow';
+  if(a.soreness===4) return 'exhausted';
+  if(a.alc>=2) return 'alcohol';
+  if(a.hunger===3) return 'hungerConstant';
   const worst = Math.min(s.ern,s.tra,s.rec);
-  if(worst===s.rec && zone(s.rec)!=='g') return 'Recovery ist heute dein schwächster Bereich. Eine Stunde früher schlafen ist der schnellste Hebel für morgen.';
-  if(worst===s.ern && zone(s.ern)!=='g') return 'Ernährung war heute wacklig — morgen reicht ein Fokus: Protein zu jeder Mahlzeit. Ein Hebel, große Wirkung.';
-  if(worst===s.tra && zone(s.tra)!=='g') return 'Bewegung kam heute zu kurz. Morgen 20 Minuten Gehen einplanen — Konstanz schlägt Intensität.';
-  return 'Starker Tag über alle drei Säulen. Genau diese Konstanz macht am Ende den Unterschied. 💪';
+  if(worst===s.rec && zone(s.rec)!=='g') return 'worstRecovery';
+  if(worst===s.ern && zone(s.ern)!=='g') return 'worstNutrition';
+  if(worst===s.tra && zone(s.tra)!=='g') return 'worstTraining';
+  return 'allGood';
 }
 
 /* =========================================================
@@ -817,8 +1059,8 @@ async function finish(){
   show('result');
   await saveCheckin(a,s);
   await refreshStreak();
-  $('#streakBig').textContent = state.streak+' Tage';
-  $('#insightText').textContent = buildInsight(a,s);
+  $('#streakBig').textContent = state.streak+' '+T[state.lang].ui.daysWord;
+  $('#insightText').textContent = T[state.lang].insights[buildInsight(a,s)];
 
   animateRing('ringErn','scoreErn',s.ern);
   animateRing('ringTra','scoreTra',s.tra);
@@ -952,12 +1194,16 @@ function trendHTML(label,values,average){
 }
 
 /* =========================================================
+   CHALLENGES — Platzhalter, Feature folgt
+========================================================= */
+$('#challengesBtn').addEventListener('click', ()=>{
+  alert(state.lang==='de' ? 'Challenges kommen bald! 🚀' : state.lang==='en' ? 'Challenges are coming soon! 🚀' : '挑戰任務即將推出！🚀');
+});
+
+/* =========================================================
    INIT
 ========================================================= */
-const days=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
-const months=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
-const now=new Date();
-$('#todayLabel').textContent = days[now.getDay()]+', '+now.getDate()+'. '+months[now.getMonth()];
+applyLanguage('de');
 renderDash();
 </script>
 </body>
