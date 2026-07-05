@@ -252,7 +252,7 @@ $('#authSubmitBtn').addEventListener('click', async ()=>{
   const errBox = $('#authError');
   errBox.textContent = '';
   if(!email || !password){ errBox.textContent = 'Bitte E-Mail und Passwort eingeben.'; return; }
-  if(!COACH_EMAILS.includes(email)){
+  if(!COACH_EMAILS.includes(email.toLowerCase())){
     errBox.textContent = 'Diese E-Mail hat keinen Coach-Zugang.';
     return;
   }
@@ -265,7 +265,7 @@ $('#authSubmitBtn').addEventListener('click', async ()=>{
 $('#logoutBtn').addEventListener('click', ()=> signOut(auth));
 
 onAuthStateChanged(auth, async (user)=>{
-  if(user && COACH_EMAILS.includes(user.email)){
+  if(user && COACH_EMAILS.includes((user.email||'').toLowerCase())){
     $('#logoutBtn').classList.remove('hidden');
     show('dash');
     await loadDashboard();
