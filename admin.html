@@ -341,7 +341,7 @@ async function loadDashboard(){
     const flags = [];
     if(!all.length) flags.push('Noch nie eingecheckt');
     else if(!all.some(c=>c.dateStr >= addDays(today,-3))) flags.push('Kein Check-in seit 3+ Tagen');
-    const sleepLowCount = last7.filter(c=>c.answers?.sleepH===0).length;
+    const sleepLowCount = last7.filter(c=>c.answers?.sleep===0).length;
     if(sleepLowCount>=2) flags.push('Schlaf < 5 h ('+sleepLowCount+' von '+last7.length+' Tagen)');
     const missedCount = last7.filter(c=>c.answers?.training===3).length;
     if(missedCount>=3) flags.push('Training '+missedCount+'× verpasst in den letzten '+last7.length+' Check-ins');
