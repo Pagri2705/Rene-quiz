@@ -33,3 +33,21 @@ Jeder Nutzer sieht nur seine eigenen Check-ins (Firestore-Regeln greifen über
 `uid`). Das Coach-Dashboard zeigt weiterhin Demo-Daten — eine echte
 Mehr-Klienten-Ansicht für Coaches erfordert zusätzliche Rollen/Regeln und ist
 noch nicht umgesetzt.
+
+## Ernährungs-/Trainingspläne (Firebase Storage)
+
+Kunden können im Bereich "Ernährungs & Trainingsplan" (oder direkt auf der
+Startseite / nach dem Check-in) einen Plan beim Coach anfordern. Der Coach
+sieht die Anfrage im Admin-Panel unter "Plan-Anfragen" und lädt die Datei
+(PNG, JPG oder PDF) per Drag & Drop direkt im aufgeklappten Klienten-Eintrag
+hoch. Der Kunde sieht den Plan danach nach Kalenderwoche sortiert.
+
+Dafür wird zusätzlich **Firebase Storage** benötigt:
+
+1. Firebase Console → **Storage** → aktivieren (falls noch nicht geschehen).
+2. Die Regeln aus [storage.rules](storage.rules) unter Storage → Regeln
+   einfügen und veröffentlichen.
+3. Die Firestore-Regeln aus [firestore.rules](firestore.rules) sind bereits
+   um die Collections `planRequests` und `plans` ergänzt — erneut in der
+   Console veröffentlichen, falls sich der Stand seit dem letzten Deploy
+   geändert hat.

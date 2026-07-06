@@ -67,6 +67,24 @@ h2{font-family:'Sora';font-weight:700;font-size:18px;margin-top:8px}
 .alert .dot{width:8px;height:8px;border-radius:50%;background:var(--red);margin-top:6px;flex-shrink:0}
 .alert strong{font-weight:600}
 .alert .a-detail{color:var(--muted)}
+.alert.request{background:rgba(255,194,75,.08);border-color:rgba(255,194,75,.35)}
+.alert.request .dot{background:var(--amber)}
+.alert.request{align-items:center;justify-content:space-between}
+.request-done-btn{ background:none;border:1px solid var(--line);color:var(--text);
+  font-family:'Inter';font-size:11.5px;font-weight:600;padding:6px 10px;border-radius:999px;cursor:pointer;flex-shrink:0; }
+.request-done-btn:hover{border-color:var(--green);color:var(--green)}
+
+/* Plan-Upload (Drag & Drop) */
+.plan-upload-section{display:flex;flex-direction:column;gap:12px;margin-top:4px}
+.plan-upload-block{display:flex;flex-direction:column;gap:6px}
+.plan-upload-label{font-size:12.5px;font-weight:600;display:flex;justify-content:space-between;gap:8px}
+.plan-last-upload{color:var(--muted);font-weight:500}
+.dropzone{
+  border:1.5px dashed var(--line);border-radius:12px;padding:16px;text-align:center;
+  font-size:12.5px;color:var(--muted);cursor:pointer;transition:border-color .15s,background .15s;
+}
+.dropzone:hover,.dropzone.drag-over{border-color:var(--accent);background:rgba(76,142,255,.06);color:var(--text)}
+.dropzone.uploading{opacity:.6;pointer-events:none}
 
 /* Client list */
 .client-list{display:flex;flex-direction:column;gap:10px}
@@ -156,6 +174,9 @@ h2{font-family:'Sora';font-weight:700;font-size:18px;margin-top:8px}
         <div class="stat-card"><div class="stat-num" id="statFlagged">–</div><div class="stat-label">Auffällig</div></div>
       </div>
       <button class="cta secondary" id="exportCsvBtn" style="max-width:none">Als CSV exportieren</button>
+      <h2>Plan-Anfragen</h2>
+      <div class="alerts" id="requestList"></div>
+      <div class="empty-note" id="requestsEmpty" style="display:none">Aktuell keine offenen Anfragen.</div>
       <h2>Hinweise</h2>
       <div class="alerts" id="alertList"></div>
       <h2>Klienten</h2>
@@ -221,6 +242,9 @@ import {
 import {
   getFirestore, doc, setDoc, deleteDoc, collection, getDocs, query, where, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+import {
+  getStorage, ref, uploadBytes, getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAmNKAXWVxAanUpqB-1KQawyM7Wl-LR0vM",
@@ -235,6 +259,7 @@ const COACH_EMAILS = ['rene.schneider1410@gmail.com'];
 const fbApp = initializeApp(firebaseConfig);
 const auth = getAuth(fbApp);
 const db = getFirestore(fbApp);
+const storage = getStorage(fbApp);
 
 const $ = s=>document.querySelector(s);
 const screens = { auth:$('#screen-auth'), dash:$('#screen-dash') };
@@ -273,6 +298,7 @@ onAuthStateChanged(auth, async (user)=>{
   if(user && COACH_EMAILS.includes((user.email||'').toLowerCase())){
     $('#logoutBtn').classList.remove('hidden');
     show('dash');
+    await loadPlanRequests();
     await loadDashboard();
     await loadChallengeManagement();
   } else {
@@ -348,7 +374,17 @@ async function loadDashboard(){
     if(last7[0]?.answers?.pain===3) flags.push('Starke Schmerzen beim letzten Check-in');
 
     const lastSeenStr = u.lastSeen?.toDate ? u.lastSeen.toDate().toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'}) : null;
-    clients.push({ ...u, aE, aT, aR, flags, lastDate: all[0]?.dateStr || null, lastSeenStr, checkedInToday, checkinCount: all.length });
+
+    const plansSnap = await getDocs(query(collection(db,'plans'), where('uid','==',u.uid)));
+    const plans = plansSnap.docs.map(d=>d.data());
+    const lastUpload = type => {
+      const ts = plans.filter(p=>p.type===type).map(p=>p.uploadedAt?.toMillis?.()||0).sort((a,b)=>b-a)[0];
+      return ts ? new Date(ts).toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'}) : 'noch nie';
+    };
+    const lastNutritionUpload = lastUpload('nutrition');
+    const lastTrainingUpload = lastUpload('training');
+
+    clients.push({ ...u, aE, aT, aR, flags, lastDate: all[0]?.dateStr || null, lastSeenStr, checkedInToday, checkinCount: all.length, lastNutritionUpload, lastTrainingUpload });
   }
 
   $('#statToday').textContent = clients.filter(c=>c.checkedInToday).length;
@@ -392,12 +428,100 @@ async function loadDashboard(){
         '<div>Ø Ernährung: '+c.aE+' / 10 · Ø Training: '+c.aT+' / 10 · Ø Recovery: '+c.aR+' / 10</div>'+
         (c.phone ? '<div class="client-note"><b>Telefon:</b> '+c.phone+'</div>' : '') +
         (c.goals ? '<div class="client-goals"><b>Ziele:</b> '+c.goals+'</div>' : '') +
+        '<div class="plan-upload-section">'+
+          '<div class="plan-upload-block" data-type="nutrition">'+
+            '<div class="plan-upload-label"><span>Ernährungsplan</span><span class="plan-last-upload">Zuletzt: '+c.lastNutritionUpload+'</span></div>'+
+            '<div class="dropzone">Datei hierher ziehen oder klicken (PNG, JPG, PDF)</div>'+
+            '<input type="file" class="hidden-file-input hidden" accept=".png,.jpg,.jpeg,.pdf,image/png,image/jpeg,application/pdf">'+
+          '</div>'+
+          '<div class="plan-upload-block" data-type="training">'+
+            '<div class="plan-upload-label"><span>Trainingsplan</span><span class="plan-last-upload">Zuletzt: '+c.lastTrainingUpload+'</span></div>'+
+            '<div class="dropzone">Datei hierher ziehen oder klicken (PNG, JPG, PDF)</div>'+
+            '<input type="file" class="hidden-file-input hidden" accept=".png,.jpg,.jpeg,.pdf,image/png,image/jpeg,application/pdf">'+
+          '</div>'+
+        '</div>'+
       '</div>';
-    card.addEventListener('click', ()=>card.classList.toggle('open'));
+    card.querySelector('.client-row').addEventListener('click', ()=>card.classList.toggle('open'));
+    card.querySelectorAll('.plan-upload-block').forEach(block=>{
+      const type = block.dataset.type;
+      const zone = block.querySelector('.dropzone');
+      const input = block.querySelector('.hidden-file-input');
+      const lastEl = block.querySelector('.plan-last-upload');
+      zone.addEventListener('click', ()=> input.click());
+      zone.addEventListener('dragover', e=>{ e.preventDefault(); zone.classList.add('drag-over'); });
+      zone.addEventListener('dragleave', ()=> zone.classList.remove('drag-over'));
+      zone.addEventListener('drop', e=>{
+        e.preventDefault(); zone.classList.remove('drag-over');
+        if(e.dataTransfer.files[0]) handleUpload(c.uid, type, e.dataTransfer.files[0], zone, lastEl);
+      });
+      input.addEventListener('change', ()=>{
+        if(input.files[0]) handleUpload(c.uid, type, input.files[0], zone, lastEl);
+        input.value = '';
+      });
+    });
     list.appendChild(card);
   });
 
   lastClients = sorted;
+}
+
+const ALLOWED_PLAN_TYPES = ['image/png','image/jpeg','application/pdf'];
+async function handleUpload(uid, type, file, zone, lastEl){
+  if(!ALLOWED_PLAN_TYPES.includes(file.type)){
+    alert('Bitte nur PNG, JPG oder PDF hochladen.');
+    return;
+  }
+  zone.classList.add('uploading');
+  const originalText = zone.textContent;
+  zone.textContent = 'Wird hochgeladen …';
+  try{
+    const path = 'plans/'+uid+'/'+type+'/'+Date.now()+'_'+file.name;
+    const sRef = ref(storage, path);
+    await uploadBytes(sRef, file);
+    const url = await getDownloadURL(sRef);
+    const id = 'plan_'+uid+'_'+type+'_'+Date.now();
+    await setDoc(doc(db,'plans',id), {
+      uid, type, fileName:file.name, fileURL:url, storagePath:path,
+      uploadedAt: serverTimestamp(), uploadedBy: auth.currentUser?.email || ''
+    });
+    const reqSnap = await getDocs(query(collection(db,'planRequests'),
+      where('uid','==',uid), where('type','==',type), where('status','==','pending')));
+    for(const d of reqSnap.docs){
+      await setDoc(doc(db,'planRequests',d.id), { status:'fulfilled', fulfilledAt: serverTimestamp() }, { merge:true });
+    }
+    lastEl.textContent = 'Zuletzt: '+new Date().toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'});
+    await loadPlanRequests();
+  }catch(e){
+    alert('Upload fehlgeschlagen. Bitte erneut versuchen.');
+  }
+  zone.classList.remove('uploading');
+  zone.textContent = originalText;
+}
+
+async function loadPlanRequests(){
+  const snap = await getDocs(query(collection(db,'planRequests'), where('status','==','pending')));
+  const requests = snap.docs.map(d=>({ id:d.id, ...d.data() }))
+    .sort((a,b)=>(b.requestedAt?.toMillis?.()||0)-(a.requestedAt?.toMillis?.()||0));
+  const box = $('#requestList');
+  box.innerHTML = '';
+  $('#requestsEmpty').style.display = requests.length ? 'none' : 'block';
+  requests.forEach(r=>{
+    const ts = r.requestedAt?.toDate ? r.requestedAt.toDate().toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'}) : '';
+    const typeLabel = r.type==='nutrition' ? 'Ernährungsplan' : 'Trainingsplan';
+    const el = document.createElement('div');
+    el.className = 'alert request';
+    el.innerHTML =
+      '<span class="dot"></span><div><strong>'+(r.name||r.email)+'</strong> · <span class="a-detail">'+typeLabel+' angefragt · '+ts+'</span></div>';
+    const doneBtn = document.createElement('button');
+    doneBtn.className = 'request-done-btn';
+    doneBtn.textContent = '✓ Erledigt';
+    doneBtn.addEventListener('click', async ()=>{
+      await setDoc(doc(db,'planRequests',r.id), { status:'fulfilled', fulfilledAt: serverTimestamp() }, { merge:true });
+      await loadPlanRequests();
+    });
+    el.appendChild(doneBtn);
+    box.appendChild(el);
+  });
 }
 
 function csvEscape(val){
