@@ -46,15 +46,17 @@ body{
 }
 .app{
   width:100%;
-  max-width:820px;
+  max-width:980px;
   min-height:100dvh;
   display:flex;
   flex-direction:column;
   padding:0 20px calc(20px + env(safe-area-inset-bottom));
   position:relative;
+  background:var(--bg);
+  z-index:1;
 }
 @media(min-width:900px){
-  .app{border-left:1px solid var(--line);border-right:1px solid var(--line)}
+  .app{border-left:1px solid var(--line);border-right:1px solid var(--line);box-shadow:0 0 40px rgba(0,0,0,.25)}
 }
 
 /* ---------- Header ---------- */
@@ -332,10 +334,11 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 .why-reminder{font-size:13px;color:var(--muted);font-style:italic;max-width:34ch;margin:-6px auto 0}
 .banner{
   width:100%;background:rgba(255,194,75,.1);border:1px solid rgba(255,194,75,.35);
-  border-radius:14px;padding:12px 14px;font-size:13px;display:flex;align-items:center;
-  justify-content:center;gap:10px;flex-wrap:wrap;text-align:center;
+  border-radius:14px;padding:12px 14px;font-size:13px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;text-align:center;
 }
 .banner.reminder{background:rgba(76,142,255,.1);border-color:rgba(76,142,255,.35)}
+.banner-heading{font-family:'Sora';font-weight:800;font-size:19px;width:100%}
 .banner button{
   background:none;border:1px solid var(--line);color:var(--text);cursor:pointer;
   font-family:'Inter';font-size:12px;font-weight:600;padding:6px 12px;border-radius:999px;
@@ -364,7 +367,7 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 .challenge-join-btn.joined{border-color:var(--green);color:var(--green)}
 
 /* ---------- Greeting ---------- */
-.greeting{font-size:15px;font-weight:600;margin-bottom:4px}
+#greetingText{font-size:18px}
 
 /* ---------- Theme switch ---------- */
 .theme-switch{display:flex;gap:10px}
@@ -377,17 +380,17 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 /* ---------- Side carousels (dekorativ, hinter der App) ---------- */
 .side-carousel{
   position:fixed; top:0; bottom:0; width:0; overflow:hidden;
-  z-index:-1; pointer-events:none; opacity:.35;
+  z-index:-1; pointer-events:none;
 }
 .side-carousel.left{left:0}
 .side-carousel.right{right:0}
 @media(min-width:900px){
-  .side-carousel{ width:calc((100vw - 820px)/2); }
+  .side-carousel{ width:calc((100vw - 980px)/2); }
 }
 .side-carousel-track{height:100%}
 .side-carousel-track img{height:100%;width:auto;max-width:none;display:block}
 .side-carousel.left .side-carousel-track img{animation:panX 50s ease-in-out infinite alternate}
-.side-carousel.right .side-carousel-track img{animation:panX 50s ease-in-out infinite alternate-reverse}
+.side-carousel.right .side-carousel-track img{animation:panX 50s ease-in-out infinite alternate; animation-delay:-25s}
 @keyframes panX{ from{transform:translateX(0)} to{transform:translateX(-35%)} }
 
 .theme-fab{
@@ -513,9 +516,8 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
   <!-- START -->
   <section class="screen start" id="screen-start">
     <div>
-      <div class="greeting" id="greetingText"></div>
       <div class="date-eyebrow" id="todayLabel"></div>
-      <h1 style="margin-top:10px" id="startTitle">Los <em>geht's</em></h1>
+      <h1 style="margin-top:10px" id="greetingText"></h1>
     </div>
     <p id="startPara">Wir ziehen das gemeinsam durch. Ein Standard nach dem anderen.</p>
     <div class="why-reminder" id="whyReminder">Jeder Tag hier ist ein Beweis an dich selbst. Machen wir den von heute zu einem, der zählt.</div>
@@ -524,6 +526,7 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
       <button id="verifyResendBtn">Erneut senden</button>
     </div>
     <div class="banner reminder hidden" id="reminderBanner">
+      <div class="banner-heading hidden" id="reminderBannerHeading"></div>
       <span id="reminderBannerText">Du hast heute noch nicht eingecheckt.</span>
     </div>
     <div class="streak-chip">⚡ <span id="streakChip">0 Tage in Folge</span></div>
@@ -781,7 +784,7 @@ de:{
       'auth/wrong-password':'Falsches Passwort.'
     },
     startTitleHTML:"Los <em>geht's</em>",
-    startPara:'Wir ziehen das gemeinsam durch. Ein Standard nach dem anderen. Jeder Tag hier ist ein Beweis an dich selbst. Machen wir den von heute zu einem, der zählt.',
+    startPara:'Wir ziehen das gemeinsam durch, ein Standard nach dem anderen. Jeder Tag hier ist ein Beweis an dich selbst — machen wir den von heute zu einem, der zählt.',
     whyReminder:'',
     streakSuffix:'Tage Streak', ctaStart:'Mission starten', challengesBtn:'Challenges',
     startHint:'Dauert ca. 90 Sekunden · Fortschritt wird automatisch gespeichert', logout:'Abmelden',
@@ -822,24 +825,29 @@ de:{
       opts:[['','Sehr wenig · unter 1 L'],['','Wenig · 1–1,5 L'],['','Okay · 1,5–2 L'],['','Gut · 2–3 L'],['','Viel · 3+ L']] },
     protein:{ title:'Hattest du Protein zu den meisten Mahlzeiten?', caption:'Z. B. Eier, Hähnchen, Fisch, Fleisch, Tofu, Skyr, Hülsenfrüchte, Shake.',
       opts:[['✅','Ja, zu den meisten'],['〰️','Etwas, aber zu wenig'],['✖️','Kaum bis gar nicht']] },
-    hunger:{ title:'Hunger & Cravings heute?', opts:[['','Kein Thema'],['','Normal'],['','Stärker als sonst'],['','Ständig Heißhunger']] },
     quality:{ title:'Wie bewertest du deine Ernährung heute insgesamt?', opts:[['🎯','On track'],['🙂','Okay'],['↩️','Off track']] },
-    digestion:{ title:'Wie war deine Verdauung heute?', opts:[['👍','Gut & normal'],['🎈','Aufgebläht'],['💧','Weicher Stuhl'],['🧱','Verstopfung'],['⚡','Schmerzen / Unwohlsein']] },
+    digestionCombo:{ title:'Verdauung & Hunger', subs:[
+      { title:'Wie war deine Verdauung heute?', opts:[['👍','Gut & normal'],['🎈','Aufgebläht'],['💧','Weicher Stuhl'],['🧱','Verstopfung'],['⚡','Schmerzen / Unwohlsein']] },
+      { title:'Hunger & Cravings heute?', opts:[['','Kein Thema'],['','Normal'],['','Stärker als sonst'],['','Ständig Heißhunger']] }
+    ] },
     digestTrigger:{ title:'Vermuteter Auslöser?', opts:[['','Große Mahlzeit'],['','Milchprodukte'],['','Gluten'],['','Viele Ballaststoffe'],['','Fettiges Essen'],['','Stress'],['','Keine Ahnung'],['','Sonstiges']] },
-    training:{ title:'Hast du dein geplantes Training absolviert?', opts:[['✅','Ja'],['➗','Teilweise'],['🛋️','Rest Day (geplant)'],['✖️','Verpasst']] },
+    trainingCombo:{ title:'Training & Mobility', subs:[
+      { title:'Hast du dein geplantes Training absolviert?', opts:[['✅','Ja'],['➗','Teilweise'],['🛋️','Rest Day (geplant)'],['✖️','Verpasst']] },
+      { title:'Mobility oder Stretching gemacht?', opts:[['','Nein'],['','Ja · 5 Min'],['','Ja · 10–15 Min'],['','Ja · 15+ Min']] }
+    ] },
     missReason:{ title:'Was war der Hauptgrund?', opts:[['','Keine Zeit'],['','Keine Energie'],['','Schmerzen'],['','Stress'],['','Motivation'],['','Arbeit & Reisen'],['','Sonstiges'],['','—']] },
-    steps:{ title:'Wie viele Schritte bist du heute gegangen?', caption:'Kein Tracker? Wähl, was am ehesten passt.',
-      opts:[['','Sehr inaktiv · unter 2.000'],['','Wenig · 2.000–5.000'],['','Moderat · 5.000–8.000'],['','Aktiv · 8.000–12.000'],['','Sehr aktiv · 12.000+']] },
-    mobility:{ title:'Mobility oder Stretching gemacht?', opts:[['','Nein'],['','Ja · 5 Min'],['','Ja · 10–15 Min'],['','Ja · 15+ Min']] },
     pain:{ title:'Schmerzen oder Beschwerden heute?', opts:[['','Keine'],['','Leicht'],['','Mittel'],['','Stark']] },
     painWhere:{ title:'Wo?', opts:[['','Nacken & Schultern'],['','Ellbogen & Handgelenk'],['','Unterer Rücken'],['','Hüfte'],['','Knie'],['','Fuß & Sprunggelenk'],['','Sonstiges'],['','—']] },
     painImpact:{ title:'Hat es deine Bewegung oder dein Training beeinflusst?', opts:[['','Nein'],['','Ein wenig'],['','Ja, musste anpassen'],['','Ja, musste abbrechen']] },
-    sleepH:{ title:'Wie viele Stunden hast du geschlafen?', opts:[['','Sehr wenig · unter 5 h'],['','Wenig · 5–6 h'],['','Okay · 6–7 h'],['','Gut · 7–8 h'],['','Top · 8+ h']] },
-    sleepQ:{ title:'Wie war deine Schlafqualität?', opts:[['','Sehr gut'],['','Gut'],['','Okay'],['','Schlecht'],['','Sehr schlecht']] },
-    energy:{ title:'Energie heute?', lo:'Komplett leer', hi:'Voll da' },
+    sleep:{ title:'Wie war dein Schlaf heute?', opts:[
+      ['','Sehr wenig / schlecht · unter 5 h oder sehr schlechte Qualität'],
+      ['','Wenig · 5–6 h, mittelmäßige Qualität'],
+      ['','Okay · 6–7 h, überwiegend gut'],
+      ['','Gut · 7–8 h, gute Qualität'],
+      ['','Top · 8+ h, sehr gute Qualität']
+    ] },
+    energyMotivation:{ title:'Energie & Motivation heute?', lo:'Leer & unmotiviert', hi:'Voll da & bereit' },
     stress:{ title:'Stresslevel heute?', lo:'Tiefenentspannt', hi:'Am Limit' },
-    soreness:{ title:'Wie erholt fühlt sich dein Körper an?', opts:[['🌱','Frisch'],['','Normal'],['','Müde'],['','Starker Muskelkater'],['','Erschöpft']] },
-    motivation:{ title:'Motivation gerade?', lo:'Gar keine', hi:'Voll dabei' },
     note:{ title:'Gibt es etwas, das dein Coach wissen sollte?', caption:'Optional — du kannst auch überspringen.',
       placeholder:'Z. B. stressiger Arbeitstag, schlecht geschlafen, super Training, unterwegs …' }
   },
@@ -879,7 +887,7 @@ en:{
       'auth/wrong-password':'Incorrect password.'
     },
     startTitleHTML:"Let's <em>go</em>",
-    startPara:"We're in this together. One standard at a time. Every day here is proof to yourself. Let's make today one that counts.",
+    startPara:"We're in this together, one standard at a time. Every day here is proof to yourself — let's make today one that counts.",
     whyReminder:'',
     streakSuffix:'day streak', ctaStart:'Start mission', challengesBtn:'Challenges',
     startHint:'Takes about 90 seconds · Progress is saved automatically', logout:'Log out',
@@ -920,24 +928,29 @@ en:{
       opts:[['','Very little · under 1 L'],['','Little · 1–1.5 L'],['','Okay · 1.5–2 L'],['','Good · 2–3 L'],['','A lot · 3+ L']] },
     protein:{ title:'Did you have protein with most meals?', caption:'E.g. eggs, chicken, fish, meat, tofu, skyr, legumes, shake.',
       opts:[['✅','Yes, with most'],['〰️','Some, but too little'],['✖️','Barely or not at all']] },
-    hunger:{ title:'Hunger & cravings today?', opts:[['','No issue'],['','Normal'],['','Stronger than usual'],['','Constant cravings']] },
     quality:{ title:'How would you rate your nutrition today overall?', opts:[['🎯','On track'],['🙂','Okay'],['↩️','Off track']] },
-    digestion:{ title:'How was your digestion today?', opts:[['👍','Good & normal'],['🎈','Bloated'],['💧','Loose stool'],['🧱','Constipated'],['⚡','Pain / discomfort']] },
+    digestionCombo:{ title:'Digestion & Hunger', subs:[
+      { title:'How was your digestion today?', opts:[['👍','Good & normal'],['🎈','Bloated'],['💧','Loose stool'],['🧱','Constipated'],['⚡','Pain / discomfort']] },
+      { title:'Hunger & cravings today?', opts:[['','No issue'],['','Normal'],['','Stronger than usual'],['','Constant cravings']] }
+    ] },
     digestTrigger:{ title:'Suspected trigger?', opts:[['','Large meal'],['','Dairy'],['','Gluten'],['','Lots of fiber'],['','Fatty food'],['','Stress'],['','No idea'],['','Other']] },
-    training:{ title:'Did you complete your planned training?', opts:[['✅','Yes'],['➗','Partially'],['🛋️','Rest day (planned)'],['✖️','Missed']] },
+    trainingCombo:{ title:'Training & Mobility', subs:[
+      { title:'Did you complete your planned training?', opts:[['✅','Yes'],['➗','Partially'],['🛋️','Rest day (planned)'],['✖️','Missed']] },
+      { title:'Did you do mobility or stretching?', opts:[['','No'],['','Yes · 5 min'],['','Yes · 10–15 min'],['','Yes · 15+ min']] }
+    ] },
     missReason:{ title:'What was the main reason?', opts:[['','No time'],['','No energy'],['','Pain'],['','Stress'],['','Motivation'],['','Work & travel'],['','Other'],['','—']] },
-    steps:{ title:'How many steps did you take today?', caption:'No tracker? Pick whatever fits best.',
-      opts:[['','Very inactive · under 2,000'],['','Low · 2,000–5,000'],['','Moderate · 5,000–8,000'],['','Active · 8,000–12,000'],['','Very active · 12,000+']] },
-    mobility:{ title:'Did you do mobility or stretching?', opts:[['','No'],['','Yes · 5 min'],['','Yes · 10–15 min'],['','Yes · 15+ min']] },
     pain:{ title:'Pain or discomfort today?', opts:[['','None'],['','Mild'],['','Moderate'],['','Severe']] },
     painWhere:{ title:'Where?', opts:[['','Neck & shoulders'],['','Elbow & wrist'],['','Lower back'],['','Hip'],['','Knee'],['','Foot & ankle'],['','Other'],['','—']] },
     painImpact:{ title:'Did it affect your movement or training?', opts:[['','No'],['','A little'],['','Yes, had to adjust'],['','Yes, had to stop']] },
-    sleepH:{ title:'How many hours did you sleep?', opts:[['','Very little · under 5 h'],['','Little · 5–6 h'],['','Okay · 6–7 h'],['','Good · 7–8 h'],['','Great · 8+ h']] },
-    sleepQ:{ title:'How was your sleep quality?', opts:[['','Very good'],['','Good'],['','Okay'],['','Bad'],['','Very bad']] },
-    energy:{ title:'Energy today?', lo:'Completely empty', hi:'Fully charged' },
+    sleep:{ title:'How was your sleep last night?', opts:[
+      ['','Very little / bad · under 5 h or very poor quality'],
+      ['','Little · 5–6 h, so-so quality'],
+      ['','Okay · 6–7 h, mostly good'],
+      ['','Good · 7–8 h, good quality'],
+      ['','Great · 8+ h, great quality']
+    ] },
+    energyMotivation:{ title:'Energy & motivation today?', lo:'Empty & unmotivated', hi:'Fully charged & ready' },
     stress:{ title:'Stress level today?', lo:'Totally relaxed', hi:'At my limit' },
-    soreness:{ title:'How recovered does your body feel?', opts:[['🌱','Fresh'],['','Normal'],['','Tired'],['','Very sore'],['','Exhausted']] },
-    motivation:{ title:'Motivation right now?', lo:'None at all', hi:'Fully in' },
     note:{ title:'Anything your coach should know?', caption:'Optional — you can also skip this.',
       placeholder:'E.g. stressful work day, slept badly, great training session, traveling …' }
   },
@@ -977,7 +990,7 @@ zh:{
       'auth/wrong-password':'密碼錯誤。'
     },
     startTitleHTML:'開始<em>行動</em>',
-    startPara:'我們一起堅持下去。一次守住一個標準。在這裡的每一天，都是對自己的證明。讓我們把今天變成值得的一天。',
+    startPara:'我們一起堅持下去，一次守住一個標準。在這裡的每一天，都是對自己的證明 — 讓我們把今天變成值得的一天。',
     whyReminder:'',
     streakSuffix:'天連續 Streak', ctaStart:'開始任務', challengesBtn:'挑戰任務',
     startHint:'大約需要90秒 · 進度會自動儲存', logout:'登出',
@@ -1018,24 +1031,29 @@ zh:{
       opts:[['','非常少 · 少於1公升'],['','偏少 · 1–1.5公升'],['','還可以 · 1.5–2公升'],['','不錯 · 2–3公升'],['','很多 · 3公升以上']] },
     protein:{ title:'你這天大部分餐點都有攝取蛋白質嗎？', caption:'例如：雞蛋、雞肉、魚肉、肉類、豆腐、優格、豆類、蛋白飲。',
       opts:[['✅','是，大部分都有'],['〰️','有一些，但不夠'],['✖️','幾乎沒有']] },
-    hunger:{ title:'今天的飢餓感與渴望食物的程度？', opts:[['','沒問題'],['','正常'],['','比平常強烈'],['','一直很想吃東西']] },
     quality:{ title:'你今天整體的飲食表現如何？', opts:[['🎯','在軌道上'],['🙂','還可以'],['↩️','偏離軌道']] },
-    digestion:{ title:'你今天的消化狀況如何？', opts:[['👍','良好正常'],['🎈','脹氣'],['💧','軟便'],['🧱','便秘'],['⚡','疼痛／不適']] },
+    digestionCombo:{ title:'消化與飢餓感', subs:[
+      { title:'你今天的消化狀況如何？', opts:[['👍','良好正常'],['🎈','脹氣'],['💧','軟便'],['🧱','便秘'],['⚡','疼痛／不適']] },
+      { title:'今天的飢餓感與渴望食物的程度？', opts:[['','沒問題'],['','正常'],['','比平常強烈'],['','一直很想吃東西']] }
+    ] },
     digestTrigger:{ title:'你認為可能的原因？', opts:[['','份量太大'],['','乳製品'],['','麩質'],['','纖維攝取過多'],['','油膩食物'],['','壓力'],['','不清楚'],['','其他']] },
-    training:{ title:'你完成計畫中的訓練了嗎？', opts:[['✅','是的'],['➗','部分完成'],['🛋️','休息日（計畫中）'],['✖️','沒有完成']] },
+    trainingCombo:{ title:'訓練與活動度', subs:[
+      { title:'你完成計畫中的訓練了嗎？', opts:[['✅','是的'],['➗','部分完成'],['🛋️','休息日（計畫中）'],['✖️','沒有完成']] },
+      { title:'你有做活動度訓練或伸展嗎？', opts:[['','沒有'],['','有 · 5分鐘'],['','有 · 10–15分鐘'],['','有 · 15分鐘以上']] }
+    ] },
     missReason:{ title:'主要原因是什麼？', opts:[['','沒有時間'],['','沒有精力'],['','疼痛'],['','壓力'],['','動力不足'],['','工作與出差'],['','其他'],['','—']] },
-    steps:{ title:'你今天走了多少步？', caption:'沒有計步器？選一個最接近的選項。',
-      opts:[['','非常不活動 · 少於2,000步'],['','偏少 · 2,000–5,000步'],['','中等 · 5,000–8,000步'],['','活躍 · 8,000–12,000步'],['','非常活躍 · 12,000步以上']] },
-    mobility:{ title:'你有做活動度訓練或伸展嗎？', opts:[['','沒有'],['','有 · 5分鐘'],['','有 · 10–15分鐘'],['','有 · 15分鐘以上']] },
     pain:{ title:'今天有疼痛或不適嗎？', opts:[['','沒有'],['','輕微'],['','中等'],['','嚴重']] },
     painWhere:{ title:'哪個部位？', opts:[['','頸部與肩膀'],['','手肘與手腕'],['','下背部'],['','髖部'],['','膝蓋'],['','腳與腳踝'],['','其他'],['','—']] },
     painImpact:{ title:'這是否影響了你的活動或訓練？', opts:[['','沒有'],['','有一點'],['','有，必須調整'],['','有，必須中止']] },
-    sleepH:{ title:'你睡了幾個小時？', opts:[['','非常少 · 少於5小時'],['','偏少 · 5–6小時'],['','還可以 · 6–7小時'],['','不錯 · 7–8小時'],['','很棒 · 8小時以上']] },
-    sleepQ:{ title:'你的睡眠品質如何？', opts:[['','非常好'],['','好'],['','普通'],['','不好'],['','非常不好']] },
-    energy:{ title:'今天的精力如何？', lo:'完全沒電', hi:'滿滿活力' },
+    sleep:{ title:'你昨晚睡得如何？', opts:[
+      ['','非常少／差 · 少於5小時或品質很差'],
+      ['','偏少 · 5–6小時，品質普通'],
+      ['','還可以 · 6–7小時，大致良好'],
+      ['','不錯 · 7–8小時，品質良好'],
+      ['','很棒 · 8小時以上，品質很好']
+    ] },
+    energyMotivation:{ title:'今天的精力與動力如何？', lo:'空虛且沒動力', hi:'滿滿活力、準備就緒' },
     stress:{ title:'今天的壓力程度？', lo:'非常放鬆', hi:'已達極限' },
-    soreness:{ title:'你的身體恢復狀況如何？', opts:[['🌱','很清爽'],['','正常'],['','疲累'],['','肌肉痠痛嚴重'],['','精疲力盡']] },
-    motivation:{ title:'現在的動力如何？', lo:'完全沒有', hi:'幹勁十足' },
     note:{ title:'有什麼是教練需要知道的嗎？', caption:'可選填 — 你也可以跳過。',
       placeholder:'例如：今天工作壓力大、睡不好、訓練表現很棒、正在出差……' }
   },
@@ -1244,9 +1262,12 @@ async function updateEngagementBanners(){
     if(isComeback){
       banner.dataset.mode = 'comeback';
       banner.classList.remove('hidden');
-      $('#reminderBannerText').innerHTML = '<strong>'+t.comebackTitle+'</strong> — '+t.comebackText+'<br>'+t.comebackText2;
+      $('#reminderBannerHeading').textContent = t.comebackTitle;
+      $('#reminderBannerHeading').classList.remove('hidden');
+      $('#reminderBannerText').textContent = t.comebackText+' '+t.comebackText2;
     } else {
       banner.dataset.mode = 'reminder';
+      $('#reminderBannerHeading').classList.add('hidden');
       $('#reminderBannerText').textContent = t.reminderBannerText;
       banner.classList.toggle('hidden', checkedInToday || !isEvening);
     }
@@ -1469,8 +1490,8 @@ async function renderLeaderboard(){
     const row = document.createElement('div');
     row.className = 'lb-row'+(e.uid===state.uid?' lb-me':'');
     const isYou = e.uid===state.uid;
-    const rankDisplay = medals[i] || (i+1);
-    const streakDisplay = i<3 ? e.streak : '⚡ '+e.streak;
+    const rankDisplay = i+1;
+    const streakDisplay = (medals[i] || '⚡')+' '+e.streak;
     row.innerHTML =
       '<div class="lb-rank">'+rankDisplay+'</div>'+
       '<div class="lb-name">'+e.name+(isYou?' '+T[state.lang].ui.lbYou:'')+'</div>'+
@@ -1701,11 +1722,13 @@ function computeScores(a){
   // den anderen beiden Säulen (Training/Recovery, je max 10) passt.
   let ern = (waterPts[a.water]+protPts[a.protein]+qualPts[a.quality]+digest) * (10/7);
 
-  const trainPts=[4,2,4,0], stepPts=[0,1,2,3,3], mobPts=[0,.5,1,1], painPts=[2,1.5,.5,0];
-  let tra = trainPts[a.training]+stepPts[a.steps]+mobPts[a.mobility]+painPts[a.pain];
+  const trainPts=[4,2,4,0], mobPts=[0,.5,1,1], painPts=[2,1.5,.5,0];
+  // Rohsumme max 7 (4+1+2) — auf 10er-Skala hochskaliert.
+  let tra = (trainPts[a.training]+mobPts[a.mobility]+painPts[a.pain]) * (10/7);
 
-  const sleepPts=[0,.5,1,2,2], sqPts=[2,1.5,1,.5,0], sorePts=[2,1.5,1,.5,0];
-  let rec = sleepPts[a.sleepH]+sqPts[a.sleepQ]+((a.energy-1)/2)+((5-a.stress)/2)+sorePts[a.soreness];
+  const sleepPts=[0,1,2,3,4];
+  // Schlaf max 4, Energie&Motivation max 3, Stress max 3 — Summe max 10.
+  let rec = sleepPts[a.sleep] + (a.energyMotivation-1)*0.75 + (5-a.stress)*0.75;
 
   return { ern:round1(ern), tra:round1(tra), rec:round1(rec) };
 }
@@ -1814,10 +1837,14 @@ function updatePrizeCountdown(){
   const diffMs = PRIZE_DEADLINE - new Date();
   if(diffMs <= 0){ el.textContent = '⏱ Frist beendet'; return; }
   const hours = Math.floor(diffMs / 3600000);
-  el.textContent = '⏱ '+hours+' Std. bis 10.08.2026';
+  const minutes = Math.floor((diffMs % 3600000) / 60000);
+  const seconds = Math.floor((diffMs % 60000) / 1000);
+  const ms = Math.floor(diffMs % 1000);
+  const pad = (n,len)=> String(n).padStart(len,'0');
+  el.textContent = '⏱ '+hours+':'+pad(minutes,2)+':'+pad(seconds,2)+'.'+pad(ms,3)+' bis 10.08.2026';
 }
 updatePrizeCountdown();
-setInterval(updatePrizeCountdown, 60000);
+setInterval(updatePrizeCountdown, 47);
 
 /* =========================================================
    INIT
