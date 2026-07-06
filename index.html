@@ -374,6 +374,22 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
   cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
 }
 .theme-btn.active{border-color:var(--accent);background:rgba(76,142,255,.1);color:var(--accent)}
+/* ---------- Side carousels (dekorativ, hinter der App) ---------- */
+.side-carousel{
+  position:fixed; top:0; bottom:0; width:0; overflow:hidden;
+  z-index:-1; pointer-events:none; opacity:.35;
+}
+.side-carousel.left{left:0}
+.side-carousel.right{right:0}
+@media(min-width:900px){
+  .side-carousel{ width:calc((100vw - 820px)/2); }
+}
+.side-carousel-track{height:100%}
+.side-carousel-track img{height:100%;width:auto;max-width:none;display:block}
+.side-carousel.left .side-carousel-track img{animation:panX 50s ease-in-out infinite alternate}
+.side-carousel.right .side-carousel-track img{animation:panX 50s ease-in-out infinite alternate-reverse}
+@keyframes panX{ from{transform:translateX(0)} to{transform:translateX(-35%)} }
+
 .theme-fab{
   position:fixed;left:16px;bottom:16px;z-index:50;
   display:flex;flex-direction:column;gap:6px;
@@ -439,12 +455,10 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 <div class="side-carousel left" aria-hidden="true">
   <div class="side-carousel-track">
     <img src="assets/collage.png" alt="">
-    <img src="assets/collage.png" alt="">
   </div>
 </div>
 <div class="side-carousel right" aria-hidden="true">
   <div class="side-carousel-track">
-    <img src="assets/collage.png" alt="">
     <img src="assets/collage.png" alt="">
   </div>
 </div>
@@ -704,17 +718,20 @@ const Q = {
   feeling:{ id:'feeling', pillarKey:'checkin', pClass:'p-neutral' },
   water:{ id:'water', pillarKey:'nutrition', pClass:'p-ern' },
   protein:{ id:'protein', pillarKey:'nutrition', pClass:'p-ern' },
-  hunger:{ id:'hunger', pillarKey:'nutrition', pClass:'p-ern' },
   quality:{ id:'quality', pillarKey:'nutrition', pClass:'p-ern' },
-  digestion:{ id:'digestion', pillarKey:'nutrition', pClass:'p-ern',
-    onAnswer:(v)=>{ removeFromQueue('digestTrigger'); if(v>0) insertAfter('digestTrigger'); } },
+  digestionCombo:{ id:'digestionCombo', pillarKey:'nutrition', pClass:'p-ern', type:'combo',
+    subs:[
+      { key:'digestion', onAnswer:(v)=>{ removeFromQueue('digestTrigger'); if(v>0) insertAfter('digestTrigger'); } },
+      { key:'hunger' }
+    ] },
   digestTrigger:{ id:'digestTrigger', pillarKey:'nutrition', pClass:'p-ern', conditional:true, grid:true },
 
-  training:{ id:'training', pillarKey:'training', pClass:'p-tra',
-    onAnswer:(v)=>{ removeFromQueue('missReason'); if(v===3) insertAfter('missReason'); } },
+  trainingCombo:{ id:'trainingCombo', pillarKey:'training', pClass:'p-tra', type:'combo',
+    subs:[
+      { key:'training', onAnswer:(v)=>{ removeFromQueue('missReason'); if(v===3) insertAfter('missReason'); } },
+      { key:'mobility' }
+    ] },
   missReason:{ id:'missReason', pillarKey:'training', pClass:'p-tra', conditional:true, grid:true },
-  steps:{ id:'steps', pillarKey:'training', pClass:'p-tra' },
-  mobility:{ id:'mobility', pillarKey:'training', pClass:'p-tra' },
   pain:{ id:'pain', pillarKey:'training', pClass:'p-tra',
     onAnswer:(v)=>{
       removeFromQueue('painWhere'); removeFromQueue('painImpact');
@@ -723,18 +740,15 @@ const Q = {
   painWhere:{ id:'painWhere', pillarKey:'training', pClass:'p-tra', conditional:true, grid:true },
   painImpact:{ id:'painImpact', pillarKey:'training', pClass:'p-tra', conditional:true },
 
-  sleepH:{ id:'sleepH', pillarKey:'recovery', pClass:'p-rec' },
-  sleepQ:{ id:'sleepQ', pillarKey:'recovery', pClass:'p-rec' },
-  energy:{ id:'energy', pillarKey:'recovery', pClass:'p-rec', type:'slider', min:1,max:5 },
+  sleep:{ id:'sleep', pillarKey:'recovery', pClass:'p-rec' },
+  energyMotivation:{ id:'energyMotivation', pillarKey:'recovery', pClass:'p-rec', type:'slider', min:1,max:5 },
   stress:{ id:'stress', pillarKey:'recovery', pClass:'p-rec', type:'slider', min:1,max:5 },
-  soreness:{ id:'soreness', pillarKey:'recovery', pClass:'p-rec' },
-  motivation:{ id:'motivation', pillarKey:'recovery', pClass:'p-rec', type:'slider', min:1,max:5 },
 
   note:{ id:'note', pillarKey:'done', pClass:'p-neutral', type:'note' }
 };
 
-const BASE_QUEUE = ['feeling','water','protein','hunger','quality','digestion',
-  'training','steps','mobility','pain','sleepH','sleepQ','energy','stress','soreness','motivation','note'];
+const BASE_QUEUE = ['feeling','water','protein','quality','digestionCombo',
+  'trainingCombo','pain','sleep','energyMotivation','stress','note'];
 
 /* =========================================================
    ÜBERSETZUNGEN — de / en / zh (Taiwan, Traditionell)
