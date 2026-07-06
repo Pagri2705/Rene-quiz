@@ -31,7 +31,7 @@
   --muted:#5B6779;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
+html,body{height:100%;overflow-x:hidden;max-width:100vw}
 body{
   background:
     radial-gradient(1200px 600px at 80% -10%, rgba(76,142,255,.08), transparent 60%),
@@ -95,7 +95,7 @@ header{
 .date-eyebrow{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 h1{font-family:'Sora';font-weight:800;font-size:34px;line-height:1.12;letter-spacing:-.01em}
 h1 em{font-style:normal;color:var(--accent)}
-.start p{color:var(--muted);font-size:15px;max-width:32ch}
+.start p{color:var(--muted);font-size:15px}
 .streak-chip{
   display:inline-flex;align-items:center;gap:8px;align-self:flex-start;
   background:var(--panel);border:1px solid var(--line);border-radius:999px;
@@ -334,10 +334,9 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 /* ---------- Start centering ---------- */
 .start{align-items:center;text-align:center}
 .start > div:first-child{width:100%}
-.start p{max-width:34ch;margin:0 auto}
+.start p{max-width:none;margin:0 auto}
 .streak-chip{align-self:center}
 .community-chip{font-size:12.5px;color:var(--muted)}
-.why-reminder{font-size:13px;color:var(--muted);font-style:italic;max-width:34ch;margin:-6px auto 0}
 .banner{
   width:100%;background:rgba(255,194,75,.1);border:1px solid rgba(255,194,75,.35);
   border-radius:14px;padding:12px 14px;font-size:13px;display:flex;flex-direction:column;
@@ -396,8 +395,19 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 .side-carousel-track{height:100%}
 .side-carousel-track img{height:100%;width:auto;max-width:none;display:block}
 .side-carousel.left .side-carousel-track img{animation:panX 40s linear infinite alternate}
-.side-carousel.right .side-carousel-track img{animation:panX 40s linear infinite alternate-reverse}
+.side-carousel.right .side-carousel-track img{animation:panXRev 40s linear infinite alternate}
 @keyframes panX{ from{transform:translateX(0)} to{transform:translateX(-35%)} }
+@keyframes panXRev{ from{transform:translateX(-35%)} to{transform:translateX(0)} }
+
+/* ---------- Mobile collage strip ---------- */
+.mobile-collage{display:none}
+@media(max-width:899px){
+  .mobile-collage{
+    display:block;width:100%;height:110px;overflow:hidden;
+    border-radius:var(--radius);border:1px solid var(--line);
+  }
+  .mobile-collage img{height:100%;width:auto;max-width:none;animation:panX 40s linear infinite alternate}
+}
 
 .theme-fab{
   position:fixed;left:16px;bottom:16px;z-index:50;
@@ -526,7 +536,6 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
       <h1 style="margin-top:10px" id="greetingText"></h1>
     </div>
     <p id="startPara">Wir ziehen das gemeinsam durch. Ein Standard nach dem anderen.</p>
-    <div class="why-reminder" id="whyReminder">Jeder Tag hier ist ein Beweis an dich selbst. Machen wir den von heute zu einem, der zählt.</div>
     <div class="banner hidden" id="verifyBanner">
       <span id="verifyBannerText">Bitte bestätige deine E-Mail-Adresse.</span>
       <button id="verifyResendBtn">Erneut senden</button>
@@ -555,6 +564,7 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
         </div>
       </button>
     </div>
+    <div class="mobile-collage" aria-hidden="true"><img src="assets/collage.png" alt=""></div>
     <div class="leaderboard-inline">
       <div class="leaderboard-inline-title">🏆 <span id="leaderboardTitle">Bestenliste</span></div>
       <div class="leaderboard-prize" id="leaderboardPrize">
@@ -789,9 +799,7 @@ de:{
       'auth/user-not-found':'Kein Konto mit dieser E-Mail gefunden.',
       'auth/wrong-password':'Falsches Passwort.'
     },
-    startTitleHTML:"Los <em>geht's</em>",
-    startPara:'Wir ziehen das gemeinsam durch, ein Standard nach dem anderen. Jeder Tag hier ist ein Beweis an dich selbst — machen wir den von heute zu einem, der zählt.',
-    whyReminder:'',
+    startPara:'Wir ziehen das gemeinsam durch, ein Standard nach dem anderen.<br>Jeder Tag hier ist ein Beweis an dich selbst — machen wir den von heute zu einem, der zählt.',
     streakSuffix:'Tage Streak', ctaStart:'Mission starten', challengesBtn:'Challenges',
     startHint:'Dauert ca. 90 Sekunden · Fortschritt wird automatisch gespeichert', logout:'Abmelden',
     coachViewBtn:'Coach-Ansicht', clientViewBtn:'Client-Ansicht',
@@ -892,9 +900,7 @@ en:{
       'auth/user-not-found':'No account found with this email.',
       'auth/wrong-password':'Incorrect password.'
     },
-    startTitleHTML:"Let's <em>go</em>",
-    startPara:"We're in this together, one standard at a time. Every day here is proof to yourself — let's make today one that counts.",
-    whyReminder:'',
+    startPara:"We're in this together, one standard at a time.<br>Every day here is proof to yourself — let's make today one that counts.",
     streakSuffix:'day streak', ctaStart:'Start mission', challengesBtn:'Challenges',
     startHint:'Takes about 90 seconds · Progress is saved automatically', logout:'Log out',
     coachViewBtn:'Coach view', clientViewBtn:'Client view',
@@ -995,9 +1001,7 @@ zh:{
       'auth/user-not-found':'找不到使用此電子郵件的帳號。',
       'auth/wrong-password':'密碼錯誤。'
     },
-    startTitleHTML:'開始<em>行動</em>',
-    startPara:'我們一起堅持下去，一次守住一個標準。在這裡的每一天，都是對自己的證明 — 讓我們把今天變成值得的一天。',
-    whyReminder:'',
+    startPara:'我們一起堅持下去，一次守住一個標準。<br>在這裡的每一天，都是對自己的證明 — 讓我們把今天變成值得的一天。',
     streakSuffix:'天連續 Streak', ctaStart:'開始任務', challengesBtn:'挑戰任務',
     startHint:'大約需要90秒 · 進度會自動儲存', logout:'登出',
     coachViewBtn:'教練檢視', clientViewBtn:'學員檢視',
@@ -1112,9 +1116,7 @@ function applyLanguage(lang){
   $('#authForgotBtn').textContent = t.authForgotBtn;
   $('#settingsGoals').placeholder = t.goalsPlaceholder;
   setAuthMode(authMode);
-  $('#startTitle').innerHTML = t.startTitleHTML;
   $('#startPara').innerHTML = t.startPara;
-  $('#whyReminder').textContent = t.whyReminder;
   $('#checkinCardBanner').textContent = t.checkinCardBanner;
   $('#checkinCardTitle').textContent = t.ctaStart;
   $('#checkinCardDesc').textContent = t.checkinCardDesc;
@@ -1658,7 +1660,7 @@ function renderCombo(wrap,q,qt){
     subT.opts.forEach(([ico,label],i)=>{
       if(label==='—') return;
       const b = document.createElement('button');
-      b.className = 'opt opt-sm';
+      b.className = 'opt opt-sm'+(state.answers[sub.key]===i ? ' selected':'');
       b.innerHTML = (ico?'<span class="ico">'+ico+'</span>':'')+'<span>'+label+'</span>';
       b.addEventListener('click',()=>{
         box.querySelectorAll('.opt').forEach(o=>o.classList.remove('selected'));
@@ -1678,7 +1680,6 @@ function renderCombo(wrap,q,qt){
   foot.className = 'q-footer';
   const btn = document.createElement('button');
   btn.className = 'cta';
-  btn.disabled = true;
   btn.textContent = T[state.lang].ui.sliderNextBtn;
   btn.addEventListener('click', next);
   foot.appendChild(btn);
@@ -1687,15 +1688,17 @@ function renderCombo(wrap,q,qt){
   function checkComboComplete(){
     btn.disabled = !q.subs.every(s => state.answers[s.key] !== undefined);
   }
+  checkComboComplete();
 }
 
 function renderOptions(wrap,q,qt){
   const box = document.createElement('div');
   box.className='options'+(q.grid?' grid-2':'');
+  const preselected = state.answers[q.id] !== undefined ? state.answers[q.id] : q.defaultIndex;
   qt.opts.forEach(([ico,label],i)=>{
     if(label==='—') return;
     const b = document.createElement('button');
-    b.className='opt'+(q.defaultIndex===i ? ' selected':'');
+    b.className='opt'+(preselected===i ? ' selected':'');
     b.innerHTML = (ico?'<span class="ico">'+ico+'</span>':'')+'<span>'+label+'</span>';
     b.addEventListener('click',()=>{
       box.querySelectorAll('.opt').forEach(o=>o.classList.remove('selected'));
@@ -1706,7 +1709,7 @@ function renderOptions(wrap,q,qt){
     });
     box.appendChild(b);
   });
-  if(q.defaultIndex!==undefined) state.answers[q.id]=q.defaultIndex;
+  if(state.answers[q.id]===undefined && q.defaultIndex!==undefined) state.answers[q.id]=q.defaultIndex;
   wrap.appendChild(box);
 }
 
@@ -1715,7 +1718,7 @@ function renderSlider(wrap,q,qt){
   block.className='slider-block';
   const val = document.createElement('div');
   val.className='slider-value';
-  const start = 3;
+  const start = state.answers[q.id] !== undefined ? state.answers[q.id] : 3;
   val.textContent = start;
   const range = document.createElement('input');
   range.type='range'; range.min=q.min; range.max=q.max; range.value=start; range.step=1;
@@ -1898,12 +1901,11 @@ function updatePrizeCountdown(){
   const hours = Math.floor(diffMs / 3600000);
   const minutes = Math.floor((diffMs % 3600000) / 60000);
   const seconds = Math.floor((diffMs % 60000) / 1000);
-  const ms = Math.floor(diffMs % 1000);
-  const pad = (n,len)=> String(n).padStart(len,'0');
-  el.textContent = '⏱ '+hours+':'+pad(minutes,2)+':'+pad(seconds,2)+'.'+pad(ms,3)+' bis 10.08.2026';
+  const pad = n=> String(n).padStart(2,'0');
+  el.textContent = '⏱ '+hours+':'+pad(minutes)+':'+pad(seconds)+' bis 10.08.2026';
 }
 updatePrizeCountdown();
-setInterval(updatePrizeCountdown, 47);
+setInterval(updatePrizeCountdown, 1000);
 
 /* =========================================================
    INIT
