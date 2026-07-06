@@ -392,7 +392,7 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 /* ---------- Action cards (Check-in / Challenges) ---------- */
 .action-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%}
 .action-card{
-  appearance:none;cursor:pointer;text-align:left;padding:0;
+  appearance:none;cursor:pointer;text-align:center;padding:0;
   background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
   overflow:hidden;display:flex;flex-direction:column;
   transition:border-color .15s,transform .1s;
@@ -403,13 +403,14 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 .action-banner{
   padding:12px 12px 28px;font-family:'Sora';font-weight:800;font-size:11px;
   letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.9);
+  text-align:center;
 }
 .action-banner.banner-checkin{background:linear-gradient(135deg,var(--accent),#2E6FE0)}
 .action-banner.banner-challenge{background:linear-gradient(135deg,#FFC24B,#E08A2E)}
-.action-body{padding:12px;display:flex;flex-direction:column;gap:6px;flex:1}
-.action-title{font-family:'Sora';font-weight:700;font-size:15px;color:var(--text);line-height:1.2}
-.action-desc{font-size:12px;color:var(--muted);line-height:1.4;flex:1}
-.action-arrow{align-self:flex-end;font-size:18px;color:var(--accent);font-weight:800}
+.action-body{padding:12px;display:flex;flex-direction:column;align-items:center;gap:6px;flex:1}
+.action-title{font-family:'Sora';font-weight:700;font-size:15px;color:var(--text);line-height:1.2;text-align:center}
+.action-desc{font-size:12px;color:var(--muted);line-height:1.4;flex:1;text-align:center}
+.action-arrow{font-size:18px;color:var(--accent);font-weight:800}
 
 /* ---------- Leaderboard ---------- */
 .leaderboard-inline{width:100%;display:flex;flex-direction:column;gap:10px;text-align:left}
@@ -417,7 +418,9 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 .leaderboard-prize{
   font-size:12.5px;color:var(--amber);background:rgba(255,194,75,.1);
   border:1px solid rgba(255,194,75,.35);border-radius:12px;padding:8px 12px;
+  display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;
 }
+.prize-countdown{font-variant-numeric:tabular-nums;white-space:nowrap}
 .leaderboard-list{display:flex;flex-direction:column;gap:10px}
 .lb-row{
   display:flex;align-items:center;gap:12px;
@@ -433,6 +436,18 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 </style>
 </head>
 <body>
+<div class="side-carousel left" aria-hidden="true">
+  <div class="side-carousel-track">
+    <img src="assets/collage.png" alt="">
+    <img src="assets/collage.png" alt="">
+  </div>
+</div>
+<div class="side-carousel right" aria-hidden="true">
+  <div class="side-carousel-track">
+    <img src="assets/collage.png" alt="">
+    <img src="assets/collage.png" alt="">
+  </div>
+</div>
 <div class="theme-fab" id="themeFab">
   <button class="theme-fab-btn" id="fabLightBtn" aria-label="Hell">☀️</button>
   <button class="theme-fab-btn" id="fabDarkBtn" aria-label="Dunkel">🌙</button>
@@ -445,7 +460,12 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
       <div class="brand-name">Modern Athlete <span>Lab</span></div>
     </div>
     <div class="header-right">
-      <button class="settings-icon-btn hidden" id="settingsBtn" aria-label="Einstellungen">⚙</button>
+      <button class="settings-icon-btn hidden" id="settingsBtn" aria-label="Einstellungen">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
       <div class="lang-switch" id="langSwitch">
         <button class="lang-btn" data-lang="de">DE</button>
         <button class="lang-btn" data-lang="en">EN</button>
@@ -514,7 +534,10 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
     </div>
     <div class="leaderboard-inline">
       <div class="leaderboard-inline-title">🏆 <span id="leaderboardTitle">Bestenliste</span></div>
-      <div class="leaderboard-prize" id="leaderboardPrize">★ Platz 1–3 kriegen ein Geschenk! Stichtag: 10.08.2026</div>
+      <div class="leaderboard-prize" id="leaderboardPrize">
+        <span>★ Platz 1–3 kriegen ein Geschenk!</span>
+        <span class="prize-countdown" id="prizeCountdown">⏱ –</span>
+      </div>
       <div class="leaderboard-list" id="leaderboardList"></div>
     </div>
     <div class="start-hint" id="startHint">Dauert ca. 90 Sekunden · Fortschritt wird automatisch gespeichert</div>
@@ -744,8 +767,8 @@ de:{
       'auth/wrong-password':'Falsches Passwort.'
     },
     startTitleHTML:"Los <em>geht's</em>",
-    startPara:'Wir ziehen das gemeinsam durch.<br>Ein Standard nach dem anderen.',
-    whyReminder:'Jeder Tag hier ist ein Beweis an dich selbst. Machen wir den von heute zu einem, der zählt.',
+    startPara:'Wir ziehen das gemeinsam durch. Ein Standard nach dem anderen. Jeder Tag hier ist ein Beweis an dich selbst. Machen wir den von heute zu einem, der zählt.',
+    whyReminder:'',
     streakSuffix:'Tage Streak', ctaStart:'Mission starten', challengesBtn:'Challenges',
     startHint:'Dauert ca. 90 Sekunden · Fortschritt wird automatisch gespeichert', logout:'Abmelden',
     coachViewBtn:'Coach-Ansicht', clientViewBtn:'Client-Ansicht',
@@ -764,7 +787,7 @@ de:{
     reminderBannerText:'Du hast heute noch nicht eingecheckt — jetzt nachholen?',
     labelTheme:'Darstellung', themeDarkLabel:'Dunkel', themeLightLabel:'Hell',
     personalInfoBtnText:'Persönliche Informationen', personalTitle:'Persönliche Informationen',
-    greetingHello:(name)=> name ? 'Hallo '+name+' 👋' : 'Hallo 👋',
+    greetingHello:()=> 'Willkommen zu deinem Modern Athlete Programm',
     changePasswordBtnText:'Passwort ändern', passwordTitle:'Passwort ändern',
     labelCurrentPassword:'Aktuelles Passwort', labelNewPassword:'Neues Passwort',
     passwordFillBoth:'Bitte beide Felder ausfüllen.', passwordTooShort:'Neues Passwort braucht mindestens 6 Zeichen.',
@@ -776,7 +799,8 @@ de:{
     lbYou:'(du)',
     tagElite:'Elite Standard', tagTarget:'Standard gehalten', tagMinimum:'Minimum gehalten', tagMiss:'Noch nicht heute',
     honestCheckin:'Ehrlicher Check-in. Du bist weiter im Spiel.',
-    comebackTitle:'Comeback verfügbar', comebackText:'Ein Tag ausgelassen ist kein Ausstieg. Mach die Mission von heute — und du bist zurück im Spiel.'
+    comebackTitle:'Comeback verfügbar', comebackText:'Ein Tag ausgelassen ist kein Ausstieg.',
+    comebackText2:'Mach die Mission von heute und du bist zurück im Spiel.'
   },
   q:{
     feeling:{ title:'Wie fühlst du dich heute?', opts:[['😄','Sehr gut'],['🙂','Gut'],['😐','Okay'],['😕','Niedrig'],['😞','Schlecht']] },
@@ -841,8 +865,8 @@ en:{
       'auth/wrong-password':'Incorrect password.'
     },
     startTitleHTML:"Let's <em>go</em>",
-    startPara:"We're in this together.<br>One standard at a time.",
-    whyReminder:'Every day here is proof to yourself. Let\'s make today one that counts.',
+    startPara:"We're in this together. One standard at a time. Every day here is proof to yourself. Let's make today one that counts.",
+    whyReminder:'',
     streakSuffix:'day streak', ctaStart:'Start mission', challengesBtn:'Challenges',
     startHint:'Takes about 90 seconds · Progress is saved automatically', logout:'Log out',
     coachViewBtn:'Coach view', clientViewBtn:'Client view',
@@ -861,7 +885,7 @@ en:{
     reminderBannerText:"You haven't checked in today yet — catch up now?",
     labelTheme:'Appearance', themeDarkLabel:'Dark', themeLightLabel:'Light',
     personalInfoBtnText:'Personal Information', personalTitle:'Personal Information',
-    greetingHello:(name)=> name ? 'Hi '+name+' 👋' : 'Hi 👋',
+    greetingHello:()=> 'Welcome, Modern Athlete',
     changePasswordBtnText:'Change password', passwordTitle:'Change password',
     labelCurrentPassword:'Current password', labelNewPassword:'New password',
     passwordFillBoth:'Please fill in both fields.', passwordTooShort:'New password needs at least 6 characters.',
@@ -873,7 +897,8 @@ en:{
     lbYou:'(you)',
     tagElite:'Elite standard', tagTarget:'Standard held', tagMinimum:'Minimum held', tagMiss:'Not yet today',
     honestCheckin:"Honest check-in. You're still in the game.",
-    comebackTitle:'Comeback available', comebackText:"Missing a day isn't quitting. Complete today's mission — and you're back in the game."
+    comebackTitle:'Comeback available', comebackText:"Missing a day isn't quitting.",
+    comebackText2:"Complete today's mission and you're back in the game."
   },
   q:{
     feeling:{ title:'How are you feeling today?', opts:[['😄','Great'],['🙂','Good'],['😐','Okay'],['😕','Low'],['😞','Bad']] },
@@ -938,8 +963,8 @@ zh:{
       'auth/wrong-password':'密碼錯誤。'
     },
     startTitleHTML:'開始<em>行動</em>',
-    startPara:'我們一起堅持下去。<br>一次守住一個標準。',
-    whyReminder:'在這裡的每一天，都是對自己的證明。讓我們把今天變成值得的一天。',
+    startPara:'我們一起堅持下去。一次守住一個標準。在這裡的每一天，都是對自己的證明。讓我們把今天變成值得的一天。',
+    whyReminder:'',
     streakSuffix:'天連續 Streak', ctaStart:'開始任務', challengesBtn:'挑戰任務',
     startHint:'大約需要90秒 · 進度會自動儲存', logout:'登出',
     coachViewBtn:'教練檢視', clientViewBtn:'學員檢視',
@@ -958,7 +983,7 @@ zh:{
     reminderBannerText:'你今天還沒有打卡 — 現在補上嗎？',
     labelTheme:'外觀', themeDarkLabel:'深色', themeLightLabel:'淺色',
     personalInfoBtnText:'個人資訊', personalTitle:'個人資訊',
-    greetingHello:(name)=> name ? '哈囉 '+name+' 👋' : '哈囉 👋',
+    greetingHello:()=> '歡迎來到你的 Modern Athlete 計畫',
     changePasswordBtnText:'變更密碼', passwordTitle:'變更密碼',
     labelCurrentPassword:'目前密碼', labelNewPassword:'新密碼',
     passwordFillBoth:'請填寫兩個欄位。', passwordTooShort:'新密碼至少需要6個字元。',
@@ -970,7 +995,8 @@ zh:{
     lbYou:'（你）',
     tagElite:'精英標準', tagTarget:'達成標準', tagMinimum:'達成最低標準', tagMiss:'今天尚未達成',
     honestCheckin:'誠實打卡。你仍然在場上。',
-    comebackTitle:'可以回歸了', comebackText:'漏掉一天不代表放棄。完成今天的任務，你就重新回到場上了。'
+    comebackTitle:'可以回歸了', comebackText:'漏掉一天不代表放棄。',
+    comebackText2:'完成今天的任務，你就重新回到場上了。'
   },
   q:{
     feeling:{ title:'你今天感覺如何？', opts:[['😄','很好'],['🙂','不錯'],['😐','普通'],['😕','偏低'],['😞','不好']] },
@@ -1204,7 +1230,7 @@ async function updateEngagementBanners(){
     if(isComeback){
       banner.dataset.mode = 'comeback';
       banner.classList.remove('hidden');
-      $('#reminderBannerText').textContent = t.comebackTitle+' — '+t.comebackText;
+      $('#reminderBannerText').innerHTML = '<strong>'+t.comebackTitle+'</strong> — '+t.comebackText+'<br>'+t.comebackText2;
     } else {
       banner.dataset.mode = 'reminder';
       $('#reminderBannerText').textContent = t.reminderBannerText;
@@ -1305,7 +1331,7 @@ $('#fabDarkBtn').addEventListener('click', ()=>applyTheme('dark'));
 /* =========================================================
    SETTINGS / PERSÖNLICHE INFORMATIONEN — users/{uid}
 ========================================================= */
-$('#settingsBtn').addEventListener('click', ()=> show('settings'));
+$('#settingsBtn').addEventListener('click', ()=> show(currentScreen==='settings' ? 'start' : 'settings'));
 $('#settingsBackBtn').addEventListener('click', ()=> show('start'));
 
 $('#personalInfoBtn').addEventListener('click', async ()=>{
@@ -1424,14 +1450,17 @@ async function renderLeaderboard(){
     realEntries = snap.docs.map(d=>({ uid:d.id, ...d.data() })).filter(e=>e.streak>0);
   }catch(e){}
   const entries = [...FAKE_LEADERBOARD, ...realEntries].sort((a,b)=>b.streak-a.streak);
+  const medals = ['🥇','🥈','🥉'];
   entries.forEach((e,i)=>{
     const row = document.createElement('div');
     row.className = 'lb-row'+(e.uid===state.uid?' lb-me':'');
     const isYou = e.uid===state.uid;
+    const rankDisplay = medals[i] || (i+1);
+    const streakDisplay = i<3 ? e.streak : '⚡ '+e.streak;
     row.innerHTML =
-      '<div class="lb-rank">'+(i+1)+'</div>'+
+      '<div class="lb-rank">'+rankDisplay+'</div>'+
       '<div class="lb-name">'+e.name+(isYou?' '+T[state.lang].ui.lbYou:'')+'</div>'+
-      '<div class="lb-streak">⚡ '+e.streak+'</div>';
+      '<div class="lb-streak">'+streakDisplay+'</div>';
     list.appendChild(row);
   });
 }
@@ -1718,7 +1747,7 @@ async function finish(){
   const t = T[state.lang].ui;
   let insightText = T[state.lang].insights[buildInsight(a,s)];
   if(wasComeback){
-    insightText = t.comebackText + ' ' + insightText;
+    insightText = t.comebackText + ' ' + t.comebackText2 + ' ' + insightText;
   } else if(standardTier(worstScore)==='miss'){
     insightText = t.honestCheckin + ' ' + insightText;
   }
@@ -1760,6 +1789,21 @@ function animateRing(ringId,scoreId,score){
 
 $('#doneBtn').addEventListener('click', async ()=>{ show('start'); await updateEngagementBanners(); await updateCommunityChip(); });
 $('#startBtn').addEventListener('click',startCheckin);
+
+/* =========================================================
+   PRIZE COUNTDOWN
+========================================================= */
+const PRIZE_DEADLINE = new Date('2026-08-10T23:59:59');
+function updatePrizeCountdown(){
+  const el = $('#prizeCountdown');
+  if(!el) return;
+  const diffMs = PRIZE_DEADLINE - new Date();
+  if(diffMs <= 0){ el.textContent = '⏱ Frist beendet'; return; }
+  const hours = Math.floor(diffMs / 3600000);
+  el.textContent = '⏱ '+hours+' Std. bis 10.08.2026';
+}
+updatePrizeCountdown();
+setInterval(updatePrizeCountdown, 60000);
 
 /* =========================================================
    INIT
