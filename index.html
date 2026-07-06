@@ -187,9 +187,19 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 
 /* ---------- Combo screen (2 mini-questions on 1 page) ---------- */
 .combo-wrap{display:flex;flex-direction:column;gap:24px}
+.combo-wrap.combo-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .combo-block{display:flex;flex-direction:column;gap:10px}
-.combo-sub-title{font-family:'Sora';font-weight:700;font-size:15px;color:var(--text)}
-.opt-sm{padding:12px 14px;font-size:14px;min-height:44px}
+.combo-sub-title{font-family:'Sora';font-weight:700;font-size:15px;color:var(--text);text-align:center}
+.opt-sm{padding:12px 14px;font-size:14px;min-height:44px;justify-content:center;text-align:center}
+.opt-good{border-color:rgba(61,220,151,.35)}
+.opt-good:hover{border-color:var(--green)}
+.opt-good.selected{border-color:var(--green);background:rgba(61,220,151,.14)}
+.opt-mid{border-color:rgba(255,194,75,.35)}
+.opt-mid:hover{border-color:var(--amber)}
+.opt-mid.selected{border-color:var(--amber);background:rgba(255,194,75,.14)}
+.opt-bad{border-color:rgba(255,107,107,.35)}
+.opt-bad:hover{border-color:var(--red)}
+.opt-bad.selected{border-color:var(--red);background:rgba(255,107,107,.14)}
 .skip-btn{
   background:none;border:none;color:var(--muted);cursor:pointer;
   font-size:13px;font-weight:600;font-family:'Inter';padding:10px;
@@ -199,7 +209,7 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 
 /* ---------- Result ---------- */
 .result{gap:22px;padding-bottom:24px}
-.result-head{padding-top:14px}
+.result-head{padding-top:14px;text-align:center}
 .result-eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
 .rings{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .ring-card{
@@ -295,6 +305,7 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 .auth-card{width:100%;max-width:360px;display:flex;flex-direction:column;gap:16px}
 .auth-heading{text-align:center}
 #authIntro{text-align:center;color:var(--muted);font-size:15px}
+.intro-video{display:block;margin:0 auto;max-height:360px;width:auto;max-width:100%;border-radius:var(--radius);border:1px solid var(--line);background:#000}
 .auth-field{
   width:100%;background:var(--panel);border:1px solid var(--line);border-radius:14px;
   color:var(--text);font-family:'Inter';font-size:15px;padding:15px 16px;
@@ -374,6 +385,22 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 }
 .challenge-join-btn.joined{border-color:var(--green);color:var(--green)}
 
+/* ---------- Plans ---------- */
+.plans{gap:14px;padding-bottom:24px}
+.plans-list{display:flex;flex-direction:column;gap:20px}
+.plan-week-group{display:flex;flex-direction:column;gap:8px}
+.plan-week-label{font-family:'Sora';font-weight:700;font-size:12.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.plan-row{
+  display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--text);
+  background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 16px;
+  transition:border-color .15s;
+}
+.plan-row:hover{border-color:#3A465C}
+.plan-icon{font-size:20px;flex-shrink:0}
+.plan-row-meta{display:flex;flex-direction:column;gap:2px;min-width:0}
+.plan-row-title{font-weight:600;font-size:14px}
+.plan-row-sub{font-size:12px;color:var(--muted)}
+
 /* ---------- Greeting ---------- */
 #greetingText{font-size:18px}
 
@@ -402,15 +429,20 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 @keyframes panX{ from{transform:translateX(0)} to{transform:translateX(-35%)} }
 @keyframes panXRev{ from{transform:translateX(-35%)} to{transform:translateX(0)} }
 
-/* ---------- Mobile collage strip ---------- */
+/* ---------- Mobile collage strip (conveyor belt) ---------- */
 .mobile-collage{display:none}
 @media(max-width:899px){
   .mobile-collage{
-    display:block;width:100%;height:110px;overflow:hidden;
+    display:block;width:100%;height:190px;overflow:hidden;
     border-radius:var(--radius);border:1px solid var(--line);
   }
-  .mobile-collage img{height:100%;width:auto;max-width:none;animation:panX 40s linear infinite alternate}
+  .mobile-collage-track{
+    display:flex;gap:8px;height:100%;width:max-content;
+    animation:beltScroll 30s linear infinite;
+  }
+  .mobile-collage-track img{height:100%;width:auto;max-width:none;flex:0 0 auto;display:block}
 }
+@keyframes beltScroll{ from{transform:translateX(0)} to{transform:translateX(-50%)} }
 
 .theme-fab{
   position:fixed;left:16px;bottom:16px;z-index:50;
@@ -445,18 +477,22 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 }
 .action-banner.banner-checkin{background:linear-gradient(135deg,var(--accent),#2E6FE0)}
 .action-banner.banner-challenge{background:linear-gradient(135deg,#FFC24B,#E08A2E)}
+.action-banner.banner-plans{background:linear-gradient(135deg,var(--green),#1F9E73)}
 .action-body{padding:12px;display:flex;flex-direction:column;align-items:center;gap:6px;flex:1}
 .action-title{font-family:'Sora';font-weight:700;font-size:15px;color:var(--text);line-height:1.2;text-align:center}
 .action-desc{font-size:12px;color:var(--muted);line-height:1.4;flex:1;text-align:center}
+.action-card.wide{width:100%;margin-top:12px}
+.plan-request-panel{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.plan-request-panel .cta[disabled]{opacity:.6;cursor:default}
 .action-arrow{font-size:18px;color:var(--accent);font-weight:800}
 
 /* ---------- Leaderboard ---------- */
 .leaderboard-inline{width:100%;display:flex;flex-direction:column;gap:10px;text-align:left}
-.leaderboard-inline-title{font-family:'Sora';font-weight:700;font-size:15px}
+.leaderboard-inline-title{font-family:'Sora';font-weight:700;font-size:15px;text-align:center}
 .leaderboard-prize{
   font-size:12.5px;color:var(--amber);background:rgba(255,194,75,.1);
   border:1px solid rgba(255,194,75,.35);border-radius:12px;padding:8px 12px;
-  display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;
+  display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;text-align:center;
 }
 .prize-countdown{font-variant-numeric:tabular-nums;white-space:nowrap}
 .leaderboard-list{display:flex;flex-direction:column;gap:10px}
@@ -517,6 +553,7 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
         <div class="date-eyebrow" id="authEyebrow">Willkommen</div>
         <h1 style="margin-top:10px" id="authTitle">Melde dich <em>an</em></h1>
       </div>
+      <video class="intro-video" id="authIntroVideo" controls playsinline preload="metadata" src="assets/intro-video.mp4"></video>
       <p id="authIntro">Mit E-Mail und Passwort anmelden, um deinen Check-in-Verlauf zu speichern.</p>
       <input class="auth-field" id="authEmail" type="email" placeholder="E-Mail" autocomplete="email">
       <div class="password-field">
@@ -540,7 +577,7 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
       <div class="date-eyebrow" id="todayLabel"></div>
       <h1 style="margin-top:10px" id="greetingText"></h1>
     </div>
-    <p id="startPara">Wir ziehen das gemeinsam durch. Ein Standard nach dem anderen.</p>
+    <p id="startPara">Wir ziehen das gemeinsam durch, ein Schritt nach dem anderen.<br>Jeder Tag beweist du es dir selbst. Heute ist ein Tag der zählt.</p>
     <div class="banner hidden" id="verifyBanner">
       <span id="verifyBannerText">Bitte bestätige deine E-Mail-Adresse.</span>
       <button id="verifyResendBtn">Erneut senden</button>
@@ -569,7 +606,24 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
         </div>
       </button>
     </div>
-    <div class="mobile-collage" aria-hidden="true"><img src="assets/collage.png" alt=""></div>
+    <button class="action-card wide" id="plansBtn">
+      <div class="action-banner banner-plans" id="plansCardBanner">Coach</div>
+      <div class="action-body">
+        <div class="action-title" id="plansCardTitle">Ernährungs &amp; Trainingsplan</div>
+        <div class="action-desc" id="plansCardDesc">Pläne deines Coaches ansehen, nach Kalenderwoche sortiert.</div>
+        <div class="action-arrow">»</div>
+      </div>
+    </button>
+    <div class="plan-request-panel" id="planRequestPanelHome">
+      <button class="cta secondary-btn req-nutrition-btn" data-type="nutrition">🥗 <span>Jetzt Ernährungsplan anfordern</span></button>
+      <button class="cta secondary-btn req-training-btn" data-type="training">💪 <span>Jetzt Trainingsplan anfordern</span></button>
+    </div>
+    <div class="mobile-collage" aria-hidden="true">
+      <div class="mobile-collage-track">
+        <img src="assets/collage/photo1.png" alt=""><img src="assets/collage/photo2.png" alt=""><img src="assets/collage/photo3.png" alt=""><img src="assets/collage/photo4.png" alt=""><img src="assets/collage/photo5.png" alt=""><img src="assets/collage/photo6.png" alt=""><img src="assets/collage/photo7.png" alt=""><img src="assets/collage/photo8.png" alt=""><img src="assets/collage/photo9.png" alt=""><img src="assets/collage/photo10.png" alt="">
+        <img src="assets/collage/photo1.png" alt=""><img src="assets/collage/photo2.png" alt=""><img src="assets/collage/photo3.png" alt=""><img src="assets/collage/photo4.png" alt=""><img src="assets/collage/photo5.png" alt=""><img src="assets/collage/photo6.png" alt=""><img src="assets/collage/photo7.png" alt=""><img src="assets/collage/photo8.png" alt=""><img src="assets/collage/photo9.png" alt=""><img src="assets/collage/photo10.png" alt="">
+      </div>
+    </div>
     <div class="leaderboard-inline">
       <div class="leaderboard-inline-title">🏆 <span id="leaderboardTitle">Bestenliste</span></div>
       <div class="leaderboard-prize" id="leaderboardPrize">
@@ -579,6 +633,7 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
       <div class="leaderboard-list" id="leaderboardList"></div>
     </div>
     <div class="start-hint" id="startHint">Dauert ca. 90 Sekunden · Fortschritt wird automatisch gespeichert</div>
+    <video class="intro-video" id="startIntroVideo" controls playsinline preload="metadata" src="assets/intro-video.mp4"></video>
     <button class="logout-btn" id="logoutBtn">Abmelden</button>
   </section>
 
@@ -648,6 +703,22 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
     <div class="dash-footnote" id="challengesEmpty">Aktuell keine aktiven Challenges.</div>
   </section>
 
+  <!-- PLANS -->
+  <section class="screen plans" id="screen-plans">
+    <div class="progress">
+      <button class="back-btn" id="plansBackBtn">← Zurück</button>
+      <div class="progress-track" style="visibility:hidden"></div>
+      <div style="width:44px"></div>
+    </div>
+    <h1 style="font-size:26px" id="plansTitle">Ernährungs &amp; Trainingsplan</h1>
+    <div class="plan-request-panel">
+      <button class="cta secondary-btn req-nutrition-btn" data-type="nutrition">🥗 <span>Jetzt Ernährungsplan anfordern</span></button>
+      <button class="cta secondary-btn req-training-btn" data-type="training">💪 <span>Jetzt Trainingsplan anfordern</span></button>
+    </div>
+    <div class="plans-list" id="plansList"></div>
+    <div class="dash-footnote" id="plansEmpty">Noch keine Pläne von deinem Coach hochgeladen.</div>
+  </section>
+
   <!-- CHECK-IN -->
   <section class="screen" id="screen-checkin">
     <div class="progress">
@@ -691,6 +762,11 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
         <div class="streak-num" id="streakBig">7 Tage</div>
         <div class="streak-sub" id="streakSub">in Folge eingecheckt — Konstanz schlägt Perfektion.</div>
       </div>
+    </div>
+    <div class="plan-request-panel result-plan-panel">
+      <div class="combo-sub-title" id="resultPlanPanelTitle">Brauchst du einen neuen Plan?</div>
+      <button class="cta secondary-btn req-nutrition-btn" data-type="nutrition">🥗 <span>Jetzt Ernährungsplan anfordern</span></button>
+      <button class="cta secondary-btn req-training-btn" data-type="training">💪 <span>Jetzt Trainingsplan anfordern</span></button>
     </div>
     <button class="cta" id="doneBtn">Fertig für heute</button>
   </section>
@@ -764,15 +840,22 @@ const Q = {
   painWhere:{ id:'painWhere', pillarKey:'training', pClass:'p-tra', conditional:true, grid:true },
   painImpact:{ id:'painImpact', pillarKey:'training', pClass:'p-tra', conditional:true },
 
-  sleep:{ id:'sleep', pillarKey:'recovery', pClass:'p-rec' },
-  energyMotivation:{ id:'energyMotivation', pillarKey:'recovery', pClass:'p-rec', type:'slider', min:1,max:5 },
-  stress:{ id:'stress', pillarKey:'recovery', pClass:'p-rec', type:'slider', min:1,max:5 },
+  sleep:{ id:'sleep', pillarKey:'recovery', pClass:'p-rec', type:'combo', comboGrid:true,
+    subs:[
+      { key:'sleepDuration', colorScale:['good','mid','bad'] },
+      { key:'sleepQuality', colorScale:['good','mid','bad'] }
+    ] },
+  energyStressCombo:{ id:'energyStressCombo', pillarKey:'recovery', pClass:'p-rec', type:'comboSlider',
+    subs:[
+      { key:'energyMotivation', min:1, max:5 },
+      { key:'stress', min:1, max:5 }
+    ] },
 
   note:{ id:'note', pillarKey:'done', pClass:'p-neutral', type:'note' }
 };
 
 const BASE_QUEUE = ['feeling','water','protein','quality','digestionCombo',
-  'trainingCombo','pain','sleep','energyMotivation','stress','note'];
+  'trainingCombo','pain','sleep','energyStressCombo','note'];
 
 /* =========================================================
    ÜBERSETZUNGEN — de / en / zh (Taiwan, Traditionell)
@@ -804,7 +887,7 @@ de:{
       'auth/user-not-found':'Kein Konto mit dieser E-Mail gefunden.',
       'auth/wrong-password':'Falsches Passwort.'
     },
-    startPara:'Wir ziehen das gemeinsam durch, ein Standard nach dem anderen.<br>Jeder Tag hier ist ein Beweis an dich selbst — machen wir den von heute zu einem, der zählt.',
+    startPara:'Wir ziehen das gemeinsam durch, ein Schritt nach dem anderen.<br>Jeder Tag beweist du es dir selbst. Heute ist ein Tag der zählt.',
     streakSuffix:'Tage Streak', ctaStart:'Mission starten', challengesBtn:'Challenges',
     startHint:'Dauert ca. 90 Sekunden · Fortschritt wird automatisch gespeichert', logout:'Abmelden',
     coachViewBtn:'Coach-Ansicht', clientViewBtn:'Client-Ansicht',
@@ -858,15 +941,14 @@ de:{
     pain:{ title:'Schmerzen oder Beschwerden heute?', opts:[['','Keine'],['','Leicht'],['','Mittel'],['','Stark']] },
     painWhere:{ title:'Wo?', opts:[['','Nacken & Schultern'],['','Ellbogen & Handgelenk'],['','Unterer Rücken'],['','Hüfte'],['','Knie'],['','Fuß & Sprunggelenk'],['','Sonstiges'],['','—']] },
     painImpact:{ title:'Hat es deine Bewegung oder dein Training beeinflusst?', opts:[['','Nein'],['','Ein wenig'],['','Ja, musste anpassen'],['','Ja, musste abbrechen']] },
-    sleep:{ title:'Wie war dein Schlaf heute?', opts:[
-      ['','Sehr wenig / schlecht · unter 5 h oder sehr schlechte Qualität'],
-      ['','Wenig · 5–6 h, mittelmäßige Qualität'],
-      ['','Okay · 6–7 h, überwiegend gut'],
-      ['','Gut · 7–8 h, gute Qualität'],
-      ['','Top · 8+ h, sehr gute Qualität']
+    sleep:{ title:'Wie war dein Schlaf heute?', subs:[
+      { title:'Dauer', opts:[['','Gut'],['','Mittelmäßig'],['','Schlecht']] },
+      { title:'Qualität', opts:[['','Gut'],['','Mittelmäßig'],['','Schlecht']] }
     ] },
-    energyMotivation:{ title:'Energie & Motivation heute?', lo:'Leer & unmotiviert', hi:'Voll da & bereit' },
-    stress:{ title:'Stresslevel heute?', lo:'Tiefenentspannt', hi:'Am Limit' },
+    energyStressCombo:{ title:'Energie & Stress', subs:[
+      { title:'Energie & Motivation heute?', lo:'Leer & unmotiviert', hi:'Voll da & bereit' },
+      { title:'Stresslevel heute?', lo:'Tiefenentspannt', hi:'Am Limit' }
+    ] },
     note:{ title:'Gibt es etwas, das dein Coach wissen sollte?', caption:'Optional — du kannst auch überspringen.',
       placeholder:'Z. B. stressiger Arbeitstag, schlecht geschlafen, super Training, unterwegs …' }
   },
@@ -959,15 +1041,14 @@ en:{
     pain:{ title:'Pain or discomfort today?', opts:[['','None'],['','Mild'],['','Moderate'],['','Severe']] },
     painWhere:{ title:'Where?', opts:[['','Neck & shoulders'],['','Elbow & wrist'],['','Lower back'],['','Hip'],['','Knee'],['','Foot & ankle'],['','Other'],['','—']] },
     painImpact:{ title:'Did it affect your movement or training?', opts:[['','No'],['','A little'],['','Yes, had to adjust'],['','Yes, had to stop']] },
-    sleep:{ title:'How was your sleep last night?', opts:[
-      ['','Very little / bad · under 5 h or very poor quality'],
-      ['','Little · 5–6 h, so-so quality'],
-      ['','Okay · 6–7 h, mostly good'],
-      ['','Good · 7–8 h, good quality'],
-      ['','Great · 8+ h, great quality']
+    sleep:{ title:'How was your sleep last night?', subs:[
+      { title:'Duration', opts:[['','Good'],['','Average'],['','Poor']] },
+      { title:'Quality', opts:[['','Good'],['','Average'],['','Poor']] }
     ] },
-    energyMotivation:{ title:'Energy & motivation today?', lo:'Empty & unmotivated', hi:'Fully charged & ready' },
-    stress:{ title:'Stress level today?', lo:'Totally relaxed', hi:'At my limit' },
+    energyStressCombo:{ title:'Energy & Stress', subs:[
+      { title:'Energy & motivation today?', lo:'Empty & unmotivated', hi:'Fully charged & ready' },
+      { title:'Stress level today?', lo:'Totally relaxed', hi:'At my limit' }
+    ] },
     note:{ title:'Anything your coach should know?', caption:'Optional — you can also skip this.',
       placeholder:'E.g. stressful work day, slept badly, great training session, traveling …' }
   },
@@ -1060,15 +1141,14 @@ zh:{
     pain:{ title:'今天有疼痛或不適嗎？', opts:[['','沒有'],['','輕微'],['','中等'],['','嚴重']] },
     painWhere:{ title:'哪個部位？', opts:[['','頸部與肩膀'],['','手肘與手腕'],['','下背部'],['','髖部'],['','膝蓋'],['','腳與腳踝'],['','其他'],['','—']] },
     painImpact:{ title:'這是否影響了你的活動或訓練？', opts:[['','沒有'],['','有一點'],['','有，必須調整'],['','有，必須中止']] },
-    sleep:{ title:'你昨晚睡得如何？', opts:[
-      ['','非常少／差 · 少於5小時或品質很差'],
-      ['','偏少 · 5–6小時，品質普通'],
-      ['','還可以 · 6–7小時，大致良好'],
-      ['','不錯 · 7–8小時，品質良好'],
-      ['','很棒 · 8小時以上，品質很好']
+    sleep:{ title:'你昨晚睡得如何？', subs:[
+      { title:'時長', opts:[['','好'],['','普通'],['','差']] },
+      { title:'品質', opts:[['','好'],['','普通'],['','差']] }
     ] },
-    energyMotivation:{ title:'今天的精力與動力如何？', lo:'空虛且沒動力', hi:'滿滿活力、準備就緒' },
-    stress:{ title:'今天的壓力程度？', lo:'非常放鬆', hi:'已達極限' },
+    energyStressCombo:{ title:'精力與壓力', subs:[
+      { title:'今天的精力與動力如何？', lo:'空虛且沒動力', hi:'滿滿活力、準備就緒' },
+      { title:'今天的壓力程度？', lo:'非常放鬆', hi:'已達極限' }
+    ] },
     note:{ title:'有什麼是教練需要知道的嗎？', caption:'可選填 — 你也可以跳過。',
       placeholder:'例如：今天工作壓力大、睡不好、訓練表現很棒、正在出差……' }
   },
@@ -1090,7 +1170,7 @@ zh:{
    FLOW ENGINE
 ========================================================= */
 const $ = s=>document.querySelector(s);
-const screens = { auth:$('#screen-auth'), start:$('#screen-start'), checkin:$('#screen-checkin'), result:$('#screen-result'), settings:$('#screen-settings'), personal:$('#screen-personal'), password:$('#screen-password'), challenges:$('#screen-challenges') };
+const screens = { auth:$('#screen-auth'), start:$('#screen-start'), checkin:$('#screen-checkin'), result:$('#screen-result'), settings:$('#screen-settings'), personal:$('#screen-personal'), password:$('#screen-password'), challenges:$('#screen-challenges'), plans:$('#screen-plans') };
 let currentScreen = 'auth';
 
 function show(name){
@@ -1474,6 +1554,85 @@ $('#challengesBtn').addEventListener('click', async ()=>{
 $('#challengesBackBtn').addEventListener('click', ()=> show('start'));
 
 /* =========================================================
+   PLÄNE — Anfrage (Kunde → Coach) & Anzeige hochgeladener Pläne
+========================================================= */
+function weekInfo(d){
+  const day = (d.getDay()+6)%7; // Montag=0
+  const monday = new Date(d); monday.setDate(d.getDate()-day); monday.setHours(0,0,0,0);
+  const sunday = new Date(monday); sunday.setDate(monday.getDate()+6);
+  const jan1 = new Date(monday.getFullYear(),0,1);
+  const week = Math.ceil((((monday-jan1)/86400000)+jan1.getDay()+1)/7);
+  const fmt = dt => String(dt.getDate()).padStart(2,'0')+'.'+String(dt.getMonth()+1).padStart(2,'0')+'.';
+  return { key: monday.toISOString().slice(0,10), label:'KW '+week+' · '+fmt(monday)+'–'+fmt(sunday)+sunday.getFullYear() };
+}
+
+async function requestPlan(type, btn){
+  if(!state.uid) return;
+  const original = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '✓ <span>Angefordert</span>';
+  try{
+    const id = 'pr_'+state.uid+'_'+type+'_'+Date.now();
+    await setDoc(doc(db,'planRequests',id), {
+      uid: state.uid, name: state.userName || '', email: auth.currentUser?.email || '',
+      type, status:'pending', requestedAt: serverTimestamp()
+    });
+  }catch(e){}
+  setTimeout(()=>{ btn.disabled=false; btn.innerHTML=original; }, 4000);
+}
+document.querySelectorAll('.req-nutrition-btn').forEach(b=> b.addEventListener('click', ()=>requestPlan('nutrition',b)));
+document.querySelectorAll('.req-training-btn').forEach(b=> b.addEventListener('click', ()=>requestPlan('training',b)));
+
+async function loadPlans(){
+  const list = $('#plansList');
+  const empty = $('#plansEmpty');
+  list.innerHTML = '';
+  let plans = [];
+  try{
+    const snap = await getDocs(query(collection(db,'plans'), where('uid','==',state.uid)));
+    plans = snap.docs.map(d=>({ id:d.id, ...d.data() }));
+  }catch(e){}
+  empty.style.display = plans.length ? 'none' : 'block';
+  plans.sort((a,b)=>(b.uploadedAt?.toMillis?.()||0)-(a.uploadedAt?.toMillis?.()||0));
+
+  const groups = new Map();
+  plans.forEach(p=>{
+    const d = p.uploadedAt?.toDate ? p.uploadedAt.toDate() : new Date();
+    const info = weekInfo(d);
+    if(!groups.has(info.key)) groups.set(info.key, { label:info.label, items:[] });
+    groups.get(info.key).items.push({ ...p, uploadedDate:d });
+  });
+
+  [...groups.values()].forEach(g=>{
+    const wrap = document.createElement('div');
+    wrap.className = 'plan-week-group';
+    const h = document.createElement('div');
+    h.className = 'plan-week-label';
+    h.textContent = g.label;
+    wrap.appendChild(h);
+    g.items.forEach(p=>{
+      const row = document.createElement('a');
+      row.className = 'plan-row';
+      row.href = p.fileURL; row.target = '_blank'; row.rel = 'noopener';
+      const typeLabel = p.type==='nutrition' ? 'Ernährungsplan' : 'Trainingsplan';
+      const ts = p.uploadedDate.toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'});
+      row.innerHTML =
+        '<span class="plan-icon">'+(p.type==='nutrition'?'🥗':'💪')+'</span>'+
+        '<span class="plan-row-meta"><span class="plan-row-title">'+typeLabel+'</span>'+
+        '<span class="plan-row-sub">'+(p.fileName||'')+' · '+ts+'</span></span>';
+      wrap.appendChild(row);
+    });
+    list.appendChild(wrap);
+  });
+}
+
+$('#plansBtn').addEventListener('click', async ()=>{
+  show('plans');
+  await loadPlans();
+});
+$('#plansBackBtn').addEventListener('click', ()=> show('start'));
+
+/* =========================================================
    BESTENLISTE — Name + Streak aller Klienten
    (zeigt zusätzlich 8 Demo-Einträge, solange wenige echte Klienten aktiv sind)
 ========================================================= */
@@ -1642,14 +1801,59 @@ function renderQuestion(){
     renderNote(wrap,q,qt);
   } else if(q.type==='combo'){
     renderCombo(wrap,q,qt);
+  } else if(q.type==='comboSlider'){
+    renderComboSlider(wrap,q,qt);
   } else {
     renderOptions(wrap,q,qt);
   }
 }
 
-function renderCombo(wrap,q,qt){
+function renderComboSlider(wrap,q,qt){
   const container = document.createElement('div');
   container.className = 'combo-wrap';
+
+  q.subs.forEach((sub,si)=>{
+    const subT = qt.subs[si];
+    const block = document.createElement('div');
+    block.className = 'combo-block';
+    const subTitle = document.createElement('div');
+    subTitle.className = 'combo-sub-title';
+    subTitle.textContent = subT.title;
+    block.appendChild(subTitle);
+
+    const sliderBlock = document.createElement('div');
+    sliderBlock.className = 'slider-block';
+    const val = document.createElement('div');
+    val.className = 'slider-value';
+    const start = state.answers[sub.key] !== undefined ? state.answers[sub.key] : 3;
+    val.textContent = start;
+    state.answers[sub.key] = start;
+    const range = document.createElement('input');
+    range.type='range'; range.min=sub.min; range.max=sub.max; range.value=start; range.step=1;
+    range.setAttribute('aria-label',subT.title);
+    range.addEventListener('input',()=>{ val.textContent=range.value; state.answers[sub.key]=parseInt(range.value,10); });
+    const labels = document.createElement('div');
+    labels.className = 'slider-labels';
+    labels.innerHTML = '<span>'+subT.lo+'</span><span>'+subT.hi+'</span>';
+    sliderBlock.append(val,range,labels);
+    block.appendChild(sliderBlock);
+    container.appendChild(block);
+  });
+  wrap.appendChild(container);
+
+  const foot = document.createElement('div');
+  foot.className = 'q-footer';
+  const btn = document.createElement('button');
+  btn.className = 'cta';
+  btn.textContent = T[state.lang].ui.sliderNextBtn;
+  btn.addEventListener('click', next);
+  foot.appendChild(btn);
+  wrap.appendChild(foot);
+}
+
+function renderCombo(wrap,q,qt){
+  const container = document.createElement('div');
+  container.className = 'combo-wrap'+(q.comboGrid ? ' combo-grid':'');
 
   q.subs.forEach((sub,si)=>{
     const subT = qt.subs[si];
@@ -1665,7 +1869,8 @@ function renderCombo(wrap,q,qt){
     subT.opts.forEach(([ico,label],i)=>{
       if(label==='—') return;
       const b = document.createElement('button');
-      b.className = 'opt opt-sm'+(state.answers[sub.key]===i ? ' selected':'');
+      const colorClass = sub.colorScale ? ' opt-'+sub.colorScale[i] : '';
+      b.className = 'opt opt-sm'+colorClass+(state.answers[sub.key]===i ? ' selected':'');
       b.innerHTML = (ico?'<span class="ico">'+ico+'</span>':'')+'<span>'+label+'</span>';
       b.addEventListener('click',()=>{
         box.querySelectorAll('.opt').forEach(o=>o.classList.remove('selected'));
@@ -1793,9 +1998,9 @@ function computeScores(a){
   // Rohsumme max 7 (4+1+2) — auf 10er-Skala hochskaliert.
   let tra = (trainPts[a.training]+mobPts[a.mobility]+painPts[a.pain]) * (10/7);
 
-  const sleepPts=[0,1,2,3,4];
-  // Schlaf max 4, Energie&Motivation max 3, Stress max 3 — Summe max 10.
-  let rec = sleepPts[a.sleep] + (a.energyMotivation-1)*0.75 + (5-a.stress)*0.75;
+  const sleepScalePts=[2,1,0]; // Gut=2, Mittelmäßig=1, Schlecht=0
+  // Schlaf (Dauer+Qualität) max 4, Energie&Motivation max 3, Stress max 3 — Summe max 10.
+  let rec = sleepScalePts[a.sleepDuration]+sleepScalePts[a.sleepQuality] + (a.energyMotivation-1)*0.75 + (5-a.stress)*0.75;
 
   return { ern:round1(ern), tra:round1(tra), rec:round1(rec) };
 }
@@ -1824,7 +2029,7 @@ function applyStandardTag(tagId, score){
 ========================================================= */
 function buildInsight(a,s){
   if(a.pain===3) return 'painSevere';
-  if(a.sleep===0) return 'sleepLow';
+  if(a.sleepDuration===2 || a.sleepQuality===2) return 'sleepLow';
   if(a.stress===5 && a.energyMotivation<=2) return 'stressEnergyLow';
   if(a.energyMotivation===1) return 'exhausted';
   if(a.hunger===3) return 'hungerConstant';

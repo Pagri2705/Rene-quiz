@@ -52,5 +52,20 @@ service cloud.firestore {
       allow read: if isSignedIn();
       allow write: if isSignedIn() && request.auth.uid == uid;
     }
+
+    // Kunde fragt einen Plan an (Ernährung/Training) — Coach sieht alle Anfragen
+    // im Admin-Panel und markiert sie nach Upload als erledigt.
+    match /planRequests/{requestId} {
+      allow read: if isSignedIn() && (resource == null || resource.data.uid == request.auth.uid || isCoach());
+      allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if isCoach();
+    }
+
+    // Vom Coach hochgeladene Pläne (Metadaten, Datei liegt in Firebase Storage).
+    // Nur der Coach lädt hoch, jeder Kunde sieht ausschließlich seine eigenen Pläne.
+    match /plans/{planId} {
+      allow read: if isSignedIn() && (resource.data.uid == request.auth.uid || isCoach());
+      allow create, update, delete: if isCoach();
+    }
   }
 }
