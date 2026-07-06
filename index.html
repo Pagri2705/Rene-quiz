@@ -212,6 +212,11 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
   font-family:'Sora';font-weight:800;font-size:19px;font-variant-numeric:tabular-nums;
 }
 .ring-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:center}
+.standard-tag{font-size:10px;font-weight:700;text-align:center;padding:3px 8px;border-radius:999px;margin-top:2px}
+.standard-tag.tag-elite{color:#FFC24B;background:rgba(255,194,75,.12)}
+.standard-tag.tag-target{color:var(--green);background:rgba(61,220,151,.12)}
+.standard-tag.tag-minimum{color:var(--accent);background:rgba(76,142,255,.12)}
+.standard-tag.tag-miss{color:var(--muted);background:var(--panel-2)}
 .insight{
   background:linear-gradient(135deg,rgba(76,142,255,.12),rgba(76,142,255,.04));
   border:1px solid rgba(76,142,255,.3);border-radius:var(--radius);
@@ -324,6 +329,7 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
 .start p{max-width:34ch;margin:0 auto}
 .streak-chip{align-self:center}
 .community-chip{font-size:12.5px;color:var(--muted)}
+.why-reminder{font-size:13px;color:var(--muted);font-style:italic;max-width:34ch;margin:-6px auto 0}
 .banner{
   width:100%;background:rgba(255,194,75,.1);border:1px solid rgba(255,194,75,.35);
   border-radius:14px;padding:12px 14px;font-size:13px;display:flex;align-items:center;
@@ -475,9 +481,10 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
     <div>
       <div class="greeting" id="greetingText"></div>
       <div class="date-eyebrow" id="todayLabel"></div>
-      <h1 style="margin-top:10px" id="startTitle">Dein täglicher<br><em>Performance-Scan</em></h1>
+      <h1 style="margin-top:10px" id="startTitle">Los <em>geht's</em></h1>
     </div>
-    <p id="startPara">15 Fragen, nur Antippen. In 90 Sekunden weiß dein Coach genau, wo du stehst — und du auch.</p>
+    <p id="startPara">Wir ziehen das gemeinsam durch. Ein Standard nach dem anderen.</p>
+    <div class="why-reminder" id="whyReminder">Jeder Tag hier ist ein Beweis an dich selbst. Machen wir den von heute zu einem, der zählt.</div>
     <div class="banner hidden" id="verifyBanner">
       <span id="verifyBannerText">Bitte bestätige deine E-Mail-Adresse.</span>
       <button id="verifyResendBtn">Erneut senden</button>
@@ -485,7 +492,7 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
     <div class="banner reminder hidden" id="reminderBanner">
       <span id="reminderBannerText">Du hast heute noch nicht eingecheckt.</span>
     </div>
-    <div class="streak-chip">🔥 <span id="streakChip">0 Tage in Folge</span></div>
+    <div class="streak-chip">⚡ <span id="streakChip">0 Tage in Folge</span></div>
     <div class="community-chip" id="communityChip"></div>
     <div class="action-grid">
       <button class="action-card" id="startBtn">
@@ -507,7 +514,7 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
     </div>
     <div class="leaderboard-inline">
       <div class="leaderboard-inline-title">🏆 <span id="leaderboardTitle">Bestenliste</span></div>
-      <div class="leaderboard-prize" id="leaderboardPrize">🎁 Platz 1–3 kriegen ein Geschenk! Stichtag: 10.08.2026</div>
+      <div class="leaderboard-prize" id="leaderboardPrize">★ Platz 1–3 kriegen ein Geschenk! Stichtag: 10.08.2026</div>
       <div class="leaderboard-list" id="leaderboardList"></div>
     </div>
     <div class="start-hint" id="startHint">Dauert ca. 90 Sekunden · Fortschritt wird automatisch gespeichert</div>
@@ -527,8 +534,8 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
       <button class="theme-btn" data-theme="dark" id="themeDarkBtn">🌙 <span id="themeDarkLabel">Dunkel</span></button>
       <button class="theme-btn" data-theme="light" id="themeLightBtn">☀️ <span id="themeLightLabel">Hell</span></button>
     </div>
-    <button class="cta secondary-btn" id="personalInfoBtn" style="margin-top:12px">👤 <span id="personalInfoBtnText">Persönliche Informationen</span></button>
-    <button class="cta secondary-btn" id="changePasswordBtn">🔒 <span id="changePasswordBtnText">Passwort ändern</span></button>
+    <button class="cta secondary-btn" id="personalInfoBtn" style="margin-top:12px">✎ <span id="personalInfoBtnText">Persönliche Informationen</span></button>
+    <button class="cta secondary-btn" id="changePasswordBtn">⚿ <span id="changePasswordBtnText">Passwort ändern</span></button>
   </section>
 
   <!-- CHANGE PASSWORD -->
@@ -600,14 +607,17 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
       <div class="ring-card">
         <div class="ring" id="ringErn"><div class="ring-inner" id="scoreErn">–</div></div>
         <div class="ring-label" id="ringLabelErn">Ernährung</div>
+        <div class="standard-tag" id="tagErn"></div>
       </div>
       <div class="ring-card">
         <div class="ring" id="ringTra"><div class="ring-inner" id="scoreTra">–</div></div>
         <div class="ring-label" id="ringLabelTra">Training</div>
+        <div class="standard-tag" id="tagTra"></div>
       </div>
       <div class="ring-card">
         <div class="ring" id="ringRec"><div class="ring-inner" id="scoreRec">–</div></div>
         <div class="ring-label" id="ringLabelRec">Recovery</div>
+        <div class="standard-tag" id="tagRec"></div>
       </div>
     </div>
     <div class="insight" id="insightBox">
@@ -615,7 +625,7 @@ textarea:focus-visible{outline:none;border-color:var(--accent)}
       <span id="insightText"></span>
     </div>
     <div class="streak-big">
-      <div style="font-size:28px">🔥</div>
+      <div style="font-size:28px">⚡</div>
       <div>
         <div class="streak-num" id="streakBig">7 Tage</div>
         <div class="streak-sub" id="streakSub">in Folge eingecheckt — Konstanz schlägt Perfektion.</div>
@@ -732,13 +742,14 @@ de:{
       'auth/user-not-found':'Kein Konto mit dieser E-Mail gefunden.',
       'auth/wrong-password':'Falsches Passwort.'
     },
-    startTitleHTML:'Dein täglicher <em>Performance-Scan</em>',
-    startPara:'15 Fragen, nur Antippen.<br>In 90 Sekunden weiß dein Coach genau, wo du stehst — und du auch.',
-    streakSuffix:'Tage in Folge', ctaStart:'Check-in starten', challengesBtn:'Challenges',
+    startTitleHTML:"Los <em>geht's</em>",
+    startPara:'Wir ziehen das gemeinsam durch.<br>Ein Standard nach dem anderen.',
+    whyReminder:'Jeder Tag hier ist ein Beweis an dich selbst. Machen wir den von heute zu einem, der zählt.',
+    streakSuffix:'Tage Streak', ctaStart:'Mission starten', challengesBtn:'Challenges',
     startHint:'Dauert ca. 90 Sekunden · Fortschritt wird automatisch gespeichert', logout:'Abmelden',
     coachViewBtn:'Coach-Ansicht', clientViewBtn:'Client-Ansicht',
     backBtn:'Zurück', skipBtn:'Überspringen', noteDoneBtn:'Check-in abschließen', sliderNextBtn:'Weiter',
-    resultEyebrow:'Scan abgeschlossen', resultTitle:'Dein Tag im Überblick', insightLabel:'Insight',
+    resultEyebrow:'Mission abgeschlossen', resultTitle:'Deine Standards heute', insightLabel:'Coach-Hinweis',
     streakSubText:'in Folge eingecheckt — Konstanz schlägt Perfektion.', doneBtn:'Fertig für heute', daysWord:'Tage',
     settingsBtn:'Einstellungen', settingsTitle:'Einstellungen',
     labelName:'Name', labelEmail:'E-Mail', labelPhone:'Telefonnummer (optional)', labelGoals:'Deine Ziele',
@@ -746,7 +757,7 @@ de:{
     goalsPlaceholder:'Z. B. 5 kg abnehmen, 10 km laufen, mehr Energie im Alltag …',
     challengesTitle:'Challenges', challengesEmpty:'Aktuell keine aktiven Challenges.',
     challengeJoinBtn:'Teilnehmen', challengeLeaveBtn:'Verlassen', challengeJoinedLabel:'Dabei ✓',
-    challengeProgressLabel:'Fortschritt', communityToday:(n,total)=> n+' von '+total+' haben heute eingecheckt 🔥',
+    challengeProgressLabel:'Fortschritt', communityToday:(n,total)=> n+' von '+total+' haben heute eingecheckt ⚡',
     verifyBannerText:'Bitte bestätige deine E-Mail-Adresse — check dein Postfach.',
     verifyResendBtn:'Erneut senden', verifyResendSent:'E-Mail verschickt.',
     reminderBannerText:'Du hast heute noch nicht eingecheckt — jetzt nachholen?',
@@ -758,10 +769,13 @@ de:{
     passwordFillBoth:'Bitte beide Felder ausfüllen.', passwordTooShort:'Neues Passwort braucht mindestens 6 Zeichen.',
     passwordSaved:'Passwort geändert.', passwordWrongCurrent:'Aktuelles Passwort ist falsch.',
     rememberMeLabel:'Angemeldet bleiben',
-    checkinCardBanner:'Heute', checkinCardDesc:'15 Fragen, 90 Sekunden — dein Coach sieht sofort, wo du stehst.',
+    checkinCardBanner:'Mission', checkinCardDesc:'15 Fragen, 90 Sekunden — dein Coach sieht sofort, wo du stehst.',
     challengeCardBanner:'Motivation', challengeCardDesc:'Mach mit, tracke deinen Fortschritt und bleib gemeinsam dran.',
     leaderboardBtnText:'Bestenliste', leaderboardTitle:'Bestenliste', leaderboardEmpty:'Noch keine Streaks vorhanden.',
-    lbYou:'(du)'
+    lbYou:'(du)',
+    tagElite:'Elite Standard', tagTarget:'Standard gehalten', tagMinimum:'Minimum gehalten', tagMiss:'Noch nicht heute',
+    honestCheckin:'Ehrlicher Check-in. Du bist weiter im Spiel.',
+    comebackTitle:'Comeback verfügbar', comebackText:'Ein Tag ausgelassen ist kein Ausstieg. Mach die Mission von heute — und du bist zurück im Spiel.'
   },
   q:{
     feeling:{ title:'Wie fühlst du dich heute?', opts:[['😄','Sehr gut'],['🙂','Gut'],['😐','Okay'],['😕','Niedrig'],['😞','Schlecht']] },
@@ -830,13 +844,14 @@ en:{
       'auth/user-not-found':'No account found with this email.',
       'auth/wrong-password':'Incorrect password.'
     },
-    startTitleHTML:'Your daily <em>Performance Scan</em>',
-    startPara:'15 questions, just tap.<br>In 90 seconds your coach knows exactly where you stand — and so do you.',
-    streakSuffix:'days in a row', ctaStart:'Start check-in', challengesBtn:'Challenges',
+    startTitleHTML:"Let's <em>go</em>",
+    startPara:"We're in this together.<br>One standard at a time.",
+    whyReminder:'Every day here is proof to yourself. Let\'s make today one that counts.',
+    streakSuffix:'day streak', ctaStart:'Start mission', challengesBtn:'Challenges',
     startHint:'Takes about 90 seconds · Progress is saved automatically', logout:'Log out',
     coachViewBtn:'Coach view', clientViewBtn:'Client view',
     backBtn:'Back', skipBtn:'Skip', noteDoneBtn:'Finish check-in', sliderNextBtn:'Next',
-    resultEyebrow:'Scan complete', resultTitle:'Your day at a glance', insightLabel:'Insight',
+    resultEyebrow:'Mission complete', resultTitle:'Your standards today', insightLabel:'Coach note',
     streakSubText:'checked in in a row — consistency beats perfection.', doneBtn:'Done for today', daysWord:'days',
     settingsBtn:'Settings', settingsTitle:'Settings',
     labelName:'Name', labelEmail:'Email', labelPhone:'Phone number (optional)', labelGoals:'Your goals',
@@ -844,7 +859,7 @@ en:{
     goalsPlaceholder:'E.g. lose 5 kg, run 10 km, more energy day-to-day …',
     challengesTitle:'Challenges', challengesEmpty:'No active challenges right now.',
     challengeJoinBtn:'Join', challengeLeaveBtn:'Leave', challengeJoinedLabel:'Joined ✓',
-    challengeProgressLabel:'Progress', communityToday:(n,total)=> n+' of '+total+' checked in today 🔥',
+    challengeProgressLabel:'Progress', communityToday:(n,total)=> n+' of '+total+' checked in today ⚡',
     verifyBannerText:'Please verify your email address — check your inbox.',
     verifyResendBtn:'Resend', verifyResendSent:'Email sent.',
     reminderBannerText:"You haven't checked in today yet — catch up now?",
@@ -856,10 +871,13 @@ en:{
     passwordFillBoth:'Please fill in both fields.', passwordTooShort:'New password needs at least 6 characters.',
     passwordSaved:'Password changed.', passwordWrongCurrent:'Current password is incorrect.',
     rememberMeLabel:'Stay signed in',
-    checkinCardBanner:'Today', checkinCardDesc:'15 questions, 90 seconds — your coach sees exactly where you stand.',
+    checkinCardBanner:'Mission', checkinCardDesc:'15 questions, 90 seconds — your coach sees exactly where you stand.',
     challengeCardBanner:'Motivation', challengeCardDesc:'Join in, track your progress, and stay accountable together.',
     leaderboardBtnText:'Leaderboard', leaderboardTitle:'Leaderboard', leaderboardEmpty:'No streaks yet.',
-    lbYou:'(you)'
+    lbYou:'(you)',
+    tagElite:'Elite standard', tagTarget:'Standard held', tagMinimum:'Minimum held', tagMiss:'Not yet today',
+    honestCheckin:"Honest check-in. You're still in the game.",
+    comebackTitle:'Comeback available', comebackText:"Missing a day isn't quitting. Complete today's mission — and you're back in the game."
   },
   q:{
     feeling:{ title:'How are you feeling today?', opts:[['😄','Great'],['🙂','Good'],['😐','Okay'],['😕','Low'],['😞','Bad']] },
@@ -928,13 +946,14 @@ zh:{
       'auth/user-not-found':'找不到使用此電子郵件的帳號。',
       'auth/wrong-password':'密碼錯誤。'
     },
-    startTitleHTML:'你的每日<br><em>表現掃描</em>',
-    startPara:'15個問題，只需點選即可。90秒內，教練就能清楚知道你的狀態 — 你自己也是。',
-    streakSuffix:'天連續打卡', ctaStart:'開始打卡', challengesBtn:'挑戰任務',
+    startTitleHTML:'開始<em>行動</em>',
+    startPara:'我們一起堅持下去。<br>一次守住一個標準。',
+    whyReminder:'在這裡的每一天，都是對自己的證明。讓我們把今天變成值得的一天。',
+    streakSuffix:'天連續 Streak', ctaStart:'開始任務', challengesBtn:'挑戰任務',
     startHint:'大約需要90秒 · 進度會自動儲存', logout:'登出',
     coachViewBtn:'教練檢視', clientViewBtn:'學員檢視',
     backBtn:'返回', skipBtn:'跳過', noteDoneBtn:'完成打卡', sliderNextBtn:'繼續',
-    resultEyebrow:'掃描完成', resultTitle:'你今天的總覽', insightLabel:'洞察',
+    resultEyebrow:'任務完成', resultTitle:'你今天的標準', insightLabel:'教練提示',
     streakSubText:'連續打卡 — 持之以恆勝過完美。', doneBtn:'今天就到這裡', daysWord:'天',
     settingsBtn:'設定', settingsTitle:'設定',
     labelName:'姓名', labelEmail:'電子郵件', labelPhone:'電話號碼（可選填）', labelGoals:'你的目標',
@@ -942,7 +961,7 @@ zh:{
     goalsPlaceholder:'例如：減重5公斤、跑步10公里、每天更有活力……',
     challengesTitle:'挑戰任務', challengesEmpty:'目前沒有進行中的挑戰任務。',
     challengeJoinBtn:'參加', challengeLeaveBtn:'退出', challengeJoinedLabel:'已參加 ✓',
-    challengeProgressLabel:'進度', communityToday:(n,total)=> '今天有 '+n+' / '+total+' 人完成打卡 🔥',
+    challengeProgressLabel:'進度', communityToday:(n,total)=> '今天有 '+n+' / '+total+' 人完成打卡 ⚡',
     verifyBannerText:'請驗證你的電子郵件地址 — 請查看你的信箱。',
     verifyResendBtn:'重新寄送', verifyResendSent:'郵件已寄出。',
     reminderBannerText:'你今天還沒有打卡 — 現在補上嗎？',
@@ -954,10 +973,13 @@ zh:{
     passwordFillBoth:'請填寫兩個欄位。', passwordTooShort:'新密碼至少需要6個字元。',
     passwordSaved:'密碼已變更。', passwordWrongCurrent:'目前密碼不正確。',
     rememberMeLabel:'保持登入狀態',
-    checkinCardBanner:'今天', checkinCardDesc:'15個問題，90秒 — 教練馬上知道你的狀態。',
+    checkinCardBanner:'任務', checkinCardDesc:'15個問題，90秒 — 教練馬上知道你的狀態。',
     challengeCardBanner:'動力', challengeCardDesc:'一起參加、追蹤進度，互相督促堅持下去。',
     leaderboardBtnText:'排行榜', leaderboardTitle:'排行榜', leaderboardEmpty:'目前還沒有任何連續打卡紀錄。',
-    lbYou:'（你）'
+    lbYou:'（你）',
+    tagElite:'精英標準', tagTarget:'達成標準', tagMinimum:'達成最低標準', tagMiss:'今天尚未達成',
+    honestCheckin:'誠實打卡。你仍然在場上。',
+    comebackTitle:'可以回歸了', comebackText:'漏掉一天不代表放棄。完成今天的任務，你就重新回到場上了。'
   },
   q:{
     feeling:{ title:'你今天感覺如何？', opts:[['😄','很好'],['🙂','不錯'],['😐','普通'],['😕','偏低'],['😞','不好']] },
@@ -1041,7 +1063,8 @@ function applyLanguage(lang){
   $('#settingsGoals').placeholder = t.goalsPlaceholder;
   setAuthMode(authMode);
   $('#startTitle').innerHTML = t.startTitleHTML;
-  $('#startPara').textContent = t.startPara;
+  $('#startPara').innerHTML = t.startPara;
+  $('#whyReminder').textContent = t.whyReminder;
   $('#checkinCardBanner').textContent = t.checkinCardBanner;
   $('#checkinCardTitle').textContent = t.ctaStart;
   $('#checkinCardDesc').textContent = t.checkinCardDesc;
@@ -1073,7 +1096,6 @@ function applyLanguage(lang){
   $('#challengesEmpty').textContent = t.challengesEmpty;
   $('#verifyBannerText').textContent = t.verifyBannerText;
   $('#verifyResendBtn').textContent = t.verifyResendBtn;
-  $('#reminderBannerText').textContent = t.reminderBannerText;
   $('#labelTheme').textContent = t.labelTheme;
   $('#themeDarkLabel').textContent = t.themeDarkLabel;
   $('#themeLightLabel').textContent = t.themeLightLabel;
@@ -1091,6 +1113,7 @@ function applyLanguage(lang){
   updateGreeting();
   updateCommunityChip();
   renderLeaderboard();
+  if(state.uid) updateEngagementBanners();
   if(currentScreen==='checkin') renderQuestion();
   if(currentScreen==='challenges') renderChallenges();
 }
@@ -1185,13 +1208,24 @@ async function updateEngagementBanners(){
   const user = auth.currentUser;
   if(!user) return;
   $('#verifyBanner').classList.toggle('hidden', user.emailVerified);
+  const banner = $('#reminderBanner');
   try{
     const todaySnap = await getDoc(doc(db,'checkins',state.uid+'_'+todayStr()));
     const checkedInToday = todaySnap.exists();
     const isEvening = new Date().getHours() >= 18;
-    $('#reminderBanner').classList.toggle('hidden', checkedInToday || !isEvening);
+    const isComeback = !checkedInToday && state.streak===0 && state.hasHistory;
+    const t = T[state.lang].ui;
+    if(isComeback){
+      banner.dataset.mode = 'comeback';
+      banner.classList.remove('hidden');
+      $('#reminderBannerText').textContent = t.comebackTitle+' — '+t.comebackText;
+    } else {
+      banner.dataset.mode = 'reminder';
+      $('#reminderBannerText').textContent = t.reminderBannerText;
+      banner.classList.toggle('hidden', checkedInToday || !isEvening);
+    }
   }catch(e){
-    $('#reminderBanner').classList.add('hidden');
+    banner.classList.add('hidden');
   }
 }
 
@@ -1210,6 +1244,7 @@ onAuthStateChanged(auth, async (user)=>{
     $('#authEmail').value=''; $('#authPassword').value=''; $('#authError').textContent='';
     $('#settingsBtn').classList.remove('hidden');
     state.userName = undefined;
+    try{ await setDoc(doc(db,'users',state.uid), { lastSeen: serverTimestamp() }, { merge:true }); }catch(e){}
     await refreshStreak();
     await updateCommunityChip();
     await updateEngagementBanners();
@@ -1410,7 +1445,7 @@ async function renderLeaderboard(){
     row.innerHTML =
       '<div class="lb-rank">'+(i+1)+'</div>'+
       '<div class="lb-name">'+e.name+(isYou?' '+T[state.lang].ui.lbYou:'')+'</div>'+
-      '<div class="lb-streak">🔥 '+e.streak+'</div>';
+      '<div class="lb-streak">⚡ '+e.streak+'</div>';
     list.appendChild(row);
   });
 }
@@ -1463,6 +1498,7 @@ async function refreshStreak(){
     const q = query(collection(db,'checkins'), where('uid','==',state.uid));
     const snap = await getDocs(q);
     const dates = new Set(snap.docs.map(d=>d.data().dateStr));
+    state.hasHistory = snap.docs.length>0;
     let streak = 0;
     const cursor = new Date();
     while(dates.has(dateStrOf(cursor))){
@@ -1643,6 +1679,22 @@ function zone(s){ return s>=7?'g':(s>=4?'y':'r'); }
 const zoneColor = { g:'var(--green)', y:'var(--amber)', r:'var(--red)' };
 
 /* =========================================================
+   MINIMUM / TARGET / ELITE STANDARD
+========================================================= */
+function standardTier(score){
+  if(score>=9) return 'elite';
+  if(score>=7) return 'target';
+  if(score>=4) return 'minimum';
+  return 'miss';
+}
+function applyStandardTag(tagId, score){
+  const tier = standardTier(score);
+  const el = $('#'+tagId);
+  el.className = 'standard-tag tag-'+tier;
+  el.textContent = T[state.lang].ui['tag'+tier[0].toUpperCase()+tier.slice(1)];
+}
+
+/* =========================================================
    INSIGHT — regelbasiert, Priorität nach Dringlichkeit
 ========================================================= */
 function buildInsight(a,s){
@@ -1665,15 +1717,28 @@ function buildInsight(a,s){
 async function finish(){
   const a = state.answers;
   const s = computeScores(a);
+  const wasComeback = $('#reminderBanner') && !$('#reminderBanner').classList.contains('hidden') && $('#reminderBanner').dataset.mode==='comeback';
   show('result');
   await saveCheckin(a,s);
   await refreshStreak();
   $('#streakBig').textContent = state.streak+' '+T[state.lang].ui.daysWord;
-  $('#insightText').textContent = T[state.lang].insights[buildInsight(a,s)];
+
+  const worstScore = Math.min(s.ern,s.tra,s.rec);
+  const t = T[state.lang].ui;
+  let insightText = T[state.lang].insights[buildInsight(a,s)];
+  if(wasComeback){
+    insightText = t.comebackText + ' ' + insightText;
+  } else if(standardTier(worstScore)==='miss'){
+    insightText = t.honestCheckin + ' ' + insightText;
+  }
+  $('#insightText').textContent = insightText;
 
   animateRing('ringErn','scoreErn',s.ern);
   animateRing('ringTra','scoreTra',s.tra);
   animateRing('ringRec','scoreRec',s.rec);
+  applyStandardTag('tagErn', s.ern);
+  applyStandardTag('tagTra', s.tra);
+  applyStandardTag('tagRec', s.rec);
 }
 
 function animateRing(ringId,scoreId,score){

@@ -347,7 +347,8 @@ async function loadDashboard(){
     if(missedCount>=3) flags.push('Training '+missedCount+'× verpasst in den letzten '+last7.length+' Check-ins');
     if(last7[0]?.answers?.pain===3) flags.push('Starke Schmerzen beim letzten Check-in');
 
-    clients.push({ ...u, aE, aT, aR, flags, lastDate: all[0]?.dateStr || null, checkedInToday, checkinCount: all.length });
+    const lastSeenStr = u.lastSeen?.toDate ? u.lastSeen.toDate().toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'}) : null;
+    clients.push({ ...u, aE, aT, aR, flags, lastDate: all[0]?.dateStr || null, lastSeenStr, checkedInToday, checkinCount: all.length });
   }
 
   $('#statToday').textContent = clients.filter(c=>c.checkedInToday).length;
@@ -380,7 +381,7 @@ async function loadDashboard(){
       '<div class="client-row">'+
         '<div class="avatar">'+initials+'</div>'+
         '<div class="client-meta"><div class="client-name">'+(c.name||'(kein Name)')+'</div>'+
-        '<div class="client-last">'+c.email+' · Letzter Check-in: '+(c.lastDate||'nie')+'</div></div>'+
+        '<div class="client-last">'+c.email+' · Letzter Check-in: '+(c.lastDate||'nie')+' · Zuletzt online: '+(c.lastSeenStr||'nie')+'</div></div>'+
         '<div class="pillar-dots">'+
           '<span class="pdot '+zone(c.aE)+'"></span>'+
           '<span class="pdot '+zone(c.aT)+'"></span>'+
@@ -405,9 +406,9 @@ function csvEscape(val){
 }
 
 $('#exportCsvBtn').addEventListener('click', ()=>{
-  const headers = ['Name','E-Mail','Telefon','Letzter Check-in','Anzahl Check-ins','Ø Ernährung','Ø Training','Ø Recovery','Heute eingecheckt','Hinweise','Ziele'];
+  const headers = ['Name','E-Mail','Telefon','Letzter Check-in','Zuletzt online','Anzahl Check-ins','Ø Ernährung','Ø Training','Ø Recovery','Heute eingecheckt','Hinweise','Ziele'];
   const rows = lastClients.map(c=>[
-    c.name||'', c.email||'', c.phone||'', c.lastDate||'', c.checkinCount,
+    c.name||'', c.email||'', c.phone||'', c.lastDate||'', c.lastSeenStr||'', c.checkinCount,
     c.aE, c.aT, c.aR, c.checkedInToday?'Ja':'Nein', c.flags.join(' | '), c.goals||''
   ]);
   const csv = [headers, ...rows].map(r=>r.map(csvEscape).join(',')).join('\r\n');
