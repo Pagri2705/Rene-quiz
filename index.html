@@ -681,21 +681,22 @@ const Q = {
   feeling:{ id:'feeling', pillarKey:'checkin', pClass:'p-neutral' },
   water:{ id:'water', pillarKey:'nutrition', pClass:'p-ern' },
   protein:{ id:'protein', pillarKey:'nutrition', pClass:'p-ern' },
-  veg:{ id:'veg', pillarKey:'nutrition', pClass:'p-ern' },
-  quality:{ id:'quality', pillarKey:'nutrition', pClass:'p-ern' },
   hunger:{ id:'hunger', pillarKey:'nutrition', pClass:'p-ern' },
+  quality:{ id:'quality', pillarKey:'nutrition', pClass:'p-ern' },
   digestion:{ id:'digestion', pillarKey:'nutrition', pClass:'p-ern',
-    onAnswer:(v)=>{ if(v>0) insertAfter('digestTrigger'); } },
+    onAnswer:(v)=>{ removeFromQueue('digestTrigger'); if(v>0) insertAfter('digestTrigger'); } },
   digestTrigger:{ id:'digestTrigger', pillarKey:'nutrition', pClass:'p-ern', conditional:true, grid:true },
-  alc:{ id:'alc', pillarKey:'nutrition', pClass:'p-ern' },
 
   training:{ id:'training', pillarKey:'training', pClass:'p-tra',
-    onAnswer:(v)=>{ if(v===3) insertAfter('missReason'); } },
+    onAnswer:(v)=>{ removeFromQueue('missReason'); if(v===3) insertAfter('missReason'); } },
   missReason:{ id:'missReason', pillarKey:'training', pClass:'p-tra', conditional:true, grid:true },
   steps:{ id:'steps', pillarKey:'training', pClass:'p-tra' },
   mobility:{ id:'mobility', pillarKey:'training', pClass:'p-tra' },
   pain:{ id:'pain', pillarKey:'training', pClass:'p-tra',
-    onAnswer:(v)=>{ if(v>=2){ insertAfter('painWhere'); insertAfter('painImpact',1);} } },
+    onAnswer:(v)=>{
+      removeFromQueue('painWhere'); removeFromQueue('painImpact');
+      if(v>=2){ insertAfter('painWhere'); insertAfter('painImpact',1);}
+    } },
   painWhere:{ id:'painWhere', pillarKey:'training', pClass:'p-tra', conditional:true, grid:true },
   painImpact:{ id:'painImpact', pillarKey:'training', pClass:'p-tra', conditional:true },
 
@@ -709,7 +710,7 @@ const Q = {
   note:{ id:'note', pillarKey:'done', pClass:'p-neutral', type:'note' }
 };
 
-const BASE_QUEUE = ['feeling','water','protein','veg','quality','hunger','digestion','alc',
+const BASE_QUEUE = ['feeling','water','protein','hunger','quality','digestion',
   'training','steps','mobility','pain','sleepH','sleepQ','energy','stress','soreness','motivation','note'];
 
 /* =========================================================
@@ -783,14 +784,10 @@ de:{
       opts:[['','Sehr wenig · unter 1 L'],['','Wenig · 1–1,5 L'],['','Okay · 1,5–2 L'],['','Gut · 2–3 L'],['','Viel · 3+ L']] },
     protein:{ title:'Hattest du Protein zu den meisten Mahlzeiten?', caption:'Z. B. Eier, Hähnchen, Fisch, Fleisch, Tofu, Skyr, Hülsenfrüchte, Shake.',
       opts:[['✅','Ja, zu den meisten'],['〰️','Etwas, aber zu wenig'],['✖️','Kaum bis gar nicht']] },
-    veg:{ title:'Wie war dein Gemüse- & Ballaststoff-Anteil?', caption:'1 Portion ≈ eine Handvoll oder eine kleine Schüssel.',
-      opts:[['','Kaum'],['','Etwas · 1 Portion'],['','Gut · 2–3 Portionen'],['','Sehr gut · 4+ Portionen']] },
-    quality:{ title:'Wie bewertest du deine Ernährung heute insgesamt?', opts:[['🎯','On track'],['🙂','Okay'],['↩️','Off track']] },
     hunger:{ title:'Hunger & Cravings heute?', opts:[['','Kein Thema'],['','Normal'],['','Stärker als sonst'],['','Ständig Heißhunger']] },
+    quality:{ title:'Wie bewertest du deine Ernährung heute insgesamt?', opts:[['🎯','On track'],['🙂','Okay'],['↩️','Off track']] },
     digestion:{ title:'Wie war deine Verdauung heute?', opts:[['👍','Gut & normal'],['🎈','Aufgebläht'],['💧','Weicher Stuhl'],['🧱','Verstopfung'],['⚡','Schmerzen / Unwohlsein']] },
     digestTrigger:{ title:'Vermuteter Auslöser?', opts:[['','Große Mahlzeit'],['','Milchprodukte'],['','Gluten'],['','Viele Ballaststoffe'],['','Fettiges Essen'],['','Stress'],['','Keine Ahnung'],['','Sonstiges']] },
-    alc:{ title:'Alkohol oder spätes Koffein heute?', caption:'Beides drückt messbar Schlafqualität und Erholung — deshalb fragen wir.',
-      opts:[['','Nein'],['☕','Koffein nach 15 Uhr'],['🍷','Alkohol'],['','Beides']] },
     training:{ title:'Hast du dein geplantes Training absolviert?', opts:[['✅','Ja'],['➗','Teilweise'],['🛋️','Rest Day (geplant)'],['✖️','Verpasst']] },
     missReason:{ title:'Was war der Hauptgrund?', opts:[['','Keine Zeit'],['','Keine Energie'],['','Schmerzen'],['','Stress'],['','Motivation'],['','Arbeit & Reisen'],['','Sonstiges'],['','—']] },
     steps:{ title:'Wie viele Schritte bist du heute gegangen?', caption:'Kein Tracker? Wähl, was am ehesten passt.',
@@ -813,7 +810,6 @@ de:{
     sleepLow:'Unter 5 Stunden Schlaf — heute keine Intensität erzwingen. Früher ins Bett zahlt direkt auf Training und Heißhunger-Kontrolle ein.',
     stressEnergyLow:'Stress am Limit, Tank fast leer. Heute zählt Regeneration mehr als jedes Workout: Spaziergang, Protein, früh schlafen.',
     exhausted:'Erschöpft ist ein Datenpunkt, kein Versagen. Plan heute bewusst runterfahren — Erholung ist Teil des Trainings.',
-    alcohol:'Alkohol drückt heute Nacht messbar deine Schlafqualität. Extra Wasser und früher ins Bett fangen das teilweise ab.',
     hungerConstant:'Ständiger Heißhunger deutet oft auf zu wenig Protein oder Schlaf hin — check die letzten Tage im Verlauf.',
     worstRecovery:'Recovery ist heute dein schwächster Bereich. Eine Stunde früher schlafen ist der schnellste Hebel für morgen.',
     worstNutrition:'Ernährung war heute wacklig — morgen reicht ein Fokus: Protein zu jeder Mahlzeit. Ein Hebel, große Wirkung.',
@@ -885,14 +881,10 @@ en:{
       opts:[['','Very little · under 1 L'],['','Little · 1–1.5 L'],['','Okay · 1.5–2 L'],['','Good · 2–3 L'],['','A lot · 3+ L']] },
     protein:{ title:'Did you have protein with most meals?', caption:'E.g. eggs, chicken, fish, meat, tofu, skyr, legumes, shake.',
       opts:[['✅','Yes, with most'],['〰️','Some, but too little'],['✖️','Barely or not at all']] },
-    veg:{ title:'How was your vegetable & fiber intake?', caption:'1 serving ≈ a handful or a small bowl.',
-      opts:[['','Barely any'],['','Some · 1 serving'],['','Good · 2–3 servings'],['','Great · 4+ servings']] },
-    quality:{ title:'How would you rate your nutrition today overall?', opts:[['🎯','On track'],['🙂','Okay'],['↩️','Off track']] },
     hunger:{ title:'Hunger & cravings today?', opts:[['','No issue'],['','Normal'],['','Stronger than usual'],['','Constant cravings']] },
+    quality:{ title:'How would you rate your nutrition today overall?', opts:[['🎯','On track'],['🙂','Okay'],['↩️','Off track']] },
     digestion:{ title:'How was your digestion today?', opts:[['👍','Good & normal'],['🎈','Bloated'],['💧','Loose stool'],['🧱','Constipated'],['⚡','Pain / discomfort']] },
     digestTrigger:{ title:'Suspected trigger?', opts:[['','Large meal'],['','Dairy'],['','Gluten'],['','Lots of fiber'],['','Fatty food'],['','Stress'],['','No idea'],['','Other']] },
-    alc:{ title:'Alcohol or late caffeine today?', caption:"Both measurably reduce sleep quality and recovery — that's why we ask.",
-      opts:[['','No'],['☕','Caffeine after 3pm'],['🍷','Alcohol'],['','Both']] },
     training:{ title:'Did you complete your planned training?', opts:[['✅','Yes'],['➗','Partially'],['🛋️','Rest day (planned)'],['✖️','Missed']] },
     missReason:{ title:'What was the main reason?', opts:[['','No time'],['','No energy'],['','Pain'],['','Stress'],['','Motivation'],['','Work & travel'],['','Other'],['','—']] },
     steps:{ title:'How many steps did you take today?', caption:'No tracker? Pick whatever fits best.',
@@ -915,7 +907,6 @@ en:{
     sleepLow:"Under 5 hours of sleep — don't force intensity today. Going to bed earlier pays off directly for training and craving control.",
     stressEnergyLow:'Stress at its limit, tank almost empty. Today, recovery matters more than any workout: a walk, protein, early sleep.',
     exhausted:'Exhausted is a data point, not a failure. Deliberately scale back today — recovery is part of training.',
-    alcohol:'Alcohol will measurably reduce your sleep quality tonight. Extra water and going to bed earlier can partly offset it.',
     hungerConstant:'Constant cravings often point to too little protein or sleep — check the past few days in your history.',
     worstRecovery:'Recovery is your weakest area today. Sleeping an hour earlier is the fastest lever for tomorrow.',
     worstNutrition:'Nutrition was shaky today — tomorrow, just focus on one thing: protein with every meal. One lever, big impact.',
@@ -987,14 +978,10 @@ zh:{
       opts:[['','非常少 · 少於1公升'],['','偏少 · 1–1.5公升'],['','還可以 · 1.5–2公升'],['','不錯 · 2–3公升'],['','很多 · 3公升以上']] },
     protein:{ title:'你這天大部分餐點都有攝取蛋白質嗎？', caption:'例如：雞蛋、雞肉、魚肉、肉類、豆腐、優格、豆類、蛋白飲。',
       opts:[['✅','是，大部分都有'],['〰️','有一些，但不夠'],['✖️','幾乎沒有']] },
-    veg:{ title:'你的蔬菜與纖維攝取量如何？', caption:'1份 ≈ 一手掌大小或一小碗。',
-      opts:[['','幾乎沒有'],['','一些 · 1份'],['','不錯 · 2–3份'],['','很好 · 4份以上']] },
-    quality:{ title:'你今天整體的飲食表現如何？', opts:[['🎯','在軌道上'],['🙂','還可以'],['↩️','偏離軌道']] },
     hunger:{ title:'今天的飢餓感與渴望食物的程度？', opts:[['','沒問題'],['','正常'],['','比平常強烈'],['','一直很想吃東西']] },
+    quality:{ title:'你今天整體的飲食表現如何？', opts:[['🎯','在軌道上'],['🙂','還可以'],['↩️','偏離軌道']] },
     digestion:{ title:'你今天的消化狀況如何？', opts:[['👍','良好正常'],['🎈','脹氣'],['💧','軟便'],['🧱','便秘'],['⚡','疼痛／不適']] },
     digestTrigger:{ title:'你認為可能的原因？', opts:[['','份量太大'],['','乳製品'],['','麩質'],['','纖維攝取過多'],['','油膩食物'],['','壓力'],['','不清楚'],['','其他']] },
-    alc:{ title:'今天有喝酒或很晚攝取咖啡因嗎？', caption:'這兩者都會明顯降低睡眠品質與恢復程度，所以我們會詢問。',
-      opts:[['','沒有'],['☕','下午3點後喝咖啡因'],['🍷','喝酒'],['','兩者都有']] },
     training:{ title:'你完成計畫中的訓練了嗎？', opts:[['✅','是的'],['➗','部分完成'],['🛋️','休息日（計畫中）'],['✖️','沒有完成']] },
     missReason:{ title:'主要原因是什麼？', opts:[['','沒有時間'],['','沒有精力'],['','疼痛'],['','壓力'],['','動力不足'],['','工作與出差'],['','其他'],['','—']] },
     steps:{ title:'你今天走了多少步？', caption:'沒有計步器？選一個最接近的選項。',
@@ -1017,7 +1004,6 @@ zh:{
     sleepLow:'睡眠不足5小時 — 今天不要勉強高強度訓練。提早睡覺會直接改善訓練表現與食慾控制。',
     stressEnergyLow:'壓力已達極限，能量幾乎耗盡。今天恢復比任何訓練都重要：散步、攝取蛋白質、早點睡。',
     exhausted:'精疲力盡只是一個數據點，不是失敗。今天請刻意放慢步調 — 恢復也是訓練的一部分。',
-    alcohol:'今晚的酒精攝取會明顯降低你的睡眠品質。多喝水並提早睡覺可以部分緩解影響。',
     hungerConstant:'持續的強烈食慾通常代表蛋白質或睡眠攝取不足 — 可以檢視一下最近幾天的紀錄。',
     worstRecovery:'恢復是你今天最弱的一環。提早一小時睡覺是明天最快見效的方法。',
     worstNutrition:'今天的飲食狀況不太穩定 — 明天只要專注一件事：每餐都攝取蛋白質。一個改變，效果顯著。',
@@ -1532,6 +1518,11 @@ function insertAfter(qid, offset=0){
   if(!state.queue.includes(qid)) state.queue.splice(pos,0,qid);
 }
 
+function removeFromQueue(qid){
+  const idx = state.queue.indexOf(qid);
+  if(idx > state.idx) state.queue.splice(idx,1);
+}
+
 function startCheckin(){
   state.answers = {};
   state.queue = [...BASE_QUEUE];
@@ -1661,10 +1652,11 @@ $('#backBtn').addEventListener('click',()=>{
    SCORING — deterministisch, exakt nach Spec
 ========================================================= */
 function computeScores(a){
-  const waterPts=[0,.5,1,2,2], protPts=[2,1,0], vegPts=[0,.5,1.5,2], qualPts=[2,1,0];
+  const waterPts=[0,.5,1,2,2], protPts=[2,1,0], qualPts=[2,1,0];
   const digest = a.digestion===0?1:(a.digestion===4?0:.5);
-  const alcPts=[1,.5,.25,0];
-  let ern = waterPts[a.water]+protPts[a.protein]+vegPts[a.veg]+qualPts[a.quality]+digest+alcPts[a.alc];
+  // Rohsumme max 7 (2+2+2+1) — auf 10er-Skala hochskaliert, damit sie zu
+  // den anderen beiden Säulen (Training/Recovery, je max 10) passt.
+  let ern = (waterPts[a.water]+protPts[a.protein]+qualPts[a.quality]+digest) * (10/7);
 
   const trainPts=[4,2,4,0], stepPts=[0,1,2,3,3], mobPts=[0,.5,1,1], painPts=[2,1.5,.5,0];
   let tra = trainPts[a.training]+stepPts[a.steps]+mobPts[a.mobility]+painPts[a.pain];
@@ -1702,7 +1694,6 @@ function buildInsight(a,s){
   if(a.sleepH===0) return 'sleepLow';
   if(a.stress===5 && a.energy<=2) return 'stressEnergyLow';
   if(a.soreness===4) return 'exhausted';
-  if(a.alc>=2) return 'alcohol';
   if(a.hunger===3) return 'hungerConstant';
   const worst = Math.min(s.ern,s.tra,s.rec);
   if(worst===s.rec && zone(s.rec)!=='g') return 'worstRecovery';
