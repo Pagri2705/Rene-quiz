@@ -1,705 +1,507 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Modern Athlete Lab — Daily Check-in</title>
+<title>The 7-Day Modern Athlete Reset™</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+/* =========================================================
+   MODERN ATHLETE LAB — 7-Day Reset
+   Bright · minimal · premium · editorial
+========================================================= */
 :root{
-  --bg:#0D1219;
-  --panel:#141B25;
-  --panel-2:#1A2230;
-  --line:#232D3D;
-  --text:#EDF1F7;
-  --muted:#8B97A8;
-  --accent:#4C8EFF;
-  --accent-strong:#6FA6FF;
-  --green:#3DDC97;
-  --amber:#FFC24B;
-  --red:#FF6B6B;
-  --radius:18px;
-}
-:root[data-theme="light"]{
-  --bg:#F4F6FA;
-  --panel:#FFFFFF;
-  --panel-2:#EEF1F7;
-  --line:#DDE3EE;
-  --text:#151B26;
-  --muted:#5B6779;
+  --bg:#F6F6F3;
+  --card:#FFFFFF;
+  --ink:#15181D;
+  --muted:#6A7076;
+  --line:#E7E7E2;
+  --accent:#2456D6;
+  --accent-soft:#EEF2FE;
+  --success:#178A5B;
+  --success-soft:#E9F6F0;
+  --warn:#B7791F;
+  --warn-soft:#FBF3E4;
+  --radius:20px;
+  --radius-sm:14px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow-x:hidden;max-width:100vw}
 body{
-  background:
-    radial-gradient(1200px 600px at 80% -10%, rgba(76,142,255,.08), transparent 60%),
-    var(--bg);
-  color:var(--text);
+  background:var(--bg);
+  color:var(--ink);
   font-family:'Inter',system-ui,sans-serif;
-  font-size:16px;
-  line-height:1.5;
+  font-size:16px;line-height:1.55;
   -webkit-font-smoothing:antialiased;
-  display:flex;
-  justify-content:center;
+  display:flex;justify-content:center;
 }
 .app{
-  width:100%;
-  max-width:900px;
-  min-height:100dvh;
-  display:flex;
-  flex-direction:column;
-  padding:0 20px calc(20px + env(safe-area-inset-bottom));
-  position:relative;
-  background:var(--bg);
-  z-index:1;
+  width:100%;max-width:560px;min-height:100dvh;
+  display:flex;flex-direction:column;
+  padding:0 20px calc(28px + env(safe-area-inset-bottom));
+  position:relative;background:var(--bg);
 }
-@media(min-width:900px){
-  .app{border-left:1px solid var(--line);border-right:1px solid var(--line);box-shadow:0 0 40px rgba(0,0,0,.25)}
+@media(min-width:640px){
+  .app{border-left:1px solid var(--line);border-right:1px solid var(--line)}
 }
 
 /* ---------- Header ---------- */
-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:18px 0 14px;
-}
-.brand{display:flex;align-items:center;gap:10px}
+header{display:flex;align-items:center;justify-content:space-between;padding:20px 0 10px}
+.brand{display:flex;align-items:center;gap:10px;cursor:pointer}
 .brand-mark{
-  width:30px;height:30px;border-radius:9px;
-  background:linear-gradient(135deg,var(--accent),#2E6FE0);
-  display:grid;place-items:center;
-  font-family:'Sora';font-weight:800;font-size:14px;color:#0D1219;
+  width:32px;height:32px;border-radius:10px;background:var(--ink);
+  display:grid;place-items:center;color:#fff;
+  font-family:'Sora';font-weight:800;font-size:14px;
 }
-.brand-name{font-family:'Sora';font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase}
+.brand-name{font-family:'Sora';font-weight:700;font-size:12px;letter-spacing:.16em;text-transform:uppercase}
 .brand-name span{color:var(--muted);font-weight:600}
-.header-right{display:flex;align-items:center;gap:10px}
-.settings-icon-btn{
-  background:var(--panel);border:1px solid var(--line);border-radius:50%;
-  color:var(--muted);font-size:20px;cursor:pointer;
-  width:40px;height:40px;display:grid;place-items:center;
-  transition:color .15s,border-color .15s;
+.header-right{display:flex;align-items:center;gap:8px}
+.icon-btn{
+  width:38px;height:38px;border-radius:50%;border:1px solid var(--line);
+  background:var(--card);color:var(--muted);cursor:pointer;
+  display:grid;place-items:center;transition:color .15s,border-color .15s;
 }
-.settings-icon-btn:hover,.settings-icon-btn:focus-visible{color:var(--text);border-color:var(--accent)}
-
-/* ---------- Screens ---------- */
-.screen{display:none;flex:1;flex-direction:column;animation:fadeIn .35s ease}
-.screen.active{display:flex}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-@media(prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
-}
-
-/* ---------- Start ---------- */
-.start{justify-content:center;gap:28px;padding-bottom:60px}
-.date-eyebrow{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-h1{font-family:'Sora';font-weight:800;font-size:34px;line-height:1.12;letter-spacing:-.01em}
-h1 em{font-style:normal;color:var(--accent)}
-.start p{color:var(--muted);font-size:15px}
-.streak-chip{
-  display:inline-flex;align-items:center;gap:8px;align-self:flex-start;
-  background:var(--panel);border:1px solid var(--line);border-radius:999px;
-  padding:8px 14px;font-size:13px;font-weight:600;
-}
-.cta{
-  appearance:none;border:none;cursor:pointer;
-  background:var(--accent);color:#0D1219;
-  font-family:'Sora';font-weight:700;font-size:16px;
-  border-radius:16px;padding:17px;width:100%;
-  transition:transform .12s ease,background .15s;
-}
-.cta:hover{background:var(--accent-strong)}
-.cta:active{transform:scale(.985)}
-.cta:focus-visible{outline:2px solid var(--text);outline-offset:2px}
-.start-hint{font-size:12px;color:var(--muted);text-align:center;margin-top:-14px}
-
-/* ---------- Progress ---------- */
-.progress{display:flex;align-items:center;gap:12px;padding:6px 0 22px}
-.progress-track{flex:1;height:4px;border-radius:99px;background:var(--panel-2);overflow:hidden}
-.progress-fill{height:100%;width:0%;background:var(--accent);border-radius:99px;transition:width .3s ease}
-.progress-count{font-family:'Sora';font-size:12px;font-weight:600;color:var(--muted);min-width:44px;text-align:right;font-variant-numeric:tabular-nums}
-.back-btn{
-  background:none;border:none;color:var(--muted);cursor:pointer;
-  font-size:13px;font-weight:600;font-family:'Inter';padding:4px 8px 4px 0;
-}
-.back-btn:hover,.back-btn:focus-visible{color:var(--text)}
-
-/* ---------- Question ---------- */
-.q-wrap{flex:1;display:flex;flex-direction:column;animation:slideIn .3s ease}
-@keyframes slideIn{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
-.q-pillar{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
-.q-pillar.p-ern{color:var(--green)}
-.q-pillar.p-tra{color:var(--accent)}
-.q-pillar.p-rec{color:var(--amber)}
-.q-pillar.p-neutral{color:var(--muted)}
-.q-title{font-family:'Sora';font-weight:700;font-size:24px;line-height:1.25;margin-bottom:8px}
-.q-caption{font-size:13px;color:var(--muted);margin-bottom:22px}
-.q-title + .options,.q-title + .slider-block,.q-title + textarea{margin-top:16px}
-
-.options{display:flex;flex-direction:column;gap:10px}
-.options.grid-2{display:grid;grid-template-columns:1fr 1fr}
-.opt{
-  appearance:none;cursor:pointer;text-align:left;
-  background:var(--panel);border:1px solid var(--line);border-radius:14px;
-  color:var(--text);font-family:'Inter';font-size:15px;font-weight:500;
-  padding:15px 16px;min-height:52px;
-  display:flex;align-items:center;gap:10px;
-  transition:border-color .15s,background .15s,transform .1s;
-}
-.opt .ico{font-size:17px;flex-shrink:0}
-.opt:hover{border-color:#3A465C;background:var(--panel-2)}
-.opt:active{transform:scale(.985)}
-.opt:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.opt.selected{border-color:var(--accent);background:rgba(76,142,255,.1)}
-
-/* ---------- Slider ---------- */
-.slider-block{display:flex;flex-direction:column;gap:18px;padding:8px 4px}
-.slider-value{
-  font-family:'Sora';font-weight:800;font-size:56px;text-align:center;
-  color:var(--accent);font-variant-numeric:tabular-nums;line-height:1;
-}
-.slider-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
-input[type=range]{
-  -webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:99px;
-  background:var(--panel-2);outline:none;
-}
-input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none;width:30px;height:30px;border-radius:50%;
-  background:var(--accent);border:4px solid var(--bg);cursor:pointer;
-  box-shadow:0 0 0 1px var(--accent);
-}
-input[type=range]::-moz-range-thumb{
-  width:22px;height:22px;border-radius:50%;background:var(--accent);
-  border:4px solid var(--bg);cursor:pointer;box-shadow:0 0 0 1px var(--accent);
-}
-input[type=range]:focus-visible{outline:2px solid var(--accent);outline-offset:6px}
-
-/* ---------- Note ---------- */
-textarea{
-  width:100%;min-height:130px;resize:vertical;
-  background:var(--panel);border:1px solid var(--line);border-radius:14px;
-  color:var(--text);font-family:'Inter';font-size:15px;padding:14px 16px;
-}
-textarea::placeholder{color:#5B6779}
-textarea:focus-visible{outline:none;border-color:var(--accent)}
-
-.q-footer{padding-top:22px;display:flex;flex-direction:column;gap:10px}
-
-/* ---------- Combo screen (2 mini-questions on 1 page) ---------- */
-.combo-wrap{display:flex;flex-direction:column;gap:24px}
-.combo-block{display:flex;flex-direction:column;gap:10px}
-.combo-sub-title{font-family:'Sora';font-weight:700;font-size:15px;color:var(--text)}
-.opt-sm{padding:12px 14px;font-size:14px;min-height:44px}
-.skip-btn{
-  background:none;border:none;color:var(--muted);cursor:pointer;
-  font-size:13px;font-weight:600;font-family:'Inter';padding:10px;
-}
-.skip-btn:hover,.skip-btn:focus-visible{color:var(--text)}
+.icon-btn:hover{color:var(--ink);border-color:#C9C9C2}
 .hidden{display:none!important}
 
-/* ---------- Result ---------- */
-.result{gap:22px;padding-bottom:24px}
-.result-head{padding-top:14px}
-.result-eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
-.rings{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.ring-card{
-  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
-  padding:16px 10px 14px;display:flex;flex-direction:column;align-items:center;gap:10px;
-}
-.ring{
-  --p:0; --c:var(--green);
-  width:78px;height:78px;border-radius:50%;
-  background:conic-gradient(var(--c) calc(var(--p)*1%), var(--panel-2) 0);
-  display:grid;place-items:center;
-  transition:background .2s;
-}
-.ring::before{content:"";position:absolute;width:78px;height:78px;border-radius:50%}
-.ring-inner{
-  width:60px;height:60px;border-radius:50%;background:var(--panel);
-  display:grid;place-items:center;
-  font-family:'Sora';font-weight:800;font-size:19px;font-variant-numeric:tabular-nums;
-}
-.ring-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:center}
-.standard-tag{font-size:10px;font-weight:700;text-align:center;padding:3px 8px;border-radius:999px;margin-top:2px}
-.standard-tag.tag-elite{color:#FFC24B;background:rgba(255,194,75,.12)}
-.standard-tag.tag-target{color:var(--green);background:rgba(61,220,151,.12)}
-.standard-tag.tag-minimum{color:var(--accent);background:rgba(76,142,255,.12)}
-.standard-tag.tag-miss{color:var(--muted);background:var(--panel-2)}
-.insight{
-  background:linear-gradient(135deg,rgba(76,142,255,.12),rgba(76,142,255,.04));
-  border:1px solid rgba(76,142,255,.3);border-radius:var(--radius);
-  padding:16px 18px;font-size:14.5px;
-}
-.insight strong{font-family:'Sora';font-weight:700;display:block;margin-bottom:4px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
-.streak-big{
-  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
-  padding:16px 18px;display:flex;align-items:center;gap:14px;
-}
-.streak-num{font-family:'Sora';font-weight:800;font-size:30px;font-variant-numeric:tabular-nums}
-.streak-sub{font-size:13px;color:var(--muted)}
-.result .cta{margin-top:auto}
+/* ---------- Screens ---------- */
+.screen{display:none;flex:1;flex-direction:column;gap:16px;animation:fadeIn .3s ease;padding-top:8px}
+.screen.active{display:flex}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 
-/* ---------- Dashboard ---------- */
-.dash{gap:18px;padding-bottom:24px}
-.dash h2{font-family:'Sora';font-weight:800;font-size:24px;letter-spacing:-.01em}
-.dash-sub{font-size:13px;color:var(--muted);margin-top:-12px}
-.alerts{display:flex;flex-direction:column;gap:8px}
-.alert{
-  display:flex;align-items:flex-start;gap:10px;
-  background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.35);
-  border-radius:14px;padding:12px 14px;font-size:13.5px;
+/* ---------- Typography ---------- */
+h1{font-family:'Sora';font-weight:800;font-size:28px;line-height:1.18;letter-spacing:-.01em}
+h2{font-family:'Sora';font-weight:700;font-size:18px}
+.eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+.sub{color:var(--muted);font-size:14.5px}
+em{font-style:normal;color:var(--accent)}
+
+/* ---------- Cards / Buttons ---------- */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+.cta{
+  appearance:none;border:none;cursor:pointer;width:100%;
+  background:var(--ink);color:#fff;
+  font-family:'Sora';font-weight:700;font-size:15px;
+  border-radius:16px;padding:16px 20px;
+  transition:transform .12s ease,opacity .15s;
 }
-.alert .dot{width:8px;height:8px;border-radius:50%;background:var(--red);margin-top:6px;flex-shrink:0}
-.alert strong{font-weight:600}
-.alert .a-detail{color:var(--muted)}
-.legend{display:flex;gap:14px;font-size:11.5px;color:var(--muted);font-weight:600}
-.legend span{display:flex;align-items:center;gap:5px}
-.legend i{width:8px;height:8px;border-radius:50%;display:inline-block}
-.client-list{display:flex;flex-direction:column;gap:10px}
-.client{
-  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
-  padding:14px 16px;cursor:pointer;transition:border-color .15s;
+.cta:hover{opacity:.92}
+.cta:active{transform:scale(.985)}
+.cta[disabled]{opacity:.4;cursor:not-allowed}
+.cta.secondary{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.cta.accent{background:var(--accent)}
+.ghost-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;font-weight:600;font-family:'Inter';padding:8px}
+.ghost-btn:hover{color:var(--ink)}
+
+/* ---------- Language screen ---------- */
+.lang-screen{justify-content:center;text-align:center;gap:22px}
+.lang-choices{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.lang-card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:28px 16px;cursor:pointer;display:flex;flex-direction:column;gap:6px;align-items:center;
+  font-family:'Sora';font-weight:700;font-size:17px;transition:border-color .15s,transform .12s;
 }
-.client:hover{border-color:#3A465C}
-.client.flagged{border-color:rgba(255,107,107,.45)}
-.client-row{display:flex;align-items:center;gap:12px}
-.avatar{
-  width:38px;height:38px;border-radius:12px;flex-shrink:0;
-  background:var(--panel-2);display:grid;place-items:center;
-  font-family:'Sora';font-weight:700;font-size:13px;color:var(--accent);
-}
-.client-meta{flex:1;min-width:0}
-.client-name{font-weight:600;font-size:15px}
-.client-last{font-size:12px;color:var(--muted)}
-.pillar-dots{display:flex;gap:7px}
-.pdot{width:13px;height:13px;border-radius:50%}
-.pdot.g{background:var(--green)}
-.pdot.y{background:var(--amber)}
-.pdot.r{background:var(--red)}
-.client-detail{
-  display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--line);
-  flex-direction:column;gap:14px;
-}
-.client.open .client-detail{display:flex}
-.trend-group{display:flex;flex-direction:column;gap:6px}
-.trend-label{display:flex;justify-content:space-between;font-size:12px;font-weight:600}
-.trend-label .avg{color:var(--muted);font-variant-numeric:tabular-nums}
-.bars{display:flex;gap:5px;align-items:flex-end;height:36px}
-.bar{flex:1;border-radius:4px 4px 2px 2px;min-height:3px;background:var(--panel-2)}
-.client-note{font-size:13px;color:var(--muted);background:var(--panel-2);border-radius:12px;padding:10px 12px}
-.client-note b{color:var(--text);font-weight:600}
-.dash-footnote{font-size:11.5px;color:var(--muted);text-align:center;padding-top:4px}
+.lang-card:hover{border-color:var(--ink)}
+.lang-card:active{transform:scale(.98)}
+.lang-card .flag{font-size:26px}
+.lang-card .lsub{font-size:12px;color:var(--muted);font-family:'Inter';font-weight:500}
 
 /* ---------- Auth ---------- */
-.auth{justify-content:center;gap:16px;padding-bottom:60px}
-.auth-field{
-  width:100%;background:var(--panel);border:1px solid var(--line);border-radius:14px;
-  color:var(--text);font-family:'Inter';font-size:15px;padding:15px 16px;
+.auth{justify-content:center;gap:14px}
+.field{
+  width:100%;background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);
+  color:var(--ink);font-family:'Inter';font-size:15px;padding:14px 16px;
 }
-.auth-field::placeholder{color:#5B6779}
-.auth-field:focus-visible{outline:none;border-color:var(--accent)}
+.field::placeholder{color:#A2A7AC}
+.field:focus-visible{outline:none;border-color:var(--accent)}
+textarea.field{min-height:96px;resize:vertical}
+select.field{appearance:auto}
+.field-label{font-size:12.5px;font-weight:600;color:var(--muted);margin-top:4px}
+.err{font-size:13px;color:#C0392B;min-height:18px}
+.ok{font-size:13px;color:var(--success);min-height:18px}
 .password-field{position:relative;width:100%}
-.password-field .auth-field{padding-right:46px}
-.password-toggle{
-  position:absolute;right:6px;top:50%;transform:translateY(-50%);
-  background:none;border:none;cursor:pointer;font-size:16px;padding:8px;
-  color:var(--muted);line-height:1;
-}
-.password-toggle:hover,.password-toggle:focus-visible{color:var(--text)}
-.cta[disabled]{opacity:.7;cursor:not-allowed}
+.password-field .field{padding-right:46px}
+.password-toggle{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:15px;padding:8px;color:var(--muted)}
 .remember-me{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);cursor:pointer}
 .remember-me input{width:16px;height:16px;accent-color:var(--accent)}
-.auth-error{font-size:13px;color:var(--red);min-height:18px}
 .auth-switch{font-size:13px;color:var(--muted);text-align:center}
-.auth-switch button{background:none;border:none;color:var(--accent);cursor:pointer;font-weight:600;font-family:'Inter';font-size:13px;padding:0}
-.logout-btn{
-  background:none;border:none;color:var(--muted);cursor:pointer;
-  font-size:12px;font-weight:600;font-family:'Inter';padding:4px 0;margin-top:-6px;
-}
-.logout-btn:hover,.logout-btn:focus-visible{color:var(--text)}
-.auth-forgot{background:none;border:none;color:var(--muted);cursor:pointer;font-size:12.5px;font-weight:600;font-family:'Inter';padding:0;text-align:center}
-.auth-forgot:hover,.auth-forgot:focus-visible{color:var(--text)}
-.auth-success{font-size:13px;color:var(--green);min-height:18px}
+.auth-switch button{background:none;border:none;color:var(--accent);cursor:pointer;font-weight:600;font-size:13px}
 
-/* ---------- Language switch ---------- */
-.lang-switch{display:flex;gap:6px}
-.lang-btn{
-  background:var(--panel);border:1px solid var(--line);color:var(--muted);
-  font-family:'Inter';font-size:12px;font-weight:700;padding:6px 12px;
-  border-radius:999px;cursor:pointer;transition:color .15s,border-color .15s,background .15s;
+/* ---------- Video placeholder ---------- */
+.video-card{
+  position:relative;border-radius:var(--radius);overflow:hidden;background:var(--ink);
+  aspect-ratio:16/9;display:grid;place-items:center;color:#fff;
 }
-.lang-btn:hover{color:var(--text);border-color:#3A465C}
-.lang-btn.active{color:#0D1219;background:var(--accent);border-color:var(--accent)}
+.video-card video{width:100%;height:100%;object-fit:cover}
+.video-ph{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:16px}
+.video-ph .play{
+  width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.35);display:grid;place-items:center;font-size:18px;
+}
+.video-ph .vtitle{font-family:'Sora';font-weight:700;font-size:14px}
+.video-ph .vsub{font-size:12px;color:rgba(255,255,255,.65)}
 
-/* ---------- Start centering ---------- */
-.start{align-items:center;text-align:center}
-.start > div:first-child{width:100%}
-.start p{max-width:none;margin:0 auto}
-.streak-chip{align-self:center}
-.community-chip{font-size:12.5px;color:var(--muted)}
-.banner{
-  width:100%;background:rgba(255,194,75,.1);border:1px solid rgba(255,194,75,.35);
-  border-radius:14px;padding:12px 14px;font-size:13px;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:10px;text-align:center;
+/* ---------- Dashboard ---------- */
+.mission-card{background:var(--ink);color:#fff;border:none}
+.mission-card .eyebrow{color:rgba(255,255,255,.6)}
+.mission-card h2{font-size:22px;margin:6px 0 4px;color:#fff}
+.mission-card .sub{color:rgba(255,255,255,.72)}
+.mission-card .cta{background:#fff;color:var(--ink);margin-top:16px}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat-tile{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 12px;text-align:center}
+.stat-num{font-family:'Sora';font-weight:800;font-size:20px}
+.stat-label{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+.progress-track{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:8px}
+.progress-fill{height:100%;background:var(--accent);border-radius:99px;transition:width .5s ease}
+.level-chip{
+  display:inline-flex;align-items:center;gap:8px;align-self:center;
+  background:var(--accent-soft);color:var(--accent);border-radius:999px;
+  padding:8px 16px;font-size:13px;font-weight:700;font-family:'Sora';
 }
-.banner.reminder{background:rgba(76,142,255,.1);border-color:rgba(76,142,255,.35)}
-.banner-heading{font-family:'Sora';font-weight:800;font-size:19px;width:100%}
-.banner button{
-  background:none;border:1px solid var(--line);color:var(--text);cursor:pointer;
-  font-family:'Inter';font-size:12px;font-weight:600;padding:6px 12px;border-radius:999px;
+.archive{display:flex;flex-direction:column;gap:8px}
+.archive-row{
+  display:flex;align-items:center;gap:12px;background:var(--card);
+  border:1px solid var(--line);border-radius:var(--radius-sm);padding:13px 16px;
+  font-size:14px;font-weight:600;
 }
+.archive-row.clickable{cursor:pointer}
+.archive-row.clickable:hover{border-color:#C9C9C2}
+.archive-row .a-day{font-family:'Sora';font-weight:700;font-size:12px;color:var(--muted);width:48px;flex-shrink:0}
+.archive-row .a-name{flex:1}
+.archive-row .a-state{font-size:14px}
+.archive-row.locked{opacity:.5}
+.unlock-card{border:1px solid var(--accent);background:var(--accent-soft)}
+.small-link-row{display:flex;align-items:center;justify-content:space-between;font-size:13.5px;font-weight:600;cursor:pointer;background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 16px}
+.small-link-row:hover{border-color:#C9C9C2}
+.verify-note{background:var(--warn-soft);border:1px solid #EAD9B0;border-radius:var(--radius-sm);padding:10px 14px;font-size:12.5px;color:var(--warn);display:flex;flex-direction:column;gap:6px;align-items:center;text-align:center}
+.verify-note button{background:none;border:1px solid #EAD9B0;border-radius:999px;color:var(--warn);font-size:12px;font-weight:600;padding:5px 12px;cursor:pointer}
+
+/* ---------- Day / Mission ---------- */
+.tasks{display:flex;flex-direction:column;gap:8px}
+.task{
+  display:flex;align-items:center;gap:12px;background:var(--card);
+  border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px 16px;
+  cursor:pointer;font-size:14.5px;font-weight:500;transition:border-color .15s,background .15s;
+}
+.task:hover{border-color:#C9C9C2}
+.task .box{
+  width:22px;height:22px;border-radius:7px;border:2px solid var(--line);
+  display:grid;place-items:center;font-size:13px;color:#fff;flex-shrink:0;transition:background .15s,border-color .15s;
+}
+.task.done{border-color:var(--success);background:var(--success-soft)}
+.task.done .box{background:var(--success);border-color:var(--success)}
+.slider-block{display:flex;flex-direction:column;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px}
+.slider-head{display:flex;justify-content:space-between;align-items:baseline}
+.slider-head .sv{font-family:'Sora';font-weight:800;font-size:22px;color:var(--accent)}
+.slider-head .sl{font-size:13.5px;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:99px;background:var(--line);outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:var(--accent);border:4px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--accent);border:4px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2);cursor:pointer}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.seg button{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);
+  padding:12px;font-size:13.5px;font-weight:600;font-family:'Inter';cursor:pointer;color:var(--ink);
+}
+.seg button.sel{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.coach-note{
+  background:var(--accent-soft);border:1px solid #D7E1FA;border-radius:var(--radius-sm);
+  padding:12px 14px;font-size:13px;color:var(--accent);text-align:center;
+}
+.quote-box{background:var(--card);border-left:3px solid var(--ink);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:14px 16px;font-size:15px;font-style:italic}
+.tip-box{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px 16px;font-size:13.5px}
+.tip-box b{font-family:'Sora';font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px}
+
+/* ---------- Reward ---------- */
+.reward{justify-content:center;text-align:center;gap:16px}
+.reward-check{
+  width:76px;height:76px;border-radius:50%;background:var(--success-soft);
+  display:grid;place-items:center;font-size:34px;margin:0 auto;
+  animation:pop .5s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes pop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.reward-points{font-family:'Sora';font-weight:800;font-size:34px}
+.reward-badge{
+  display:inline-flex;align-items:center;gap:10px;align-self:center;
+  background:var(--ink);color:#fff;border-radius:999px;padding:10px 20px;
+  font-family:'Sora';font-weight:700;font-size:14px;
+  animation:pop .6s .15s cubic-bezier(.34,1.56,.64,1) backwards;
+}
+.reward-streak{font-size:14px;color:var(--muted);font-weight:600}
+
+/* ---------- Bottleneck / Final ---------- */
+.option-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;gap:8px}
+.option-card h3{font-family:'Sora';font-weight:700;font-size:16px}
+.option-card p{font-size:13.5px;color:var(--muted)}
+.option-card .cta{margin-top:6px;padding:13px}
+.offer-list{display:flex;flex-direction:column;gap:6px;font-size:14px}
+.offer-list div::before{content:"✓";color:var(--success);font-weight:700;margin-right:8px}
+.price-tag{font-family:'Sora';font-weight:800;font-size:22px}
+.prize-note{background:var(--warn-soft);border:1px solid #EAD9B0;border-radius:var(--radius-sm);padding:12px 16px;font-size:13.5px;text-align:center}
 
 /* ---------- Settings ---------- */
-.settings{gap:10px;padding-bottom:24px}
-.field-label{font-size:12px;font-weight:600;color:var(--muted);margin-top:6px}
-
-/* ---------- Challenges ---------- */
-.challenges{gap:14px;padding-bottom:24px}
-.challenge-list{display:flex;flex-direction:column;gap:12px}
-.challenge-card{
-  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
-  padding:16px 18px;display:flex;flex-direction:column;gap:10px;
-}
-.challenge-title{font-family:'Sora';font-weight:700;font-size:16px}
-.challenge-desc{font-size:13px;color:var(--muted)}
-.challenge-progress-track{height:8px;border-radius:99px;background:var(--panel-2);overflow:hidden}
-.challenge-progress-fill{height:100%;background:var(--accent);border-radius:99px;transition:width .3s ease}
-.challenge-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
-.challenge-join-btn{
-  align-self:flex-start;background:none;border:1px solid var(--line);color:var(--text);
-  font-family:'Inter';font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:999px;cursor:pointer;
-}
-.challenge-join-btn.joined{border-color:var(--green);color:var(--green)}
-
-/* ---------- Greeting ---------- */
-#greetingText{font-size:18px}
-
-/* ---------- Theme switch ---------- */
-.theme-switch{display:flex;gap:10px}
-.theme-btn{
-  flex:1;background:var(--panel);border:1px solid var(--line);color:var(--text);
-  font-family:'Inter';font-size:14px;font-weight:600;padding:14px;border-radius:14px;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
-}
-.theme-btn.active{border-color:var(--accent);background:rgba(76,142,255,.1);color:var(--accent)}
-/* ---------- Side carousels (dekorativ, hinter der App) ---------- */
-.side-carousel{
-  position:fixed; top:0; bottom:0; width:0; overflow:hidden;
-  z-index:-1; pointer-events:none;
-}
-.side-carousel.left{left:0}
-.side-carousel.right{right:0}
-@media(min-width:900px){
-  .side-carousel{ width:calc((100vw - 900px)/2); }
-}
-.side-carousel-track{height:100%}
-.side-carousel-track img{height:100%;width:auto;max-width:none;display:block}
-.side-carousel.left .side-carousel-track img{animation:panX 40s linear infinite alternate}
-.side-carousel.right .side-carousel-track img{animation:panXRev 40s linear infinite alternate}
-@keyframes panX{ from{transform:translateX(0)} to{transform:translateX(-35%)} }
-@keyframes panXRev{ from{transform:translateX(-35%)} to{transform:translateX(0)} }
-
-/* ---------- Mobile collage strip ---------- */
-.mobile-collage{display:none}
-@media(max-width:899px){
-  .mobile-collage{
-    display:block;width:100%;height:110px;overflow:hidden;
-    border-radius:var(--radius);border:1px solid var(--line);
-  }
-  .mobile-collage img{height:100%;width:auto;max-width:none;animation:panX 40s linear infinite alternate}
-}
-
-.theme-fab{
-  position:fixed;left:16px;bottom:16px;z-index:50;
-  display:flex;flex-direction:column;gap:6px;
-  background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px;
-  box-shadow:0 4px 16px rgba(0,0,0,.15);
-}
-.theme-fab-btn{
-  width:36px;height:36px;border-radius:50%;border:none;background:none;cursor:pointer;
-  font-size:16px;display:grid;place-items:center;
-}
-.theme-fab-btn.active{background:var(--accent);box-shadow:0 0 0 2px var(--accent-strong) inset}
-#fabDarkBtn.active{background:#5C6BC0;box-shadow:0 0 0 2px #7986CB inset}
-.secondary-btn{background:var(--panel-2)!important;color:var(--text)!important;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;gap:8px}
-.brand{cursor:pointer}
-
-/* ---------- Action cards (Check-in / Challenges) ---------- */
-.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%}
-.action-card{
-  appearance:none;cursor:pointer;text-align:center;padding:0;
-  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
-  overflow:hidden;display:flex;flex-direction:column;
-  transition:border-color .15s,transform .1s;
-}
-.action-card:hover{border-color:#3A465C}
-.action-card:active{transform:scale(.985)}
-.action-card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.action-banner{
-  padding:12px 12px 28px;font-family:'Sora';font-weight:800;font-size:11px;
-  letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.9);
-  text-align:center;
-}
-.action-banner.banner-checkin{background:linear-gradient(135deg,var(--accent),#2E6FE0)}
-.action-banner.banner-challenge{background:linear-gradient(135deg,#FFC24B,#E08A2E)}
-.action-body{padding:12px;display:flex;flex-direction:column;align-items:center;gap:6px;flex:1}
-.action-title{font-family:'Sora';font-weight:700;font-size:15px;color:var(--text);line-height:1.2;text-align:center}
-.action-desc{font-size:12px;color:var(--muted);line-height:1.4;flex:1;text-align:center}
-.action-arrow{font-size:18px;color:var(--accent);font-weight:800}
-
-/* ---------- Leaderboard ---------- */
-.leaderboard-inline{width:100%;display:flex;flex-direction:column;gap:10px;text-align:left}
-.leaderboard-inline-title{font-family:'Sora';font-weight:700;font-size:15px}
-.leaderboard-prize{
-  font-size:12.5px;color:var(--amber);background:rgba(255,194,75,.1);
-  border:1px solid rgba(255,194,75,.35);border-radius:12px;padding:8px 12px;
-  display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;
-}
-.prize-countdown{font-variant-numeric:tabular-nums;white-space:nowrap}
-.leaderboard-list{display:flex;flex-direction:column;gap:10px}
-.lb-row{
-  display:flex;align-items:center;gap:12px;
-  background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 16px;
-}
-.lb-row.lb-me{border-color:var(--accent);background:rgba(76,142,255,.08)}
-.lb-rank{font-family:'Sora';font-weight:800;font-size:15px;color:var(--muted);width:24px;text-align:center}
-.lb-row:nth-child(1) .lb-rank{color:#FFC24B}
-.lb-row:nth-child(2) .lb-rank{color:#C7CEDB}
-.lb-row:nth-child(3) .lb-rank{color:#D7935B}
-.lb-name{flex:1;font-weight:600;font-size:14.5px}
-.lb-streak{font-family:'Sora';font-weight:700;font-size:14px;color:var(--accent);font-variant-numeric:tabular-nums}
+.settings{gap:12px}
+.seg2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.seg2 button{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter';color:var(--ink)}
+.seg2 button.sel{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.back-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;font-weight:600;font-family:'Inter';padding:6px 8px 6px 0;align-self:flex-start}
+.back-btn:hover{color:var(--ink)}
+.footer-note{font-size:11.5px;color:var(--muted);text-align:center;padding-top:8px}
 </style>
 </head>
 <body>
-<div class="side-carousel left" aria-hidden="true">
-  <div class="side-carousel-track">
-    <img src="assets/collage.png" alt="">
-  </div>
-</div>
-<div class="side-carousel right" aria-hidden="true">
-  <div class="side-carousel-track">
-    <img src="assets/collage.png" alt="">
-  </div>
-</div>
-<div class="theme-fab" id="themeFab">
-  <button class="theme-fab-btn" id="fabLightBtn" aria-label="Hell">☀️</button>
-  <button class="theme-fab-btn" id="fabDarkBtn" aria-label="Dunkel">🌙</button>
-</div>
 <div class="app">
 
   <header>
     <div class="brand" id="brandLogo" role="button" tabindex="0">
       <div class="brand-mark">M</div>
-      <div class="brand-name">Modern Athlete <span>Lab</span></div>
+      <div class="brand-name">Modern Athlete <span>LAB™</span></div>
     </div>
     <div class="header-right">
-      <div class="lang-switch" id="langSwitch">
-        <button class="lang-btn" data-lang="de">DE</button>
-        <button class="lang-btn" data-lang="en">EN</button>
-        <button class="lang-btn" data-lang="zh">中文</button>
-      </div>
-      <button class="settings-icon-btn hidden" id="settingsBtn" aria-label="Einstellungen">
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="3"></circle>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-        </svg>
+      <button class="icon-btn hidden" id="settingsBtn" aria-label="Settings">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
       </button>
     </div>
   </header>
 
-  <!-- AUTH -->
-  <section class="screen auth active" id="screen-auth">
-    <div>
-      <div class="date-eyebrow" id="authEyebrow">Willkommen</div>
-      <h1 style="margin-top:10px" id="authTitle">Melde dich <em>an</em></h1>
-    </div>
-    <p id="authIntro">Mit E-Mail und Passwort anmelden, um deinen Check-in-Verlauf zu speichern.</p>
-    <input class="auth-field" id="authEmail" type="email" placeholder="E-Mail" autocomplete="email">
-    <div class="password-field">
-      <input class="auth-field" id="authPassword" type="password" placeholder="Passwort" autocomplete="current-password">
-      <button type="button" class="password-toggle" id="passwordToggleBtn" aria-label="Passwort anzeigen">👁</button>
-    </div>
-    <label class="remember-me"><input type="checkbox" id="rememberMe" checked> <span id="rememberMeLabel">Angemeldet bleiben</span></label>
-    <div class="auth-error" id="authError"></div>
-    <div class="auth-success" id="authSuccess"></div>
-    <button class="cta" id="authSubmitBtn">Anmelden</button>
-    <button class="auth-forgot" id="authForgotBtn">Passwort vergessen?</button>
-    <div class="auth-switch">
-      <span id="authSwitchText">Noch kein Konto?</span> <button id="authSwitchBtn">Registrieren</button>
+  <!-- LANGUAGE -->
+  <section class="screen lang-screen" id="screen-language">
+    <div class="eyebrow">The 7-Day Modern Athlete Reset™</div>
+    <h1>Choose Your Reset Language<br><span style="font-size:20px;color:var(--muted)">Wähle deine Reset-Sprache</span></h1>
+    <div class="lang-choices">
+      <div class="lang-card" data-lang="en" role="button" tabindex="0">
+        <div class="flag">🇬🇧</div>
+        English
+        <div class="lsub">Videos & app in English</div>
+      </div>
+      <div class="lang-card" data-lang="de" role="button" tabindex="0">
+        <div class="flag">🇩🇪</div>
+        Deutsch
+        <div class="lsub">Videos & App auf Deutsch</div>
+      </div>
     </div>
   </section>
 
-  <!-- START -->
-  <section class="screen start" id="screen-start">
+  <!-- AUTH -->
+  <section class="screen auth" id="screen-auth">
     <div>
-      <div class="date-eyebrow" id="todayLabel"></div>
-      <h1 style="margin-top:10px" id="greetingText"></h1>
+      <div class="eyebrow" id="authEyebrow">Welcome</div>
+      <h1 id="authTitle">You are now inside the Reset.</h1>
     </div>
-    <p id="startPara">Wir ziehen das gemeinsam durch. Ein Standard nach dem anderen.</p>
-    <div class="banner hidden" id="verifyBanner">
-      <span id="verifyBannerText">Bitte bestätige deine E-Mail-Adresse.</span>
-      <button id="verifyResendBtn">Erneut senden</button>
+    <p class="sub" id="authIntro">Create your access to start the 7 days.</p>
+    <input class="field" id="authEmail" type="email" placeholder="Email" autocomplete="email">
+    <div class="password-field">
+      <input class="field" id="authPassword" type="password" placeholder="Password" autocomplete="current-password">
+      <button type="button" class="password-toggle" id="passwordToggleBtn" aria-label="Show password">👁</button>
     </div>
-    <div class="banner reminder hidden" id="reminderBanner">
-      <div class="banner-heading hidden" id="reminderBannerHeading"></div>
-      <span id="reminderBannerText">Du hast heute noch nicht eingecheckt.</span>
+    <label class="remember-me"><input type="checkbox" id="rememberMe" checked> <span id="rememberMeLabel">Stay signed in</span></label>
+    <div class="err" id="authError"></div>
+    <div class="ok" id="authSuccess"></div>
+    <button class="cta" id="authSubmitBtn">Sign in</button>
+    <button class="ghost-btn" id="authForgotBtn" style="align-self:center">Forgot password?</button>
+    <div class="auth-switch"><span id="authSwitchText">No account yet?</span> <button id="authSwitchBtn">Create account</button></div>
+  </section>
+
+  <!-- DAY 0 — WELCOME -->
+  <section class="screen" id="screen-day0">
+    <button class="back-btn hidden" id="day0BackBtn">← Back</button>
+    <div>
+      <div class="eyebrow" id="day0Eyebrow">Day 0 · Start Here</div>
+      <h1 id="day0Title">Welcome to the Reset.</h1>
     </div>
-    <div class="streak-chip">⚡ <span id="streakChip">0 Tage in Folge</span></div>
-    <div class="community-chip" id="communityChip"></div>
-    <div class="action-grid">
-      <button class="action-card" id="startBtn">
-        <div class="action-banner banner-checkin" id="checkinCardBanner">Heute</div>
-        <div class="action-body">
-          <div class="action-title" id="checkinCardTitle">Check-in starten</div>
-          <div class="action-desc" id="checkinCardDesc">15 Fragen, 90 Sekunden — dein Coach sieht sofort, wo du stehst.</div>
-          <div class="action-arrow">»</div>
-        </div>
-      </button>
-      <button class="action-card" id="challengesBtn">
-        <div class="action-banner banner-challenge" id="challengeCardBanner">Motivation</div>
-        <div class="action-body">
-          <div class="action-title" id="challengeCardTitle">Challenges</div>
-          <div class="action-desc" id="challengeCardDesc">Mach mit, tracke deinen Fortschritt und bleib gemeinsam dran.</div>
-          <div class="action-arrow">»</div>
-        </div>
-      </button>
+    <div class="video-card" id="day0Video"></div>
+    <p class="sub" id="day0Text"></p>
+    <button class="cta" id="day0Cta">Start Baseline Check-In</button>
+  </section>
+
+  <!-- BASELINE -->
+  <section class="screen" id="screen-baseline">
+    <div>
+      <div class="eyebrow" id="baseEyebrow">Baseline Check-In</div>
+      <h1 id="baseTitle">Where are you starting from?</h1>
     </div>
-    <div class="mobile-collage" aria-hidden="true"><img src="assets/collage.png" alt=""></div>
-    <div class="leaderboard-inline">
-      <div class="leaderboard-inline-title">🏆 <span id="leaderboardTitle">Bestenliste</span></div>
-      <div class="leaderboard-prize" id="leaderboardPrize">
-        <span>★ Platz 1–3 kriegen ein Geschenk!</span>
-        <span class="prize-countdown" id="prizeCountdown">⏱ –</span>
+    <label class="field-label" id="lblName">Name</label>
+    <input class="field" id="baseName" type="text" autocomplete="name">
+    <label class="field-label" id="lblPhone">WhatsApp / LINE (optional)</label>
+    <input class="field" id="basePhone" type="tel" autocomplete="tel">
+    <label class="field-label" id="lblSource">Who invited you?</label>
+    <select class="field" id="baseSource"></select>
+    <div id="friendNameWrap" class="hidden">
+      <label class="field-label" id="lblFriend">Name of the friend</label>
+      <input class="field" id="baseFriend" type="text">
+    </div>
+    <label class="field-label" id="lblGoal">Main goal</label>
+    <select class="field" id="baseGoal"></select>
+    <label class="field-label" id="lblStruggle">Biggest current struggle</label>
+    <select class="field" id="baseStruggle"></select>
+    <div id="baseSliders"></div>
+    <div class="err" id="baseError"></div>
+    <button class="cta" id="baseSubmit">Enter the Reset</button>
+  </section>
+
+  <!-- DASHBOARD -->
+  <section class="screen" id="screen-dash">
+    <div class="verify-note hidden" id="verifyNote">
+      <span id="verifyNoteText"></span>
+      <button id="verifyResendBtn"></button>
+    </div>
+    <div>
+      <div class="eyebrow" id="dashHello"></div>
+      <h1 id="dashHead"></h1>
+    </div>
+    <div class="card mission-card" id="missionCard">
+      <div class="eyebrow" id="missionEyebrow"></div>
+      <h2 id="missionTitle"></h2>
+      <p class="sub" id="missionDesc"></p>
+      <button class="cta" id="missionCta"></button>
+    </div>
+    <div class="stat-row">
+      <div class="stat-tile">
+        <div class="stat-num" id="statDay">0/7</div>
+        <div class="stat-label" id="statDayLbl">Progress</div>
+        <div class="progress-track"><div class="progress-fill" id="statBar" style="width:0%"></div></div>
       </div>
-      <div class="leaderboard-list" id="leaderboardList"></div>
+      <div class="stat-tile">
+        <div class="stat-num" id="statStreak">0</div>
+        <div class="stat-label" id="statStreakLbl">Streak</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-num" id="statPoints">0</div>
+        <div class="stat-label" id="statPointsLbl">Reset Points</div>
+      </div>
     </div>
-    <div class="start-hint" id="startHint">Dauert ca. 90 Sekunden · Fortschritt wird automatisch gespeichert</div>
-    <button class="logout-btn" id="logoutBtn">Abmelden</button>
+    <div class="level-chip" id="levelChip"></div>
+    <div class="card unlock-card hidden" id="bottleneckCard" role="button" tabindex="0" style="cursor:pointer">
+      <h2 id="bnCardTitle"></h2>
+      <p class="sub" id="bnCardSub"></p>
+    </div>
+    <div class="card unlock-card hidden" id="mapCard" role="button" tabindex="0" style="cursor:pointer">
+      <h2 id="mapCardTitle"></h2>
+      <p class="sub" id="mapCardSub"></p>
+    </div>
+    <h2 id="archiveHead"></h2>
+    <div class="archive" id="archiveList"></div>
+    <div class="small-link-row" id="startHereRow"><span id="startHereLbl"></span><span>→</span></div>
+    <button class="ghost-btn" id="logoutBtn" style="align-self:center"></button>
+  </section>
+
+  <!-- DAY / MISSION -->
+  <section class="screen" id="screen-day">
+    <button class="back-btn" id="dayBackBtn">←</button>
+    <div>
+      <div class="eyebrow" id="dayEyebrow"></div>
+      <h1 id="dayTitle"></h1>
+      <p class="sub" id="dayTheme" style="margin-top:4px"></p>
+    </div>
+    <div class="video-card" id="dayVideo"></div>
+    <p class="sub" id="dayDesc"></p>
+    <h2 id="tasksHead"></h2>
+    <div class="tasks" id="taskList"></div>
+    <div id="checkinBlock">
+      <h2 id="checkinHead" style="margin:10px 0 8px"></h2>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="slider-block">
+          <div class="slider-head"><span class="sl" id="lblEnergy"></span><span class="sv" id="valEnergy">5</span></div>
+          <input type="range" id="rngEnergy" min="1" max="10" value="5">
+        </div>
+        <div class="slider-block">
+          <div class="slider-head"><span class="sl" id="lblSleep"></span><span class="sv" id="valSleep">5</span></div>
+          <input type="range" id="rngSleep" min="1" max="10" value="5">
+        </div>
+        <label class="field-label" id="lblMission"></label>
+        <div class="seg" id="segMission"></div>
+        <label class="field-label" id="lblReflection"></label>
+        <textarea class="field" id="txtReflection"></textarea>
+        <label class="field-label" id="lblWin"></label>
+        <input class="field" id="txtWin" type="text">
+        <label class="field-label" id="lblHard"></label>
+        <input class="field" id="txtHard" type="text">
+        <label class="field-label" id="lblFeedback"></label>
+        <input class="field" id="txtFeedback" type="text">
+        <div class="coach-note" id="coachNote"></div>
+        <div class="err" id="dayError"></div>
+        <button class="cta accent" id="daySubmit"></button>
+      </div>
+    </div>
+    <div id="archiveView" class="hidden" style="display:flex;flex-direction:column;gap:10px">
+      <div class="quote-box" id="arcQuote"></div>
+      <div class="tip-box"><b id="arcTipLbl"></b><span id="arcTip"></span></div>
+      <div class="card" id="arcStats" style="font-size:14px"></div>
+    </div>
+  </section>
+
+  <!-- REWARD -->
+  <section class="screen reward" id="screen-reward">
+    <div class="reward-check">✓</div>
+    <div>
+      <div class="eyebrow" id="rewardEyebrow"></div>
+      <div class="reward-points" id="rewardPoints"></div>
+    </div>
+    <div class="reward-badge" id="rewardBadge"></div>
+    <div class="reward-streak" id="rewardStreak"></div>
+    <div class="quote-box" id="rewardQuote" style="text-align:left"></div>
+    <div class="tip-box" style="text-align:left"><b id="rewardTipLbl"></b><span id="rewardTip"></span></div>
+    <div class="card" id="teaserCard" style="text-align:left">
+      <div class="eyebrow" id="teaserLbl"></div>
+      <p style="font-size:14.5px;margin-top:4px" id="teaserText"></p>
+    </div>
+    <button class="cta secondary" id="rewardWhatsapp"></button>
+    <button class="cta" id="rewardContinue"></button>
+  </section>
+
+  <!-- DAY 4 — BOTTLENECK -->
+  <section class="screen" id="screen-bottleneck">
+    <button class="back-btn" id="bnBackBtn">←</button>
+    <div>
+      <div class="eyebrow" id="bnEyebrow"></div>
+      <h1 id="bnTitle"></h1>
+    </div>
+    <div class="video-card" id="bnVideo"></div>
+    <p class="sub" id="bnIntro"></p>
+    <div id="bnOptions" style="display:flex;flex-direction:column;gap:12px"></div>
+  </section>
+
+  <!-- DAY 7 — FINAL -->
+  <section class="screen" id="screen-final">
+    <button class="back-btn" id="finalBackBtn">←</button>
+    <div>
+      <div class="eyebrow" id="finalEyebrow"></div>
+      <h1 id="finalTitle"></h1>
+    </div>
+    <div class="video-card" id="finalVideo"></div>
+    <p class="sub" id="finalIntro"></p>
+    <div class="prize-note" id="prizeNote"></div>
+    <div class="card">
+      <h2 id="offerTitle"></h2>
+      <div class="price-tag" style="margin:6px 0" id="offerPrice"></div>
+      <div class="offer-list" id="offerList"></div>
+    </div>
+    <div id="finalCtas" style="display:flex;flex-direction:column;gap:10px"></div>
   </section>
 
   <!-- SETTINGS -->
   <section class="screen settings" id="screen-settings">
-    <div class="progress">
-      <button class="back-btn" id="settingsBackBtn">← Zurück</button>
-      <div class="progress-track" style="visibility:hidden"></div>
-      <div style="width:44px"></div>
+    <button class="back-btn" id="settingsBackBtn">←</button>
+    <h1 id="settingsTitle"></h1>
+    <label class="field-label" id="lblLang"></label>
+    <div class="seg2">
+      <button id="setLangEn">English</button>
+      <button id="setLangDe">Deutsch</button>
     </div>
-    <h1 style="font-size:26px" id="settingsTitle">Einstellungen</h1>
-    <label class="field-label" id="labelTheme">Darstellung</label>
-    <div class="theme-switch">
-      <button class="theme-btn" data-theme="dark" id="themeDarkBtn">🌙 <span id="themeDarkLabel">Dunkel</span></button>
-      <button class="theme-btn" data-theme="light" id="themeLightBtn">☀️ <span id="themeLightLabel">Hell</span></button>
-    </div>
-    <button class="cta secondary-btn" id="personalInfoBtn" style="margin-top:12px">✎ <span id="personalInfoBtnText">Persönliche Informationen</span></button>
-    <button class="cta secondary-btn" id="changePasswordBtn">⚿ <span id="changePasswordBtnText">Passwort ändern</span></button>
+    <label class="field-label" id="lblPw"></label>
+    <input class="field" id="curPw" type="password" autocomplete="current-password">
+    <input class="field" id="newPw" type="password" autocomplete="new-password">
+    <div class="err" id="pwError"></div>
+    <div class="ok" id="pwSuccess"></div>
+    <button class="cta secondary" id="pwSaveBtn"></button>
   </section>
 
-  <!-- CHANGE PASSWORD -->
-  <section class="screen settings" id="screen-password">
-    <div class="progress">
-      <button class="back-btn" id="passwordBackBtn">← Zurück</button>
-      <div class="progress-track" style="visibility:hidden"></div>
-      <div style="width:44px"></div>
-    </div>
-    <h1 style="font-size:26px" id="passwordTitle">Passwort ändern</h1>
-    <label class="field-label" id="labelCurrentPassword">Aktuelles Passwort</label>
-    <input class="auth-field" id="currentPassword" type="password" autocomplete="current-password">
-    <label class="field-label" id="labelNewPassword">Neues Passwort</label>
-    <input class="auth-field" id="newPassword" type="password" autocomplete="new-password">
-    <div class="auth-error" id="passwordError"></div>
-    <div class="auth-success" id="passwordSuccess"></div>
-    <button class="cta" id="passwordSaveBtn">Speichern</button>
-  </section>
-
-  <!-- PERSONAL INFO -->
-  <section class="screen settings" id="screen-personal">
-    <div class="progress">
-      <button class="back-btn" id="personalBackBtn">← Zurück</button>
-      <div class="progress-track" style="visibility:hidden"></div>
-      <div style="width:44px"></div>
-    </div>
-    <h1 style="font-size:26px" id="personalTitle">Persönliche Informationen</h1>
-    <label class="field-label" id="labelName">Name</label>
-    <input class="auth-field" id="settingsName" type="text">
-    <label class="field-label" id="labelEmail">E-Mail</label>
-    <input class="auth-field" id="settingsEmail" type="email" disabled>
-    <label class="field-label" id="labelPhone">Telefonnummer (optional)</label>
-    <input class="auth-field" id="settingsPhone" type="tel">
-    <label class="field-label" id="labelGoals">Deine Ziele</label>
-    <textarea class="auth-field" id="settingsGoals" style="min-height:100px"></textarea>
-    <div class="auth-success" id="settingsSuccess"></div>
-    <button class="cta" id="settingsSaveBtn">Speichern</button>
-  </section>
-
-  <!-- CHALLENGES -->
-  <section class="screen challenges" id="screen-challenges">
-    <div class="progress">
-      <button class="back-btn" id="challengesBackBtn">← Zurück</button>
-      <div class="progress-track" style="visibility:hidden"></div>
-      <div style="width:44px"></div>
-    </div>
-    <h1 style="font-size:26px" id="challengesTitle">Challenges</h1>
-    <div class="challenge-list" id="challengeList"></div>
-    <div class="dash-footnote" id="challengesEmpty">Aktuell keine aktiven Challenges.</div>
-  </section>
-
-  <!-- CHECK-IN -->
-  <section class="screen" id="screen-checkin">
-    <div class="progress">
-      <button class="back-btn" id="backBtn">← Zurück</button>
-      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-      <div class="progress-count" id="progressCount">1/15</div>
-    </div>
-    <div class="q-wrap" id="qWrap"></div>
-  </section>
-
-  <!-- RESULT -->
-  <section class="screen result" id="screen-result">
-    <div class="result-head">
-      <div class="result-eyebrow" id="resultEyebrow">Scan abgeschlossen</div>
-      <h1 style="font-size:28px" id="resultTitle">Dein Tag im Überblick</h1>
-    </div>
-    <div class="rings">
-      <div class="ring-card">
-        <div class="ring" id="ringErn"><div class="ring-inner" id="scoreErn">–</div></div>
-        <div class="ring-label" id="ringLabelErn">Ernährung</div>
-        <div class="standard-tag" id="tagErn"></div>
-      </div>
-      <div class="ring-card">
-        <div class="ring" id="ringTra"><div class="ring-inner" id="scoreTra">–</div></div>
-        <div class="ring-label" id="ringLabelTra">Training</div>
-        <div class="standard-tag" id="tagTra"></div>
-      </div>
-      <div class="ring-card">
-        <div class="ring" id="ringRec"><div class="ring-inner" id="scoreRec">–</div></div>
-        <div class="ring-label" id="ringLabelRec">Recovery</div>
-        <div class="standard-tag" id="tagRec"></div>
-      </div>
-    </div>
-    <div class="insight" id="insightBox">
-      <strong id="insightLabelText">Insight</strong>
-      <span id="insightText"></span>
-    </div>
-    <div class="streak-big">
-      <div style="font-size:28px">⚡</div>
-      <div>
-        <div class="streak-num" id="streakBig">7 Tage</div>
-        <div class="streak-sub" id="streakSub">in Folge eingecheckt — Konstanz schlägt Perfektion.</div>
-      </div>
-    </div>
-    <button class="cta" id="doneBtn">Fertig für heute</button>
-  </section>
-
-
+  <div class="footer-note" id="footerNote">Modern Athlete LAB™ · The 7-Day Reset</div>
 </div>
 
 <script type="module">
-/* =========================================================
-   FIREBASE — Auth (E-Mail/Passwort) + Firestore (Check-ins)
-   Projekt in der Firebase Console anlegen und die Platzhalter
-   unten durch die echte Config ersetzen (Project Settings →
-   "Your apps" → SDK setup and configuration → Config).
-========================================================= */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
 import {
   getAuth, onAuthStateChanged, signInWithEmailAndPassword,
@@ -708,8 +510,8 @@ import {
   setPersistence, browserLocalPersistence, browserSessionPersistence
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 import {
-  getFirestore, doc, setDoc, getDoc, deleteDoc, collection, query, where,
-  getDocs, serverTimestamp, runTransaction
+  getFirestore, doc, setDoc, getDoc, collection, query, where,
+  getDocs, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -724,370 +526,308 @@ const fbApp = initializeApp(firebaseConfig);
 const auth = getAuth(fbApp);
 const db = getFirestore(fbApp);
 
-/* =========================================================
-   STATE (in-memory — Check-ins werden in Firestore persistiert)
-========================================================= */
-const state = { answers:{}, queue:[], idx:0, streak:0, uid:null, lang:'de' };
+/* René's WhatsApp number in international format without +, e.g. "886912345678".
+   Leave empty to let WhatsApp open with the message and free contact choice. */
+const COACH_WHATSAPP = "";
 
 /* =========================================================
-   QUESTION STRUCTURE (sprachneutral)
-   Texte (title/caption/opts/lo/hi/placeholder) liegen in T[lang].q[id]
+   VIDEO URLS — fill in when René has recorded them.
+   Empty string = premium placeholder is shown instead.
 ========================================================= */
-const Q = {
-  feeling:{ id:'feeling', pillarKey:'checkin', pClass:'p-neutral' },
-  water:{ id:'water', pillarKey:'nutrition', pClass:'p-ern' },
-  protein:{ id:'protein', pillarKey:'nutrition', pClass:'p-ern' },
-  quality:{ id:'quality', pillarKey:'nutrition', pClass:'p-ern', defaultIndex:1 },
-  digestionCombo:{ id:'digestionCombo', pillarKey:'nutrition', pClass:'p-ern', type:'combo',
-    subs:[
-      { key:'digestion', onAnswer:(v)=>{ removeFromQueue('digestTrigger'); if(v>0) insertAfter('digestTrigger'); } },
-      { key:'hunger' }
-    ] },
-  digestTrigger:{ id:'digestTrigger', pillarKey:'nutrition', pClass:'p-ern', conditional:true, grid:true },
-
-  trainingCombo:{ id:'trainingCombo', pillarKey:'training', pClass:'p-tra', type:'combo',
-    subs:[
-      { key:'training', onAnswer:(v)=>{ removeFromQueue('missReason'); if(v===3) insertAfter('missReason'); } },
-      { key:'mobility' }
-    ] },
-  missReason:{ id:'missReason', pillarKey:'training', pClass:'p-tra', conditional:true, grid:true },
-  pain:{ id:'pain', pillarKey:'training', pClass:'p-tra',
-    onAnswer:(v)=>{
-      removeFromQueue('painWhere'); removeFromQueue('painImpact');
-      if(v>=2){ insertAfter('painWhere'); insertAfter('painImpact',1);}
-    } },
-  painWhere:{ id:'painWhere', pillarKey:'training', pClass:'p-tra', conditional:true, grid:true },
-  painImpact:{ id:'painImpact', pillarKey:'training', pClass:'p-tra', conditional:true },
-
-  sleep:{ id:'sleep', pillarKey:'recovery', pClass:'p-rec' },
-  energyMotivation:{ id:'energyMotivation', pillarKey:'recovery', pClass:'p-rec', type:'slider', min:1,max:5 },
-  stress:{ id:'stress', pillarKey:'recovery', pClass:'p-rec', type:'slider', min:1,max:5 },
-
-  note:{ id:'note', pillarKey:'done', pClass:'p-neutral', type:'note' }
+const VIDEOS = {
+  day0:{ en:"", de:"" },
+  1:{ en:"", de:"" }, 2:{ en:"", de:"" }, 3:{ en:"", de:"" },
+  4:{ en:"", de:"" }, 5:{ en:"", de:"" }, 6:{ en:"", de:"" }, 7:{ en:"", de:"" },
+  bottleneck:{ en:"", de:"" },
+  final:{ en:"", de:"" }
 };
 
-const BASE_QUEUE = ['feeling','water','protein','quality','digestionCombo',
-  'trainingCombo','pain','sleep','energyMotivation','stress','note'];
+/* =========================================================
+   THE SEVEN DAYS — content EN / DE
+========================================================= */
+const BADGES = ["","Observer","Mover","Fuel Builder","Recovery Operator","Structure Builder","Resilience Builder","Modern Athlete Standard"];
+
+const DAYS = {
+1:{ chooseOne:false,
+  en:{ name:"Awareness", theme:"Track, don't judge.",
+    desc:"Today is only about noticing your current patterns — no judgment, no fixing yet.",
+    tasks:["Track your sleep","Track your energy","Track your water intake","Track your meals","Track your mood","Track your movement"],
+    reflection:"What pattern did you notice today?",
+    quote:"You don't change what you don't notice. Awareness is the first rep.",
+    tip:"Track without judgment. The goal is not to be perfect. The goal is to see the pattern.",
+    teaser:"Tomorrow: feel your body again." },
+  de:{ name:"Awareness", theme:"Beobachten, nicht bewerten.",
+    desc:"Heute geht es nur darum, deine aktuellen Muster wahrzunehmen — ohne Bewertung, ohne sofort etwas zu ändern.",
+    tasks:["Schlaf notieren","Energie notieren","Wasser notieren","Mahlzeiten notieren","Stimmung notieren","Bewegung notieren"],
+    reflection:"Welches Muster ist dir heute aufgefallen?",
+    quote:"Du veränderst nicht, was du nicht wahrnimmst. Wahrnehmung ist die erste Wiederholung.",
+    tip:"Beobachte ohne zu bewerten. Es geht nicht um Perfektion — es geht darum, das Muster zu sehen.",
+    teaser:"Morgen: Spür deinen Körper wieder." } },
+2:{ chooseOne:false,
+  en:{ name:"Movement", theme:"Feel your body again.",
+    desc:"Simple movement today — nothing extreme. The goal is to reconnect with your body.",
+    tasks:["Complete a simple full-body movement session","Go for a 20-minute walk","Do 2 minutes of mobility"],
+    reflection:"Where did your body feel stiff, weak or restricted?",
+    quote:"Energy often comes after movement, not before.",
+    tip:"When you feel stuck, move first. A 10-minute walk can shift your state.",
+    teaser:"Tomorrow: eat to support energy." },
+  de:{ name:"Movement", theme:"Spür deinen Körper wieder.",
+    desc:"Heute einfache Bewegung — nichts Extremes. Das Ziel ist, wieder Verbindung zu deinem Körper aufzubauen.",
+    tasks:["Eine einfache Ganzkörper-Einheit absolvieren","20 Minuten spazieren gehen","2 Minuten Mobility machen"],
+    reflection:"Wo hat sich dein Körper steif, schwach oder eingeschränkt angefühlt?",
+    quote:"Energie kommt oft nach der Bewegung, nicht davor.",
+    tip:"Wenn du feststeckst: Beweg dich zuerst. Ein 10-Minuten-Walk kann deinen Zustand verändern.",
+    teaser:"Morgen: Essen für mehr Energie." } },
+3:{ chooseOne:false,
+  en:{ name:"Fuel", theme:"Eat to support energy.",
+    desc:"Today we build simple nutrition structure for better energy — no extreme dieting.",
+    tasks:["Eat one protein-first meal","Drink enough water","Eat one simple whole-food meal","Avoid extreme dieting"],
+    reflection:"Which meal gave you the best energy today?",
+    quote:"Your next decision is easier when your blood sugar is stable.",
+    tip:"Start meals with protein and fiber. This one habit can reduce cravings and energy crashes.",
+    teaser:"Tomorrow: recovery is productive." },
+  de:{ name:"Fuel", theme:"Essen, das Energie gibt.",
+    desc:"Heute bauen wir einfache Ernährungsstruktur für bessere Energie — kein extremes Diäten.",
+    tasks:["Eine Protein-First-Mahlzeit essen","Genug Wasser trinken","Eine einfache, unverarbeitete Mahlzeit essen","Extremes Diäten vermeiden"],
+    reflection:"Welche Mahlzeit hat dir heute die beste Energie gegeben?",
+    quote:"Deine nächste Entscheidung fällt leichter, wenn dein Blutzucker stabil ist.",
+    tip:"Starte Mahlzeiten mit Protein und Ballaststoffen. Diese eine Gewohnheit kann Cravings und Energielöcher reduzieren.",
+    teaser:"Morgen: Regeneration ist produktiv." } },
+4:{ chooseOne:false,
+  en:{ name:"Recovery", theme:"Recovery is productive.",
+    desc:"Tonight decides tomorrow's energy. We build a simple evening structure.",
+    tasks:["Reduce evening screen time","Create a simple evening routine","Do 5 minutes of calm breathing","Set a realistic sleep target"],
+    reflection:"What is your biggest recovery problem right now?",
+    quote:"Recovery is not time away from progress. Recovery is what makes progress possible.",
+    tip:"Your evening routine decides tomorrow's energy more than your morning motivation.",
+    teaser:"Tomorrow: remove decision fatigue." },
+  de:{ name:"Recovery", theme:"Regeneration ist produktiv.",
+    desc:"Der heutige Abend entscheidet über die Energie von morgen. Wir bauen eine einfache Abendstruktur.",
+    tasks:["Bildschirmzeit am Abend reduzieren","Eine einfache Abendroutine erstellen","5 Minuten ruhig atmen","Ein realistisches Schlafziel setzen"],
+    reflection:"Was ist aktuell dein größtes Regenerations-Problem?",
+    quote:"Regeneration ist keine Pause vom Fortschritt. Regeneration macht Fortschritt erst möglich.",
+    tip:"Deine Abendroutine entscheidet mehr über die Energie von morgen als deine Motivation am Morgen.",
+    teaser:"Morgen: Weniger Entscheidungen, mehr Struktur." } },
+5:{ chooseOne:false,
+  en:{ name:"Structure", theme:"Remove decision fatigue.",
+    desc:"Discipline gets easier when the system removes unnecessary decisions.",
+    tasks:["Choose one anchor habit","Plan tomorrow's first meal","Schedule your movement","Prepare your water"],
+    reflection:"What routine would make your life easier?",
+    quote:"Discipline gets easier when the system removes unnecessary decisions.",
+    tip:"Choose one anchor habit. Same time. Same place. Same trigger.",
+    teaser:"Tomorrow: controlled discomfort." },
+  de:{ name:"Structure", theme:"Weniger Entscheidungen, mehr Struktur.",
+    desc:"Disziplin wird leichter, wenn das System unnötige Entscheidungen entfernt.",
+    tasks:["Eine Anker-Gewohnheit wählen","Die erste Mahlzeit von morgen planen","Bewegung fest einplanen","Wasser vorbereiten"],
+    reflection:"Welche Routine würde dein Leben leichter machen?",
+    quote:"Disziplin wird leichter, wenn das System unnötige Entscheidungen entfernt.",
+    tip:"Wähle eine Anker-Gewohnheit. Gleiche Zeit. Gleicher Ort. Gleicher Auslöser.",
+    teaser:"Morgen: Kontrolliertes Unbehagen." } },
+6:{ chooseOne:true,
+  en:{ name:"Resilience", theme:"Controlled discomfort.",
+    desc:"Choose at least one challenge. Small promises kept under discomfort build confidence.",
+    tasks:["Cold shower","Long walk","No phone for one hour","Extra mobility session","Wake up earlier","Do something you've been avoiding"],
+    reflection:"What did you learn about yourself under discomfort?",
+    quote:"Confidence is built when you keep small promises under discomfort.",
+    tip:"Controlled discomfort teaches your nervous system: I can handle this.",
+    teaser:"Tomorrow: the new standard." },
+  de:{ name:"Resilience", theme:"Kontrolliertes Unbehagen.",
+    desc:"Wähle mindestens eine Challenge. Kleine gehaltene Versprechen unter Unbehagen bauen Selbstvertrauen auf.",
+    tasks:["Kalte Dusche","Langer Spaziergang","Eine Stunde ohne Handy","Extra Mobility-Einheit","Früher aufstehen","Etwas tun, das du aufgeschoben hast"],
+    reflection:"Was hast du unter Unbehagen über dich gelernt?",
+    quote:"Selbstvertrauen entsteht, wenn du kleine Versprechen auch unter Unbehagen hältst.",
+    tip:"Kontrolliertes Unbehagen lehrt dein Nervensystem: Ich kann damit umgehen.",
+    teaser:"Morgen: Der neue Standard." } },
+7:{ chooseOne:false,
+  en:{ name:"The New Standard", theme:"This wasn't a challenge. It was proof.",
+    desc:"Seven days done. Today you look back — and decide what you keep.",
+    tasks:["Review your 7 days","Choose the 1–2 habits you keep","Complete your final check-in"],
+    reflection:"What changed? How do you feel? What surprised you? What do you need help with next?",
+    quote:"This wasn't a challenge. It was proof.",
+    tip:"Don't try to keep everything. Keep the 1–2 habits that created the biggest shift.",
+    teaser:"" },
+  de:{ name:"The New Standard", theme:"Das war keine Challenge. Das war der Beweis.",
+    desc:"Sieben Tage geschafft. Heute blickst du zurück — und entscheidest, was du behältst.",
+    tasks:["Deine 7 Tage durchgehen","Die 1–2 Gewohnheiten wählen, die du behältst","Finalen Check-in abschließen"],
+    reflection:"Was hat sich verändert? Wie fühlst du dich? Was hat dich überrascht? Wobei brauchst du als Nächstes Hilfe?",
+    quote:"Das war keine Challenge. Das war der Beweis.",
+    tip:"Versuch nicht, alles beizubehalten. Behalte die 1–2 Gewohnheiten mit dem größten Effekt.",
+    teaser:"" } }
+};
 
 /* =========================================================
-   ÜBERSETZUNGEN — de / en / zh (Taiwan, Traditionell)
+   UI STRINGS
 ========================================================= */
-const LOCALE_MAP = { de:'de-DE', en:'en-US', zh:'zh-TW' };
-const HTML_LANG = { de:'de', en:'en', zh:'zh-Hant-TW' };
-
 const T = {
-de:{
-  pillars:{ checkin:'Check-in', nutrition:'Ernährung', training:'Training & Bewegung', recovery:'Recovery', done:'Abschluss' },
-  ui:{
-    authEyebrow:'Willkommen', authTitleHTML:'Melde dich <em>an</em>',
-    authIntroLogin:'Mit E-Mail und Passwort anmelden, um deinen Check-in-Verlauf zu speichern.',
-    authIntroRegister:'Neues Konto erstellen — Passwort braucht mindestens 6 Zeichen.',
-    authEmailPh:'E-Mail', authPasswordPh:'Passwort',
-    authSubmitLogin:'Anmelden', authSubmitRegister:'Konto erstellen', authSubmitting:'Wird angemeldet …',
-    authSwitchTextLogin:'Noch kein Konto?', authSwitchTextRegister:'Schon registriert?',
-    authSwitchBtnToRegister:'Registrieren', authSwitchBtnToLogin:'Anmelden',
-    authForgotBtn:'Passwort vergessen?', authFillBoth:'Bitte E-Mail und Passwort eingeben.',
-    authFillEmail:'Bitte zuerst deine E-Mail-Adresse eingeben.',
-    authResetSent:'E-Mail zum Zurücksetzen wurde verschickt — bitte Posteingang prüfen.',
-    authErrorFallback:'Etwas ist schiefgelaufen. Bitte erneut versuchen.',
-    authErrors:{
-      'auth/invalid-email':'Ungültige E-Mail-Adresse.',
-      'auth/missing-password':'Bitte ein Passwort eingeben.',
-      'auth/weak-password':'Passwort braucht mindestens 6 Zeichen.',
-      'auth/email-already-in-use':'Für diese E-Mail existiert bereits ein Konto.',
-      'auth/invalid-credential':'E-Mail oder Passwort ist falsch.',
-      'auth/user-not-found':'Kein Konto mit dieser E-Mail gefunden.',
-      'auth/wrong-password':'Falsches Passwort.'
-    },
-    startPara:'Wir ziehen das gemeinsam durch, ein Standard nach dem anderen.<br>Jeder Tag hier ist ein Beweis an dich selbst — machen wir den von heute zu einem, der zählt.',
-    streakSuffix:'Tage Streak', ctaStart:'Mission starten', challengesBtn:'Challenges',
-    startHint:'Dauert ca. 90 Sekunden · Fortschritt wird automatisch gespeichert', logout:'Abmelden',
-    coachViewBtn:'Coach-Ansicht', clientViewBtn:'Client-Ansicht',
-    backBtn:'Zurück', skipBtn:'Überspringen', noteDoneBtn:'Check-in abschließen', sliderNextBtn:'Weiter',
-    resultEyebrow:'Mission abgeschlossen', resultTitle:'Deine Standards heute', insightLabel:'Coach-Hinweis',
-    streakSubText:'in Folge eingecheckt — Konstanz schlägt Perfektion.', doneBtn:'Fertig für heute', daysWord:'Tage',
-    settingsBtn:'Einstellungen', settingsTitle:'Einstellungen',
-    labelName:'Name', labelEmail:'E-Mail', labelPhone:'Telefonnummer (optional)', labelGoals:'Deine Ziele',
-    settingsSaveBtn:'Speichern', settingsSaved:'Gespeichert.',
-    goalsPlaceholder:'Z. B. 5 kg abnehmen, 10 km laufen, mehr Energie im Alltag …',
-    challengesTitle:'Challenges', challengesEmpty:'Aktuell keine aktiven Challenges.',
-    challengeJoinBtn:'Teilnehmen', challengeLeaveBtn:'Verlassen', challengeJoinedLabel:'Dabei ✓',
-    challengeProgressLabel:'Fortschritt', communityToday:(n,total)=> n+' von '+total+' haben heute eingecheckt ⚡',
-    verifyBannerText:'Bitte bestätige deine E-Mail-Adresse — check dein Postfach.',
-    verifyResendBtn:'Erneut senden', verifyResendSent:'E-Mail verschickt.',
-    reminderBannerText:'Du hast heute noch nicht eingecheckt — jetzt nachholen?',
-    labelTheme:'Darstellung', themeDarkLabel:'Dunkel', themeLightLabel:'Hell',
-    personalInfoBtnText:'Persönliche Informationen', personalTitle:'Persönliche Informationen',
-    greetingHello:()=> 'Willkommen zu deinem Modern Athlete Programm',
-    changePasswordBtnText:'Passwort ändern', passwordTitle:'Passwort ändern',
-    labelCurrentPassword:'Aktuelles Passwort', labelNewPassword:'Neues Passwort',
-    passwordFillBoth:'Bitte beide Felder ausfüllen.', passwordTooShort:'Neues Passwort braucht mindestens 6 Zeichen.',
-    passwordSaved:'Passwort geändert.', passwordWrongCurrent:'Aktuelles Passwort ist falsch.',
-    rememberMeLabel:'Angemeldet bleiben',
-    checkinCardBanner:'Mission', checkinCardDesc:'15 Fragen, 90 Sekunden — dein Coach sieht sofort, wo du stehst.',
-    challengeCardBanner:'Motivation', challengeCardDesc:'Mach mit, tracke deinen Fortschritt und bleib gemeinsam dran.',
-    leaderboardBtnText:'Bestenliste', leaderboardTitle:'Bestenliste', leaderboardEmpty:'Noch keine Streaks vorhanden.',
-    lbYou:'(du)',
-    tagElite:'Elite Standard', tagTarget:'Standard gehalten', tagMinimum:'Minimum gehalten', tagMiss:'Noch nicht heute',
-    honestCheckin:'Ehrlicher Check-in. Du bist weiter im Spiel.',
-    comebackTitle:'Comeback verfügbar', comebackText:'Ein Tag ausgelassen ist kein Ausstieg.',
-    comebackText2:'Mach die Mission von heute und du bist zurück im Spiel.'
-  },
-  q:{
-    feeling:{ title:'Wie fühlst du dich heute?', opts:[['😄','Sehr gut'],['🙂','Gut'],['😐','Okay'],['😕','Niedrig'],['😞','Schlecht']] },
-    water:{ title:'Wie viel Wasser hast du heute getrunken?', caption:'Richtwert — bei Hitze, Schwitzen, viel Aktivität oder höherem Körpergewicht brauchst du mehr.',
-      opts:[['','Sehr wenig · unter 1 L'],['','Wenig · 1–1,5 L'],['','Okay · 1,5–2 L'],['','Gut · 2–3 L'],['','Viel · 3+ L']] },
-    protein:{ title:'Hattest du Protein zu den meisten Mahlzeiten?', caption:'Z. B. Eier, Hähnchen, Fisch, Fleisch, Tofu, Skyr, Hülsenfrüchte, Shake.',
-      opts:[['✅','Ja, zu den meisten'],['〰️','Etwas, aber zu wenig'],['✖️','Kaum bis gar nicht']] },
-    quality:{ title:'Wie bewertest du deine Ernährung heute insgesamt?', opts:[['🎯','On track'],['⚖️','Okay'],['↩️','Off track']] },
-    digestionCombo:{ title:'Verdauung & Hunger', subs:[
-      { title:'Wie war deine Verdauung heute?', opts:[['👍','Gut & normal'],['🎈','Aufgebläht'],['💧','Weicher Stuhl'],['🧱','Verstopfung'],['⚡','Schmerzen / Unwohlsein']] },
-      { title:'Hunger & Cravings heute?', opts:[['','Kein Thema'],['','Normal'],['','Stärker als sonst'],['','Ständig Heißhunger']] }
-    ] },
-    digestTrigger:{ title:'Vermuteter Auslöser?', opts:[['','Große Mahlzeit'],['','Milchprodukte'],['','Gluten'],['','Viele Ballaststoffe'],['','Fettiges Essen'],['','Stress'],['','Keine Ahnung'],['','Sonstiges']] },
-    trainingCombo:{ title:'Training & Mobility', subs:[
-      { title:'Hast du dein geplantes Training absolviert?', opts:[['✅','Ja'],['➗','Teilweise'],['🛋️','Rest Day (geplant)'],['✖️','Verpasst']] },
-      { title:'Mobility oder Stretching gemacht?', opts:[['','Nein'],['','Ja · 5 Min'],['','Ja · 10–15 Min'],['','Ja · 15+ Min']] }
-    ] },
-    missReason:{ title:'Was war der Hauptgrund?', opts:[['','Keine Zeit'],['','Keine Energie'],['','Schmerzen'],['','Stress'],['','Motivation'],['','Arbeit & Reisen'],['','Sonstiges'],['','—']] },
-    pain:{ title:'Schmerzen oder Beschwerden heute?', opts:[['','Keine'],['','Leicht'],['','Mittel'],['','Stark']] },
-    painWhere:{ title:'Wo?', opts:[['','Nacken & Schultern'],['','Ellbogen & Handgelenk'],['','Unterer Rücken'],['','Hüfte'],['','Knie'],['','Fuß & Sprunggelenk'],['','Sonstiges'],['','—']] },
-    painImpact:{ title:'Hat es deine Bewegung oder dein Training beeinflusst?', opts:[['','Nein'],['','Ein wenig'],['','Ja, musste anpassen'],['','Ja, musste abbrechen']] },
-    sleep:{ title:'Wie war dein Schlaf heute?', opts:[
-      ['','Sehr wenig / schlecht · unter 5 h oder sehr schlechte Qualität'],
-      ['','Wenig · 5–6 h, mittelmäßige Qualität'],
-      ['','Okay · 6–7 h, überwiegend gut'],
-      ['','Gut · 7–8 h, gute Qualität'],
-      ['','Top · 8+ h, sehr gute Qualität']
-    ] },
-    energyMotivation:{ title:'Energie & Motivation heute?', lo:'Leer & unmotiviert', hi:'Voll da & bereit' },
-    stress:{ title:'Stresslevel heute?', lo:'Tiefenentspannt', hi:'Am Limit' },
-    note:{ title:'Gibt es etwas, das dein Coach wissen sollte?', caption:'Optional — du kannst auch überspringen.',
-      placeholder:'Z. B. stressiger Arbeitstag, schlecht geschlafen, super Training, unterwegs …' }
-  },
-  insights:{
-    painSevere:'Starke Schmerzen sind ein Stopp-Signal, kein Durchbeißen-Signal. Dein Coach meldet sich — bei anhaltenden Schmerzen bitte ärztlich abklären.',
-    sleepLow:'Unter 5 Stunden Schlaf — heute keine Intensität erzwingen. Früher ins Bett zahlt direkt auf Training und Heißhunger-Kontrolle ein.',
-    stressEnergyLow:'Stress am Limit, Tank fast leer. Heute zählt Regeneration mehr als jedes Workout: Spaziergang, Protein, früh schlafen.',
-    exhausted:'Erschöpft ist ein Datenpunkt, kein Versagen. Plan heute bewusst runterfahren — Erholung ist Teil des Trainings.',
-    hungerConstant:'Ständiger Heißhunger deutet oft auf zu wenig Protein oder Schlaf hin — check die letzten Tage im Verlauf.',
-    worstRecovery:'Recovery ist heute dein schwächster Bereich. Eine Stunde früher schlafen ist der schnellste Hebel für morgen.',
-    worstNutrition:'Ernährung war heute wacklig — morgen reicht ein Fokus: Protein zu jeder Mahlzeit. Ein Hebel, große Wirkung.',
-    worstTraining:'Bewegung kam heute zu kurz. Morgen 20 Minuten Gehen einplanen — Konstanz schlägt Intensität.',
-    allGood:'Starker Tag über alle drei Säulen. Genau diese Konstanz macht am Ende den Unterschied. 💪'
-  }
-},
 en:{
-  pillars:{ checkin:'Check-in', nutrition:'Nutrition', training:'Training & Movement', recovery:'Recovery', done:'Wrap-up' },
-  ui:{
-    authEyebrow:'Welcome', authTitleHTML:'Sign <em>in</em>',
-    authIntroLogin:'Sign in with email and password to save your check-in history.',
-    authIntroRegister:'Create a new account — password needs at least 6 characters.',
-    authEmailPh:'Email', authPasswordPh:'Password',
-    authSubmitLogin:'Sign in', authSubmitRegister:'Create account', authSubmitting:'Signing in …',
-    authSwitchTextLogin:"Don't have an account yet?", authSwitchTextRegister:'Already registered?',
-    authSwitchBtnToRegister:'Register', authSwitchBtnToLogin:'Sign in',
-    authForgotBtn:'Forgot password?', authFillBoth:'Please enter email and password.',
-    authFillEmail:'Please enter your email address first.',
-    authResetSent:'Password reset email sent — please check your inbox.',
-    authErrorFallback:'Something went wrong. Please try again.',
-    authErrors:{
-      'auth/invalid-email':'Invalid email address.',
-      'auth/missing-password':'Please enter a password.',
-      'auth/weak-password':'Password needs at least 6 characters.',
-      'auth/email-already-in-use':'An account already exists for this email.',
-      'auth/invalid-credential':'Email or password is incorrect.',
-      'auth/user-not-found':'No account found with this email.',
-      'auth/wrong-password':'Incorrect password.'
-    },
-    startPara:"We're in this together, one standard at a time.<br>Every day here is proof to yourself — let's make today one that counts.",
-    streakSuffix:'day streak', ctaStart:'Start mission', challengesBtn:'Challenges',
-    startHint:'Takes about 90 seconds · Progress is saved automatically', logout:'Log out',
-    coachViewBtn:'Coach view', clientViewBtn:'Client view',
-    backBtn:'Back', skipBtn:'Skip', noteDoneBtn:'Finish check-in', sliderNextBtn:'Next',
-    resultEyebrow:'Mission complete', resultTitle:'Your standards today', insightLabel:'Coach note',
-    streakSubText:'checked in in a row — consistency beats perfection.', doneBtn:'Done for today', daysWord:'days',
-    settingsBtn:'Settings', settingsTitle:'Settings',
-    labelName:'Name', labelEmail:'Email', labelPhone:'Phone number (optional)', labelGoals:'Your goals',
-    settingsSaveBtn:'Save', settingsSaved:'Saved.',
-    goalsPlaceholder:'E.g. lose 5 kg, run 10 km, more energy day-to-day …',
-    challengesTitle:'Challenges', challengesEmpty:'No active challenges right now.',
-    challengeJoinBtn:'Join', challengeLeaveBtn:'Leave', challengeJoinedLabel:'Joined ✓',
-    challengeProgressLabel:'Progress', communityToday:(n,total)=> n+' of '+total+' checked in today ⚡',
-    verifyBannerText:'Please verify your email address — check your inbox.',
-    verifyResendBtn:'Resend', verifyResendSent:'Email sent.',
-    reminderBannerText:"You haven't checked in today yet — catch up now?",
-    labelTheme:'Appearance', themeDarkLabel:'Dark', themeLightLabel:'Light',
-    personalInfoBtnText:'Personal Information', personalTitle:'Personal Information',
-    greetingHello:()=> 'Welcome, Modern Athlete',
-    changePasswordBtnText:'Change password', passwordTitle:'Change password',
-    labelCurrentPassword:'Current password', labelNewPassword:'New password',
-    passwordFillBoth:'Please fill in both fields.', passwordTooShort:'New password needs at least 6 characters.',
-    passwordSaved:'Password changed.', passwordWrongCurrent:'Current password is incorrect.',
-    rememberMeLabel:'Stay signed in',
-    checkinCardBanner:'Mission', checkinCardDesc:'15 questions, 90 seconds — your coach sees exactly where you stand.',
-    challengeCardBanner:'Motivation', challengeCardDesc:'Join in, track your progress, and stay accountable together.',
-    leaderboardBtnText:'Leaderboard', leaderboardTitle:'Leaderboard', leaderboardEmpty:'No streaks yet.',
-    lbYou:'(you)',
-    tagElite:'Elite standard', tagTarget:'Standard held', tagMinimum:'Minimum held', tagMiss:'Not yet today',
-    honestCheckin:"Honest check-in. You're still in the game.",
-    comebackTitle:'Comeback available', comebackText:"Missing a day isn't quitting.",
-    comebackText2:"Complete today's mission and you're back in the game."
-  },
-  q:{
-    feeling:{ title:'How are you feeling today?', opts:[['😄','Great'],['🙂','Good'],['😐','Okay'],['😕','Low'],['😞','Bad']] },
-    water:{ title:'How much water did you drink today?', caption:'Rule of thumb — you need more in heat, when sweating a lot, with high activity, or a higher body weight.',
-      opts:[['','Very little · under 1 L'],['','Little · 1–1.5 L'],['','Okay · 1.5–2 L'],['','Good · 2–3 L'],['','A lot · 3+ L']] },
-    protein:{ title:'Did you have protein with most meals?', caption:'E.g. eggs, chicken, fish, meat, tofu, skyr, legumes, shake.',
-      opts:[['✅','Yes, with most'],['〰️','Some, but too little'],['✖️','Barely or not at all']] },
-    quality:{ title:'How would you rate your nutrition today overall?', opts:[['🎯','On track'],['⚖️','Okay'],['↩️','Off track']] },
-    digestionCombo:{ title:'Digestion & Hunger', subs:[
-      { title:'How was your digestion today?', opts:[['👍','Good & normal'],['🎈','Bloated'],['💧','Loose stool'],['🧱','Constipated'],['⚡','Pain / discomfort']] },
-      { title:'Hunger & cravings today?', opts:[['','No issue'],['','Normal'],['','Stronger than usual'],['','Constant cravings']] }
-    ] },
-    digestTrigger:{ title:'Suspected trigger?', opts:[['','Large meal'],['','Dairy'],['','Gluten'],['','Lots of fiber'],['','Fatty food'],['','Stress'],['','No idea'],['','Other']] },
-    trainingCombo:{ title:'Training & Mobility', subs:[
-      { title:'Did you complete your planned training?', opts:[['✅','Yes'],['➗','Partially'],['🛋️','Rest day (planned)'],['✖️','Missed']] },
-      { title:'Did you do mobility or stretching?', opts:[['','No'],['','Yes · 5 min'],['','Yes · 10–15 min'],['','Yes · 15+ min']] }
-    ] },
-    missReason:{ title:'What was the main reason?', opts:[['','No time'],['','No energy'],['','Pain'],['','Stress'],['','Motivation'],['','Work & travel'],['','Other'],['','—']] },
-    pain:{ title:'Pain or discomfort today?', opts:[['','None'],['','Mild'],['','Moderate'],['','Severe']] },
-    painWhere:{ title:'Where?', opts:[['','Neck & shoulders'],['','Elbow & wrist'],['','Lower back'],['','Hip'],['','Knee'],['','Foot & ankle'],['','Other'],['','—']] },
-    painImpact:{ title:'Did it affect your movement or training?', opts:[['','No'],['','A little'],['','Yes, had to adjust'],['','Yes, had to stop']] },
-    sleep:{ title:'How was your sleep last night?', opts:[
-      ['','Very little / bad · under 5 h or very poor quality'],
-      ['','Little · 5–6 h, so-so quality'],
-      ['','Okay · 6–7 h, mostly good'],
-      ['','Good · 7–8 h, good quality'],
-      ['','Great · 8+ h, great quality']
-    ] },
-    energyMotivation:{ title:'Energy & motivation today?', lo:'Empty & unmotivated', hi:'Fully charged & ready' },
-    stress:{ title:'Stress level today?', lo:'Totally relaxed', hi:'At my limit' },
-    note:{ title:'Anything your coach should know?', caption:'Optional — you can also skip this.',
-      placeholder:'E.g. stressful work day, slept badly, great training session, traveling …' }
-  },
-  insights:{
-    painSevere:'Severe pain is a stop signal, not a push-through signal. Your coach will reach out — if pain persists, please see a doctor.',
-    sleepLow:"Under 5 hours of sleep — don't force intensity today. Going to bed earlier pays off directly for training and craving control.",
-    stressEnergyLow:'Stress at its limit, tank almost empty. Today, recovery matters more than any workout: a walk, protein, early sleep.',
-    exhausted:'Exhausted is a data point, not a failure. Deliberately scale back today — recovery is part of training.',
-    hungerConstant:'Constant cravings often point to too little protein or sleep — check the past few days in your history.',
-    worstRecovery:'Recovery is your weakest area today. Sleeping an hour earlier is the fastest lever for tomorrow.',
-    worstNutrition:'Nutrition was shaky today — tomorrow, just focus on one thing: protein with every meal. One lever, big impact.',
-    worstTraining:'Movement was too short today. Plan for a 20-minute walk tomorrow — consistency beats intensity.',
-    allGood:'A strong day across all three pillars. This kind of consistency is what makes the difference in the end. 💪'
-  }
+  authEyebrow:"Welcome", authTitleLogin:"Welcome back.", authTitleRegister:"You are now inside the Reset.",
+  authIntroLogin:"Sign in to continue your 7 days.", authIntroRegister:"Create your access to start the 7 days.",
+  emailPh:"Email", passwordPh:"Password", staySignedIn:"Stay signed in",
+  signIn:"Sign in", createAccount:"Create account", submitting:"One moment …",
+  noAccount:"No account yet?", haveAccount:"Already have access?", register:"Create account", login:"Sign in",
+  forgot:"Forgot password?", fillBoth:"Please enter email and password.", fillEmail:"Please enter your email first.",
+  resetSent:"Password reset email sent — check your inbox.",
+  errFallback:"Something went wrong. Please try again.",
+  errors:{ "auth/invalid-email":"Invalid email address.","auth/missing-password":"Please enter a password.","auth/weak-password":"Password needs at least 6 characters.","auth/email-already-in-use":"An account already exists for this email.","auth/invalid-credential":"Email or password is incorrect.","auth/user-not-found":"No account found for this email.","auth/wrong-password":"Incorrect password." },
+  day0Eyebrow:"Day 0 · Start Here", day0Title:"Welcome to the Reset.",
+  day0Text:"Welcome to the 7-Day Modern Athlete Reset. This is not about perfection, fat loss or pushing harder. For the next seven days, we keep it simple: movement, fuel, recovery and reflection. The goal is to help you feel more energy, more structure and more control again. Complete the daily check-ins honestly — I'll personally review them inside my coaching dashboard. — René",
+  day0Cta:"Start Baseline Check-In", day0CtaDone:"Back to dashboard",
+  videoSoon:"Video from René — coming soon", welcomeVideo:"Welcome video",
+  baseEyebrow:"Baseline Check-In", baseTitle:"Where are you starting from?",
+  lblName:"Name", lblPhone:"WhatsApp / LINE (optional, recommended)", lblSource:"Who invited you?",
+  lblFriend:"Name of the friend", lblGoal:"Main goal", lblStruggle:"Biggest current struggle",
+  sources:[["instagram","Instagram"],["rene","René personally"],["friend","A friend"],["other","Other"]],
+  goals:[["energy","More energy"],["nutrition","Better nutrition"],["training","Better training routine"],["sleep","Better sleep"],["stiffness","Less stiffness"],["consistency","More consistency"],["fat","Lose fat"],["strength","Build strength"],["healthy","Feel healthy again"]],
+  struggles:[["nutrition","Nutrition"],["training","Training"],["sleep","Sleep"],["stress","Stress"],["energy","Low energy"],["structure","No structure"],["not_sure","Not sure"]],
+  baseSliders:[["energy","Energy today"],["sleep","Sleep quality"],["stress","Stress level"],["movement","Movement consistency"],["nutrition","Nutrition structure"]],
+  baseSubmit:"Enter the Reset", baseNameReq:"Please enter your name.",
+  dashHello:(n)=> n ? "Welcome back, "+n : "Welcome back",
+  dashHead:"The 7-Day Reset", missionCta:"Start Today's Mission",
+  missionDoneTitle:"Day completed ✅", missionDoneDesc:"Strong. Come back tomorrow for the next day.",
+  missionAllDoneTitle:"Reset completed", missionAllDoneDesc:"All 7 days done. Your next step is ready below.",
+  missionCtaDone:"View today's summary", missionCtaFinal:"See your next step",
+  dayWord:"Day", statDayLbl:"Progress", statStreakLbl:"Day streak", statPointsLbl:"Reset Points",
+  levelDefault:"Reset Participant", archiveHead:"Your 7 days", startHereLbl:"▶ Day 0 · Welcome video", logout:"Log out",
+  locked:"Locked", today:"Today",
+  bnCardTitle:"Your Bottleneck Snapshot™ 🔓", bnCardSub:"Unlocked after Day 4 — see what's actually blocking you.",
+  mapCardTitle:"Your Personal MAP™", mapCardSub:"You completed the Reset. See your next step.",
+  tasksHead:"Today's mission", tasksHeadChoose:"Choose at least one",
+  checkinHead:"Daily check-in",
+  lblEnergy:"Energy today", lblSleep:"Sleep last night",
+  lblMission:"Did you complete today's mission?",
+  segMission:[["yes","Yes"],["partly","Partly"],["no","No"]],
+  lblReflection:"Reflection", lblWin:"Biggest win today", lblHard:"What was hard today?",
+  lblFeedback:"Anything René should look at? (optional)",
+  coachNote:"Be honest here. René reviews the challenge check-ins personally — this is where the coaching begins.",
+  daySubmit:"Submit check-in", missionReq:"Please answer whether you completed today's mission.",
+  chooseOneReq:"Choose at least one challenge for today.",
+  rewardEyebrow:"Standard Completed ✅", pointsSuffix:"Reset Points",
+  badgeUnlocked:"Badge unlocked", streakWord:(n)=> "Current streak: "+n+(n===1?" day":" days"),
+  tipLbl:"Tip of the day", teaserLbl:"Tomorrow",
+  rewardWhatsapp:"Send René a personal note", rewardContinue:"Continue",
+  checkinSaved:"Check-in submitted ✅ — René can now see your progress.",
+  waCheckin:(d,e,s,w,h)=>"Hey René, I completed Day "+d+" of the Modern Athlete Reset.\n\nEnergy: "+e+"/10\nSleep: "+s+"/10\nBiggest win: "+(w||"—")+"\nBiggest struggle: "+(h||"—"),
+  bnEyebrow:"Unlocked · Your Bottleneck Snapshot™", bnTitle:"Now the pattern is becoming visible.",
+  bnIntro:"You've completed 4 days. Most people don't need more motivation — they need to know what is actually blocking their energy, consistency and progress. For some it's nutrition. For others it's training structure. For many it's recovery and lifestyle. Choose where you want personal guidance:",
+  bnOptions:[
+    { key:"nutrition", title:"Fuel MAP™", desc:"For better energy, fewer cravings and simple nutrition structure.", cta:"I want nutrition guidance",
+      wa:"Hey René, I completed Day 4 of the Modern Athlete Reset and I'd like help with my nutrition guidance." },
+    { key:"training", title:"Movement MAP™", desc:"For strength, mobility, consistency and training structure that fits real life.", cta:"I want training guidance",
+      wa:"Hey René, I completed Day 4 of the Modern Athlete Reset and I'd like help with my training guidance." },
+    { key:"lifestyle", title:"Recovery / Lifestyle MAP™", desc:"For sleep, stress, energy and daily structure.", cta:"I want recovery/lifestyle guidance",
+      wa:"Hey René, I completed Day 4 of the Modern Athlete Reset and I'd like help with recovery and lifestyle structure." },
+    { key:"not_sure", title:"Not sure yet?", desc:"Many people don't know what they need. That's normal.", cta:"Help me find my bottleneck",
+      wa:"Hey René, I completed Day 4 and I'm not sure if nutrition, training or lifestyle is my biggest bottleneck. Can you help me?" }
+  ],
+  bnSaved:"Saved. René will see your choice in his dashboard.",
+  finalEyebrow:"Day 7 completed", finalTitle:"Ready To Build Your Personal MAP™?",
+  finalIntro:"You've seen what seven simple days can change. Now imagine what happens when your nutrition, training, recovery and lifestyle are built around your real life — your schedule, your goals, your body and your current bottlenecks. This is where your Personal MAP™ begins.",
+  prizeNote:"🎁 You're in: everyone who completes all 7 days enters the draw for a free Modern Athlete Assessment™ (worth 1,800 NTD).",
+  offerTitle:"Modern Athlete Assessment™", offerPrice:"1,800 NTD",
+  offerList:["Nutrition review","Movement / training review","Lifestyle score","Main bottleneck analysis","Personal next-step recommendation"],
+  finalCtas:[
+    ["Build My Personal MAP™","Hey René, I completed the 7-Day Modern Athlete Reset and I want to build my Personal MAP™."],
+    ["Book A Free Discovery Call","Hey René, I completed the 7-Day Reset — I'd like to book a free discovery call."],
+    ["Ask René For My Next Step","Hey René, I completed the 7-Day Reset. What would you recommend as my next step?"]
+  ],
+  settingsTitle:"Settings", lblLang:"Language / Sprache", lblPw:"Change password (current, then new)",
+  pwSave:"Update password", pwFill:"Please fill in both fields.", pwShort:"New password needs at least 6 characters.",
+  pwSaved:"Password changed.", pwWrong:"Current password is incorrect.",
+  verifyNote:"Please verify your email — check your inbox.", verifyResend:"Resend email", verifySent:"Email sent."
 },
-zh:{
-  pillars:{ checkin:'每日打卡', nutrition:'飲食', training:'訓練與活動', recovery:'恢復', done:'結尾' },
-  ui:{
-    authEyebrow:'歡迎', authTitleHTML:'登入<em>帳號</em>',
-    authIntroLogin:'使用電子郵件與密碼登入，以儲存你的打卡紀錄。',
-    authIntroRegister:'建立新帳號 — 密碼至少需要6個字元。',
-    authEmailPh:'電子郵件', authPasswordPh:'密碼',
-    authSubmitLogin:'登入', authSubmitRegister:'建立帳號', authSubmitting:'登入中…',
-    authSwitchTextLogin:'還沒有帳號？', authSwitchTextRegister:'已經有帳號了？',
-    authSwitchBtnToRegister:'註冊', authSwitchBtnToLogin:'登入',
-    authForgotBtn:'忘記密碼？', authFillBoth:'請輸入電子郵件與密碼。',
-    authFillEmail:'請先輸入你的電子郵件地址。',
-    authResetSent:'重設密碼的電子郵件已寄出 — 請查收你的信箱。',
-    authErrorFallback:'發生錯誤，請再試一次。',
-    authErrors:{
-      'auth/invalid-email':'電子郵件地址無效。',
-      'auth/missing-password':'請輸入密碼。',
-      'auth/weak-password':'密碼至少需要6個字元。',
-      'auth/email-already-in-use':'此電子郵件已經有帳號存在。',
-      'auth/invalid-credential':'電子郵件或密碼錯誤。',
-      'auth/user-not-found':'找不到使用此電子郵件的帳號。',
-      'auth/wrong-password':'密碼錯誤。'
-    },
-    startPara:'我們一起堅持下去，一次守住一個標準。<br>在這裡的每一天，都是對自己的證明 — 讓我們把今天變成值得的一天。',
-    streakSuffix:'天連續 Streak', ctaStart:'開始任務', challengesBtn:'挑戰任務',
-    startHint:'大約需要90秒 · 進度會自動儲存', logout:'登出',
-    coachViewBtn:'教練檢視', clientViewBtn:'學員檢視',
-    backBtn:'返回', skipBtn:'跳過', noteDoneBtn:'完成打卡', sliderNextBtn:'繼續',
-    resultEyebrow:'任務完成', resultTitle:'你今天的標準', insightLabel:'教練提示',
-    streakSubText:'連續打卡 — 持之以恆勝過完美。', doneBtn:'今天就到這裡', daysWord:'天',
-    settingsBtn:'設定', settingsTitle:'設定',
-    labelName:'姓名', labelEmail:'電子郵件', labelPhone:'電話號碼（可選填）', labelGoals:'你的目標',
-    settingsSaveBtn:'儲存', settingsSaved:'已儲存。',
-    goalsPlaceholder:'例如：減重5公斤、跑步10公里、每天更有活力……',
-    challengesTitle:'挑戰任務', challengesEmpty:'目前沒有進行中的挑戰任務。',
-    challengeJoinBtn:'參加', challengeLeaveBtn:'退出', challengeJoinedLabel:'已參加 ✓',
-    challengeProgressLabel:'進度', communityToday:(n,total)=> '今天有 '+n+' / '+total+' 人完成打卡 ⚡',
-    verifyBannerText:'請驗證你的電子郵件地址 — 請查看你的信箱。',
-    verifyResendBtn:'重新寄送', verifyResendSent:'郵件已寄出。',
-    reminderBannerText:'你今天還沒有打卡 — 現在補上嗎？',
-    labelTheme:'外觀', themeDarkLabel:'深色', themeLightLabel:'淺色',
-    personalInfoBtnText:'個人資訊', personalTitle:'個人資訊',
-    greetingHello:()=> '歡迎來到你的 Modern Athlete 計畫',
-    changePasswordBtnText:'變更密碼', passwordTitle:'變更密碼',
-    labelCurrentPassword:'目前密碼', labelNewPassword:'新密碼',
-    passwordFillBoth:'請填寫兩個欄位。', passwordTooShort:'新密碼至少需要6個字元。',
-    passwordSaved:'密碼已變更。', passwordWrongCurrent:'目前密碼不正確。',
-    rememberMeLabel:'保持登入狀態',
-    checkinCardBanner:'任務', checkinCardDesc:'15個問題，90秒 — 教練馬上知道你的狀態。',
-    challengeCardBanner:'動力', challengeCardDesc:'一起參加、追蹤進度，互相督促堅持下去。',
-    leaderboardBtnText:'排行榜', leaderboardTitle:'排行榜', leaderboardEmpty:'目前還沒有任何連續打卡紀錄。',
-    lbYou:'（你）',
-    tagElite:'精英標準', tagTarget:'達成標準', tagMinimum:'達成最低標準', tagMiss:'今天尚未達成',
-    honestCheckin:'誠實打卡。你仍然在場上。',
-    comebackTitle:'可以回歸了', comebackText:'漏掉一天不代表放棄。',
-    comebackText2:'完成今天的任務，你就重新回到場上了。'
-  },
-  q:{
-    feeling:{ title:'你今天感覺如何？', opts:[['😄','很好'],['🙂','不錯'],['😐','普通'],['😕','偏低'],['😞','不好']] },
-    water:{ title:'你今天喝了多少水？', caption:'僅供參考 — 天氣炎熱、大量流汗、活動量大或體重較高時，你需要喝更多水。',
-      opts:[['','非常少 · 少於1公升'],['','偏少 · 1–1.5公升'],['','還可以 · 1.5–2公升'],['','不錯 · 2–3公升'],['','很多 · 3公升以上']] },
-    protein:{ title:'你這天大部分餐點都有攝取蛋白質嗎？', caption:'例如：雞蛋、雞肉、魚肉、肉類、豆腐、優格、豆類、蛋白飲。',
-      opts:[['✅','是，大部分都有'],['〰️','有一些，但不夠'],['✖️','幾乎沒有']] },
-    quality:{ title:'你今天整體的飲食表現如何？', opts:[['🎯','在軌道上'],['⚖️','還可以'],['↩️','偏離軌道']] },
-    digestionCombo:{ title:'消化與飢餓感', subs:[
-      { title:'你今天的消化狀況如何？', opts:[['👍','良好正常'],['🎈','脹氣'],['💧','軟便'],['🧱','便秘'],['⚡','疼痛／不適']] },
-      { title:'今天的飢餓感與渴望食物的程度？', opts:[['','沒問題'],['','正常'],['','比平常強烈'],['','一直很想吃東西']] }
-    ] },
-    digestTrigger:{ title:'你認為可能的原因？', opts:[['','份量太大'],['','乳製品'],['','麩質'],['','纖維攝取過多'],['','油膩食物'],['','壓力'],['','不清楚'],['','其他']] },
-    trainingCombo:{ title:'訓練與活動度', subs:[
-      { title:'你完成計畫中的訓練了嗎？', opts:[['✅','是的'],['➗','部分完成'],['🛋️','休息日（計畫中）'],['✖️','沒有完成']] },
-      { title:'你有做活動度訓練或伸展嗎？', opts:[['','沒有'],['','有 · 5分鐘'],['','有 · 10–15分鐘'],['','有 · 15分鐘以上']] }
-    ] },
-    missReason:{ title:'主要原因是什麼？', opts:[['','沒有時間'],['','沒有精力'],['','疼痛'],['','壓力'],['','動力不足'],['','工作與出差'],['','其他'],['','—']] },
-    pain:{ title:'今天有疼痛或不適嗎？', opts:[['','沒有'],['','輕微'],['','中等'],['','嚴重']] },
-    painWhere:{ title:'哪個部位？', opts:[['','頸部與肩膀'],['','手肘與手腕'],['','下背部'],['','髖部'],['','膝蓋'],['','腳與腳踝'],['','其他'],['','—']] },
-    painImpact:{ title:'這是否影響了你的活動或訓練？', opts:[['','沒有'],['','有一點'],['','有，必須調整'],['','有，必須中止']] },
-    sleep:{ title:'你昨晚睡得如何？', opts:[
-      ['','非常少／差 · 少於5小時或品質很差'],
-      ['','偏少 · 5–6小時，品質普通'],
-      ['','還可以 · 6–7小時，大致良好'],
-      ['','不錯 · 7–8小時，品質良好'],
-      ['','很棒 · 8小時以上，品質很好']
-    ] },
-    energyMotivation:{ title:'今天的精力與動力如何？', lo:'空虛且沒動力', hi:'滿滿活力、準備就緒' },
-    stress:{ title:'今天的壓力程度？', lo:'非常放鬆', hi:'已達極限' },
-    note:{ title:'有什麼是教練需要知道的嗎？', caption:'可選填 — 你也可以跳過。',
-      placeholder:'例如：今天工作壓力大、睡不好、訓練表現很棒、正在出差……' }
-  },
-  insights:{
-    painSevere:'嚴重疼痛是停止的訊號，而不是硬撐的訊號。你的教練會與你聯繫 — 如果疼痛持續，請就醫檢查。',
-    sleepLow:'睡眠不足5小時 — 今天不要勉強高強度訓練。提早睡覺會直接改善訓練表現與食慾控制。',
-    stressEnergyLow:'壓力已達極限，能量幾乎耗盡。今天恢復比任何訓練都重要：散步、攝取蛋白質、早點睡。',
-    exhausted:'精疲力盡只是一個數據點，不是失敗。今天請刻意放慢步調 — 恢復也是訓練的一部分。',
-    hungerConstant:'持續的強烈食慾通常代表蛋白質或睡眠攝取不足 — 可以檢視一下最近幾天的紀錄。',
-    worstRecovery:'恢復是你今天最弱的一環。提早一小時睡覺是明天最快見效的方法。',
-    worstNutrition:'今天的飲食狀況不太穩定 — 明天只要專注一件事：每餐都攝取蛋白質。一個改變，效果顯著。',
-    worstTraining:'今天的活動量不夠。明天安排20分鐘的散步 — 持之以恆勝過強度。',
-    allGood:'三個面向今天都表現出色。正是這樣的持續一致，最終造就了差異。💪'
-  }
+de:{
+  authEyebrow:"Willkommen", authTitleLogin:"Willkommen zurück.", authTitleRegister:"Du bist jetzt im Reset.",
+  authIntroLogin:"Melde dich an, um deine 7 Tage fortzusetzen.", authIntroRegister:"Erstelle deinen Zugang, um die 7 Tage zu starten.",
+  emailPh:"E-Mail", passwordPh:"Passwort", staySignedIn:"Angemeldet bleiben",
+  signIn:"Anmelden", createAccount:"Konto erstellen", submitting:"Einen Moment …",
+  noAccount:"Noch kein Konto?", haveAccount:"Schon einen Zugang?", register:"Konto erstellen", login:"Anmelden",
+  forgot:"Passwort vergessen?", fillBoth:"Bitte E-Mail und Passwort eingeben.", fillEmail:"Bitte zuerst deine E-Mail eingeben.",
+  resetSent:"E-Mail zum Zurücksetzen verschickt — check dein Postfach.",
+  errFallback:"Etwas ist schiefgelaufen. Bitte erneut versuchen.",
+  errors:{ "auth/invalid-email":"Ungültige E-Mail-Adresse.","auth/missing-password":"Bitte ein Passwort eingeben.","auth/weak-password":"Passwort braucht mindestens 6 Zeichen.","auth/email-already-in-use":"Für diese E-Mail existiert bereits ein Konto.","auth/invalid-credential":"E-Mail oder Passwort ist falsch.","auth/user-not-found":"Kein Konto mit dieser E-Mail gefunden.","auth/wrong-password":"Falsches Passwort." },
+  day0Eyebrow:"Tag 0 · Start Here", day0Title:"Willkommen im Reset.",
+  day0Text:"Willkommen beim 7-Day Modern Athlete Reset. Es geht hier nicht um Perfektion, extremes Abnehmen oder darum, dich komplett zu zerstören. Für die nächsten sieben Tage halten wir es simpel: Bewegung, Ernährung, Regeneration und Reflexion. Das Ziel ist, dass du wieder mehr Energie, Struktur und Kontrolle in deinen Alltag bringst. Füll die täglichen Check-ins ehrlich aus — ich sehe sie in meinem Coaching-Dashboard und schaue sie mir persönlich an. — René",
+  day0Cta:"Baseline-Check-in starten", day0CtaDone:"Zurück zum Dashboard",
+  videoSoon:"Video von René — folgt in Kürze", welcomeVideo:"Willkommens-Video",
+  baseEyebrow:"Baseline-Check-in", baseTitle:"Wo startest du gerade?",
+  lblName:"Name", lblPhone:"WhatsApp / LINE (optional, empfohlen)", lblSource:"Wer hat dich eingeladen?",
+  lblFriend:"Name des Freundes", lblGoal:"Hauptziel", lblStruggle:"Größte aktuelle Herausforderung",
+  sources:[["instagram","Instagram"],["rene","René persönlich"],["friend","Ein Freund"],["other","Sonstiges"]],
+  goals:[["energy","Mehr Energie"],["nutrition","Bessere Ernährung"],["training","Bessere Trainingsroutine"],["sleep","Besserer Schlaf"],["stiffness","Weniger Steifheit"],["consistency","Mehr Konstanz"],["fat","Fett verlieren"],["strength","Kraft aufbauen"],["healthy","Mich wieder gesund fühlen"]],
+  struggles:[["nutrition","Ernährung"],["training","Training"],["sleep","Schlaf"],["stress","Stress"],["energy","Wenig Energie"],["structure","Keine Struktur"],["not_sure","Nicht sicher"]],
+  baseSliders:[["energy","Energie heute"],["sleep","Schlafqualität"],["stress","Stresslevel"],["movement","Bewegungs-Konstanz"],["nutrition","Ernährungs-Struktur"]],
+  baseSubmit:"Reset betreten", baseNameReq:"Bitte gib deinen Namen ein.",
+  dashHello:(n)=> n ? "Willkommen zurück, "+n : "Willkommen zurück",
+  dashHead:"Der 7-Day Reset", missionCta:"Heutige Mission starten",
+  missionDoneTitle:"Tag abgeschlossen ✅", missionDoneDesc:"Stark. Komm morgen für den nächsten Tag zurück.",
+  missionAllDoneTitle:"Reset abgeschlossen", missionAllDoneDesc:"Alle 7 Tage geschafft. Dein nächster Schritt wartet unten.",
+  missionCtaDone:"Heutige Zusammenfassung ansehen", missionCtaFinal:"Deinen nächsten Schritt ansehen",
+  dayWord:"Tag", statDayLbl:"Fortschritt", statStreakLbl:"Tage-Streak", statPointsLbl:"Reset Points",
+  levelDefault:"Reset-Teilnehmer", archiveHead:"Deine 7 Tage", startHereLbl:"▶ Tag 0 · Willkommens-Video", logout:"Abmelden",
+  locked:"Gesperrt", today:"Heute",
+  bnCardTitle:"Dein Bottleneck Snapshot™ 🔓", bnCardSub:"Nach Tag 4 freigeschaltet — sieh, was dich wirklich blockiert.",
+  mapCardTitle:"Deine Personal MAP™", mapCardSub:"Du hast den Reset abgeschlossen. Sieh dir deinen nächsten Schritt an.",
+  tasksHead:"Heutige Mission", tasksHeadChoose:"Wähle mindestens eine",
+  checkinHead:"Täglicher Check-in",
+  lblEnergy:"Energie heute", lblSleep:"Schlaf letzte Nacht",
+  lblMission:"Hast du die heutige Mission abgeschlossen?",
+  segMission:[["yes","Ja"],["partly","Teilweise"],["no","Nein"]],
+  lblReflection:"Reflexion", lblWin:"Größter Win heute", lblHard:"Was war heute schwer?",
+  lblFeedback:"Soll René sich etwas Bestimmtes anschauen? (optional)",
+  coachNote:"Sei hier ehrlich. René schaut sich die Challenge-Check-ins persönlich an — hier beginnt das Coaching.",
+  daySubmit:"Check-in absenden", missionReq:"Bitte beantworte, ob du die heutige Mission abgeschlossen hast.",
+  chooseOneReq:"Wähle mindestens eine Challenge für heute.",
+  rewardEyebrow:"Standard gehalten ✅", pointsSuffix:"Reset Points",
+  badgeUnlocked:"Badge freigeschaltet", streakWord:(n)=> "Aktueller Streak: "+n+(n===1?" Tag":" Tage"),
+  tipLbl:"Tipp des Tages", teaserLbl:"Morgen",
+  rewardWhatsapp:"René eine persönliche Nachricht senden", rewardContinue:"Weiter",
+  checkinSaved:"Check-in gespeichert ✅ — René kann deinen Fortschritt jetzt sehen.",
+  waCheckin:(d,e,s,w,h)=>"Hey René, ich habe Tag "+d+" vom Modern Athlete Reset abgeschlossen.\n\nEnergie: "+e+"/10\nSchlaf: "+s+"/10\nGrößter Win: "+(w||"—")+"\nGrößte Herausforderung: "+(h||"—"),
+  bnEyebrow:"Freigeschaltet · Dein Bottleneck Snapshot™", bnTitle:"Jetzt wird das Muster sichtbar.",
+  bnIntro:"Du hast 4 Tage abgeschlossen. Die meisten Menschen brauchen nicht mehr Motivation — sie müssen wissen, was ihre Energie, Konstanz und ihren Fortschritt wirklich blockiert. Bei manchen ist es die Ernährung. Bei anderen die Trainingsstruktur. Bei vielen sind es Regeneration und Lifestyle. Wähle, wo du persönliche Begleitung willst:",
+  bnOptions:[
+    { key:"nutrition", title:"Fuel MAP™", desc:"Für bessere Energie, weniger Cravings und einfache Ernährungsstruktur.", cta:"Ich will Ernährungs-Guidance",
+      wa:"Hey René, ich habe Tag 4 vom Modern Athlete Reset abgeschlossen und hätte gern Hilfe bei meiner Ernährung." },
+    { key:"training", title:"Movement MAP™", desc:"Für Kraft, Mobility, Konstanz und Trainingsstruktur, die in dein echtes Leben passt.", cta:"Ich will Trainings-Guidance",
+      wa:"Hey René, ich habe Tag 4 vom Modern Athlete Reset abgeschlossen und hätte gern Hilfe bei meinem Training." },
+    { key:"lifestyle", title:"Recovery / Lifestyle MAP™", desc:"Für Schlaf, Stress, Energie und Alltagsstruktur.", cta:"Ich will Recovery/Lifestyle-Guidance",
+      wa:"Hey René, ich habe Tag 4 vom Modern Athlete Reset abgeschlossen und hätte gern Hilfe bei Regeneration und Lifestyle-Struktur." },
+    { key:"not_sure", title:"Noch nicht sicher?", desc:"Viele wissen nicht, was sie brauchen. Das ist normal.", cta:"Hilf mir, meinen Bottleneck zu finden",
+      wa:"Hey René, ich habe Tag 4 abgeschlossen und bin nicht sicher, ob Ernährung, Training oder Lifestyle mein größter Bottleneck ist. Kannst du mir helfen?" }
+  ],
+  bnSaved:"Gespeichert. René sieht deine Auswahl in seinem Dashboard.",
+  finalEyebrow:"Tag 7 abgeschlossen", finalTitle:"Bereit für deine Personal MAP™?",
+  finalIntro:"Du hast gesehen, was sieben einfache Tage verändern können. Stell dir vor, was passiert, wenn Ernährung, Training, Regeneration und Lifestyle um dein echtes Leben herum gebaut werden — deinen Zeitplan, deine Ziele, deinen Körper und deine aktuellen Bottlenecks. Hier beginnt deine Personal MAP™.",
+  prizeNote:"🎁 Du bist dabei: Alle, die alle 7 Tage abschließen, nehmen an der Verlosung eines kostenlosen Modern Athlete Assessment™ teil (Wert: 1.800 NTD).",
+  offerTitle:"Modern Athlete Assessment™", offerPrice:"1.800 NTD",
+  offerList:["Ernährungs-Review","Bewegungs- / Trainings-Review","Lifestyle-Score","Analyse deines größten Bottlenecks","Persönliche Next-Step-Empfehlung"],
+  finalCtas:[
+    ["Meine Personal MAP™ bauen","Hey René, ich habe den 7-Day Modern Athlete Reset abgeschlossen und möchte meine Personal MAP™ bauen."],
+    ["Kostenloses Erstgespräch buchen","Hey René, ich habe den 7-Day Reset abgeschlossen — ich würde gern ein kostenloses Erstgespräch buchen."],
+    ["René nach meinem nächsten Schritt fragen","Hey René, ich habe den 7-Day Reset abgeschlossen. Was würdest du mir als nächsten Schritt empfehlen?"]
+  ],
+  settingsTitle:"Einstellungen", lblLang:"Sprache / Language", lblPw:"Passwort ändern (aktuell, dann neu)",
+  pwSave:"Passwort aktualisieren", pwFill:"Bitte beide Felder ausfüllen.", pwShort:"Neues Passwort braucht mindestens 6 Zeichen.",
+  pwSaved:"Passwort geändert.", pwWrong:"Aktuelles Passwort ist falsch.",
+  verifyNote:"Bitte bestätige deine E-Mail — check dein Postfach.", verifyResend:"Erneut senden", verifySent:"E-Mail verschickt."
 }
 };
 
 /* =========================================================
-   FLOW ENGINE
+   STATE + HELPERS
 ========================================================= */
 const $ = s=>document.querySelector(s);
-const screens = { auth:$('#screen-auth'), start:$('#screen-start'), checkin:$('#screen-checkin'), result:$('#screen-result'), settings:$('#screen-settings'), personal:$('#screen-personal'), password:$('#screen-password'), challenges:$('#screen-challenges') };
-let currentScreen = 'auth';
+const state = {
+  uid:null, lang: localStorage.getItem('mal_lang') || null,
+  profile:null, checkins:{}, // day -> data
+  currentTasks:new Set(), missionAnswer:null, lastReward:null, viewDay:null
+};
+const t = ()=> T[state.lang || 'en'];
+const dc = (day)=> DAYS[day][state.lang || 'en'];
 
+const screens = {};
+document.querySelectorAll('.screen').forEach(s=>{ screens[s.id.replace('screen-','')] = s; });
+let currentScreen = null;
 function show(name){
   Object.values(screens).forEach(s=>s.classList.remove('active'));
   screens[name].classList.add('active');
@@ -1095,823 +835,574 @@ function show(name){
   window.scrollTo(0,0);
 }
 
-/* =========================================================
-   SPRACHUMSCHALTUNG
-========================================================= */
-function updateDateLabel(){
-  const now = new Date();
-  $('#todayLabel').textContent = now.toLocaleDateString(LOCALE_MAP[state.lang], {weekday:'long', day:'numeric', month:'long'});
+function todayStr(){
+  const d=new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function dateOffsetStr(offset){
+  const d=new Date(); d.setDate(d.getDate()+offset);
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
 
-function applyLanguage(lang){
-  state.lang = lang;
-  document.documentElement.setAttribute('lang', HTML_LANG[lang]);
-  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active', b.dataset.lang===lang));
-  const t = T[lang].ui;
-  updateDateLabel();
-  $('#authEyebrow').textContent = t.authEyebrow;
-  $('#authTitle').innerHTML = t.authTitleHTML;
-  $('#authEmail').placeholder = t.authEmailPh;
-  $('#authPassword').placeholder = t.authPasswordPh;
-  $('#authForgotBtn').textContent = t.authForgotBtn;
-  $('#settingsGoals').placeholder = t.goalsPlaceholder;
-  setAuthMode(authMode);
-  $('#startPara').innerHTML = t.startPara;
-  $('#checkinCardBanner').textContent = t.checkinCardBanner;
-  $('#checkinCardTitle').textContent = t.ctaStart;
-  $('#checkinCardDesc').textContent = t.checkinCardDesc;
-  $('#challengeCardBanner').textContent = t.challengeCardBanner;
-  $('#challengeCardTitle').textContent = t.challengesBtn;
-  $('#challengeCardDesc').textContent = t.challengeCardDesc;
-  $('#startHint').textContent = t.startHint;
-  $('#logoutBtn').textContent = t.logout;
-  $('#streakChip').textContent = state.streak+' '+t.streakSuffix;
-  $('#backBtn').textContent = '← '+t.backBtn;
-  $('#resultEyebrow').textContent = t.resultEyebrow;
-  $('#resultTitle').textContent = t.resultTitle;
-  $('#ringLabelErn').textContent = T[lang].pillars.nutrition;
-  $('#ringLabelTra').textContent = T[lang].pillars.training;
-  $('#ringLabelRec').textContent = T[lang].pillars.recovery;
-  $('#insightLabelText').textContent = t.insightLabel;
-  $('#streakSub').textContent = t.streakSubText;
-  $('#doneBtn').textContent = t.doneBtn;
-  $('#settingsBtn').setAttribute('aria-label', t.settingsBtn);
-  $('#settingsTitle').textContent = t.settingsTitle;
-  $('#labelName').textContent = t.labelName;
-  $('#labelEmail').textContent = t.labelEmail;
-  $('#labelPhone').textContent = t.labelPhone;
-  $('#labelGoals').textContent = t.labelGoals;
-  $('#settingsSaveBtn').textContent = t.settingsSaveBtn;
-  $('#settingsBackBtn').textContent = '← '+t.backBtn;
-  $('#challengesTitle').textContent = t.challengesTitle;
-  $('#challengesBackBtn').textContent = '← '+t.backBtn;
-  $('#challengesEmpty').textContent = t.challengesEmpty;
-  $('#verifyBannerText').textContent = t.verifyBannerText;
-  $('#verifyResendBtn').textContent = t.verifyResendBtn;
-  $('#labelTheme').textContent = t.labelTheme;
-  $('#themeDarkLabel').textContent = t.themeDarkLabel;
-  $('#themeLightLabel').textContent = t.themeLightLabel;
-  $('#personalInfoBtnText').textContent = t.personalInfoBtnText;
-  $('#personalTitle').textContent = t.personalTitle;
-  $('#personalBackBtn').textContent = '← '+t.backBtn;
-  $('#changePasswordBtnText').textContent = t.changePasswordBtnText;
-  $('#passwordTitle').textContent = t.passwordTitle;
-  $('#labelCurrentPassword').textContent = t.labelCurrentPassword;
-  $('#labelNewPassword').textContent = t.labelNewPassword;
-  $('#passwordSaveBtn').textContent = t.settingsSaveBtn;
-  $('#passwordBackBtn').textContent = '← '+t.backBtn;
-  $('#rememberMeLabel').textContent = t.rememberMeLabel;
-  $('#leaderboardTitle').textContent = t.leaderboardTitle;
-  updateGreeting();
-  updateCommunityChip();
-  renderLeaderboard();
-  if(state.uid) updateEngagementBanners();
-  if(currentScreen==='checkin') renderQuestion();
-  if(currentScreen==='challenges') renderChallenges();
+function completedDays(){ return Object.keys(state.checkins).map(Number).sort((a,b)=>a-b); }
+function currentDay(){ return Math.min(7, completedDays().length + 1); }
+function allDone(){ return completedDays().length >= 7; }
+function totalPoints(){ return completedDays().reduce((sum,d)=> sum + (state.checkins[d].points||0), 0); }
+function completedToday(){ return Object.values(state.checkins).some(c=>c.dateStr===todayStr()); }
+function computeStreak(){
+  const dates = new Set(Object.values(state.checkins).map(c=>c.dateStr));
+  let streak=0, offset=0;
+  if(!dates.has(todayStr())) offset = -1;
+  while(dates.has(dateOffsetStr(offset - streak))) streak++;
+  return streak;
 }
-document.querySelectorAll('.lang-btn').forEach(b=>{
-  b.addEventListener('click',()=>applyLanguage(b.dataset.lang));
+function latestBadge(){
+  const days = completedDays();
+  return days.length ? BADGES[days[days.length-1]] : null;
+}
+function waLink(msg){
+  const enc = encodeURIComponent(msg);
+  return COACH_WHATSAPP ? 'https://wa.me/'+COACH_WHATSAPP+'?text='+enc : 'https://wa.me/?text='+enc;
+}
+
+function renderVideo(el, url, label){
+  el.innerHTML='';
+  if(url){
+    const v=document.createElement('video');
+    v.src=url; v.controls=true; v.playsInline=true;
+    el.appendChild(v);
+  } else {
+    el.innerHTML = '<div class="video-ph"><div class="play">▶</div><div class="vtitle">'+label+'</div><div class="vsub">'+t().videoSoon+'</div></div>';
+  }
+}
+
+/* =========================================================
+   LANGUAGE
+========================================================= */
+document.querySelectorAll('.lang-card').forEach(card=>{
+  const pick = async ()=>{
+    state.lang = card.dataset.lang;
+    localStorage.setItem('mal_lang', state.lang);
+    document.documentElement.lang = state.lang;
+    if(state.uid){
+      try{ await setDoc(doc(db,'users',state.uid), { preferredLanguage: state.lang }, { merge:true }); }catch(e){}
+      if(state.profile) state.profile.preferredLanguage = state.lang;
+    }
+    route();
+  };
+  card.addEventListener('click', pick);
+  card.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); pick(); } });
 });
 
 /* =========================================================
-   AUTH — E-Mail/Passwort, Login/Registrierung im selben Screen
+   AUTH
 ========================================================= */
-let authMode = 'login';
-
-function setAuthMode(mode){
-  authMode = mode;
-  const t = T[state.lang].ui;
-  $('#authSubmitBtn').textContent = mode==='login' ? t.authSubmitLogin : t.authSubmitRegister;
-  $('#authIntro').textContent = mode==='login' ? t.authIntroLogin : t.authIntroRegister;
-  $('#authSwitchText').textContent = mode==='login' ? t.authSwitchTextLogin : t.authSwitchTextRegister;
-  $('#authSwitchBtn').textContent = mode==='login' ? t.authSwitchBtnToRegister : t.authSwitchBtnToLogin;
-  $('#authError').textContent = '';
-  $('#authSuccess').textContent = '';
+let authMode='login';
+function applyAuthText(){
+  const s=t();
+  $('#authEyebrow').textContent=s.authEyebrow;
+  $('#authTitle').textContent = authMode==='login' ? s.authTitleLogin : s.authTitleRegister;
+  $('#authIntro').textContent = authMode==='login' ? s.authIntroLogin : s.authIntroRegister;
+  $('#authEmail').placeholder=s.emailPh; $('#authPassword').placeholder=s.passwordPh;
+  $('#rememberMeLabel').textContent=s.staySignedIn;
+  $('#authSubmitBtn').textContent = authMode==='login' ? s.signIn : s.createAccount;
+  $('#authForgotBtn').textContent=s.forgot;
+  $('#authSwitchText').textContent = authMode==='login' ? s.noAccount : s.haveAccount;
+  $('#authSwitchBtn').textContent = authMode==='login' ? s.register : s.login;
+  $('#authError').textContent=''; $('#authSuccess').textContent='';
 }
-$('#authSwitchBtn').addEventListener('click',()=>setAuthMode(authMode==='login'?'register':'login'));
-
-$('#passwordToggleBtn').addEventListener('click', ()=>{
-  const input = $('#authPassword');
-  const showing = input.type==='text';
-  input.type = showing ? 'password' : 'text';
-  $('#passwordToggleBtn').textContent = showing ? '👁' : '🙈';
+$('#authSwitchBtn').addEventListener('click',()=>{ authMode = authMode==='login'?'register':'login'; applyAuthText(); });
+$('#passwordToggleBtn').addEventListener('click',()=>{
+  const i=$('#authPassword'); const showing=i.type==='text';
+  i.type=showing?'password':'text';
+  $('#passwordToggleBtn').textContent=showing?'👁':'🙈';
 });
+function authErr(code){ return t().errors[code] || t().errFallback; }
 
 $('#authSubmitBtn').addEventListener('click', async ()=>{
-  const email = $('#authEmail').value.trim().toLowerCase();
-  const password = $('#authPassword').value;
-  const errBox = $('#authError');
-  const btn = $('#authSubmitBtn');
-  errBox.textContent = ''; $('#authSuccess').textContent = '';
-  if(!email || !password){ errBox.textContent = T[state.lang].ui.authFillBoth; return; }
-  const originalLabel = btn.textContent;
-  btn.disabled = true;
-  btn.textContent = T[state.lang].ui.authSubmitting;
+  const email=$('#authEmail').value.trim().toLowerCase();
+  const password=$('#authPassword').value;
+  const err=$('#authError'); err.textContent=''; $('#authSuccess').textContent='';
+  if(!email||!password){ err.textContent=t().fillBoth; return; }
+  const btn=$('#authSubmitBtn'); const orig=btn.textContent;
+  btn.disabled=true; btn.textContent=t().submitting;
   try{
     await setPersistence(auth, $('#rememberMe').checked ? browserLocalPersistence : browserSessionPersistence);
     if(authMode==='login'){
       await signInWithEmailAndPassword(auth,email,password);
     } else {
-      const cred = await createUserWithEmailAndPassword(auth,email,password);
-      await sendEmailVerification(cred.user, { url: window.location.origin + '/verify.html' });
-      await setDoc(doc(db,'users',cred.user.uid), { email, name:'', phone:'', goals:'', createdAt: serverTimestamp() });
-      await runTransaction(db, async (tx)=>{
-        const ref = doc(db,'stats','totals');
-        const snap = await tx.get(ref);
-        tx.set(ref, { userCount: (snap.exists()? snap.data().userCount||0 : 0) + 1 }, { merge:true });
-      });
+      const cred=await createUserWithEmailAndPassword(auth,email,password);
+      try{ await sendEmailVerification(cred.user,{ url: window.location.origin+'/verify.html' }); }catch(e){}
+      await setDoc(doc(db,'users',cred.user.uid),{
+        email, preferredLanguage: state.lang || 'en', createdAt: serverTimestamp()
+      },{ merge:true });
     }
-  }catch(e){
-    errBox.textContent = authErrorMessage(e.code);
-  }finally{
-    btn.disabled = false;
-    btn.textContent = originalLabel;
-  }
+  }catch(e){ err.textContent=authErr(e.code); }
+  finally{ btn.disabled=false; btn.textContent=orig; }
 });
-
 $('#authForgotBtn').addEventListener('click', async ()=>{
-  const t = T[state.lang].ui;
-  const email = $('#authEmail').value.trim().toLowerCase();
-  const errBox = $('#authError'); const okBox = $('#authSuccess');
-  errBox.textContent = ''; okBox.textContent = '';
-  if(!email){ errBox.textContent = t.authFillEmail; return; }
-  try{
-    await sendPasswordResetEmail(auth,email);
-    okBox.textContent = t.authResetSent;
-  }catch(e){
-    errBox.textContent = authErrorMessage(e.code);
-  }
+  const email=$('#authEmail').value.trim().toLowerCase();
+  const err=$('#authError'); const ok=$('#authSuccess');
+  err.textContent=''; ok.textContent='';
+  if(!email){ err.textContent=t().fillEmail; return; }
+  try{ await sendPasswordResetEmail(auth,email); ok.textContent=t().resetSent; }
+  catch(e){ err.textContent=authErr(e.code); }
 });
 
-function authErrorMessage(code){
-  const t = T[state.lang].ui;
-  return t.authErrors[code] || t.authErrorFallback;
-}
-
-$('#logoutBtn').addEventListener('click', ()=> signOut(auth));
-
-$('#verifyResendBtn').addEventListener('click', async ()=>{
-  if(!auth.currentUser) return;
-  await sendEmailVerification(auth.currentUser, { url: window.location.origin + '/verify.html' });
-  $('#verifyResendBtn').textContent = T[state.lang].ui.verifyResendSent;
-});
-
-async function updateEngagementBanners(){
-  const user = auth.currentUser;
-  if(!user) return;
-  $('#verifyBanner').classList.toggle('hidden', user.emailVerified);
-  const banner = $('#reminderBanner');
-  try{
-    const todaySnap = await getDoc(doc(db,'checkins',state.uid+'_'+todayStr()));
-    const checkedInToday = todaySnap.exists();
-    const isEvening = new Date().getHours() >= 18;
-    const isComeback = !checkedInToday && state.streak===0 && state.hasHistory;
-    const t = T[state.lang].ui;
-    if(isComeback){
-      banner.dataset.mode = 'comeback';
-      banner.classList.remove('hidden');
-      $('#reminderBannerHeading').textContent = t.comebackTitle;
-      $('#reminderBannerHeading').classList.remove('hidden');
-      $('#reminderBannerText').textContent = t.comebackText+' '+t.comebackText2;
-    } else {
-      banner.dataset.mode = 'reminder';
-      $('#reminderBannerHeading').classList.add('hidden');
-      $('#reminderBannerText').textContent = t.reminderBannerText;
-      banner.classList.toggle('hidden', checkedInToday || !isEvening);
-    }
-  }catch(e){
-    banner.classList.add('hidden');
-  }
-}
-
-document.addEventListener('visibilitychange', async ()=>{
-  if(document.visibilityState==='visible' && auth.currentUser && !auth.currentUser.emailVerified){
-    try{
-      await auth.currentUser.reload();
-      $('#verifyBanner').classList.toggle('hidden', auth.currentUser.emailVerified);
-    }catch(e){}
-  }
-});
-
+/* =========================================================
+   ROUTING
+========================================================= */
 onAuthStateChanged(auth, async (user)=>{
   if(user){
-    state.uid = user.uid;
-    $('#authEmail').value=''; $('#authPassword').value=''; $('#authError').textContent='';
-    $('#settingsBtn').classList.remove('hidden');
-    state.userName = undefined;
-    try{ await setDoc(doc(db,'users',state.uid), { lastSeen: serverTimestamp() }, { merge:true }); }catch(e){}
-    await refreshStreak();
-    await updateCommunityChip();
-    await updateEngagementBanners();
-    await updateGreeting();
-    show('start');
-  } else {
-    state.uid = null;
-    state.userName = undefined;
-    setAuthMode('login');
-    $('#settingsBtn').classList.add('hidden');
-    show('auth');
-  }
-});
-
-/* =========================================================
-   FIRESTORE — Check-ins pro Nutzer/Tag, Streak aus Historie
-========================================================= */
-function todayStr(){
-  const d = new Date();
-  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-}
-function dateStrOf(d){
-  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-}
-
-async function saveCheckin(answers,scores){
-  const dateStr = todayStr();
-  const ref = doc(db,'checkins',state.uid+'_'+dateStr);
-  const already = (await getDoc(ref)).exists();
-  await setDoc(ref,{
-    uid: state.uid, dateStr, answers, scores, createdAt: serverTimestamp()
-  });
-  if(!already){
-    await runTransaction(db, async (tx)=>{
-      const statRef = doc(db,'dailyStats',dateStr);
-      const snap = await tx.get(statRef);
-      tx.set(statRef, { checkinCount: (snap.exists()? snap.data().checkinCount||0 : 0) + 1 }, { merge:true });
-    });
-  }
-}
-
-async function updateCommunityChip(){
-  const chip = $('#communityChip');
-  if(!chip) return;
-  try{
-    const [dailySnap, totalsSnap] = await Promise.all([
-      getDoc(doc(db,'dailyStats',todayStr())),
-      getDoc(doc(db,'stats','totals'))
-    ]);
-    const n = dailySnap.exists() ? (dailySnap.data().checkinCount||0) : 0;
-    const total = totalsSnap.exists() ? (totalsSnap.data().userCount||0) : 0;
-    chip.textContent = total>0 ? T[state.lang].ui.communityToday(n,total) : '';
-  }catch(e){ chip.textContent=''; }
-}
-
-/* =========================================================
-   THEME — Dunkel / Hell
-========================================================= */
-function applyTheme(theme){
-  state.theme = theme;
-  document.documentElement.setAttribute('data-theme', theme);
-  $('#themeDarkBtn').classList.toggle('active', theme==='dark');
-  $('#themeLightBtn').classList.toggle('active', theme==='light');
-  $('#fabLightBtn').classList.toggle('active', theme==='light');
-  $('#fabDarkBtn').classList.toggle('active', theme==='dark');
-}
-$('#themeDarkBtn').addEventListener('click', ()=>applyTheme('dark'));
-$('#themeLightBtn').addEventListener('click', ()=>applyTheme('light'));
-$('#fabLightBtn').addEventListener('click', ()=>applyTheme('light'));
-$('#fabDarkBtn').addEventListener('click', ()=>applyTheme('dark'));
-
-/* =========================================================
-   SETTINGS / PERSÖNLICHE INFORMATIONEN — users/{uid}
-========================================================= */
-$('#settingsBtn').addEventListener('click', ()=> show(currentScreen==='settings' ? 'start' : 'settings'));
-$('#settingsBackBtn').addEventListener('click', ()=> show('start'));
-
-$('#personalInfoBtn').addEventListener('click', async ()=>{
-  try{
-    const snap = await getDoc(doc(db,'users',state.uid));
-    const data = snap.exists() ? snap.data() : {};
-    $('#settingsName').value = data.name || '';
-    $('#settingsEmail').value = auth.currentUser ? auth.currentUser.email : '';
-    $('#settingsPhone').value = data.phone || '';
-    $('#settingsGoals').value = data.goals || '';
-    $('#settingsSuccess').textContent = '';
-  }catch(e){
-    $('#settingsSuccess').textContent = '';
-  }
-  show('personal');
-});
-$('#personalBackBtn').addEventListener('click', ()=> show('settings'));
-
-$('#changePasswordBtn').addEventListener('click', ()=>{
-  $('#currentPassword').value=''; $('#newPassword').value='';
-  $('#passwordError').textContent=''; $('#passwordSuccess').textContent='';
-  show('password');
-});
-$('#passwordBackBtn').addEventListener('click', ()=> show('settings'));
-
-$('#passwordSaveBtn').addEventListener('click', async ()=>{
-  const t = T[state.lang].ui;
-  const current = $('#currentPassword').value;
-  const next = $('#newPassword').value;
-  const errBox = $('#passwordError'); const okBox = $('#passwordSuccess');
-  errBox.textContent=''; okBox.textContent='';
-  if(!current || !next){ errBox.textContent = t.passwordFillBoth; return; }
-  if(next.length < 6){ errBox.textContent = t.passwordTooShort; return; }
-  try{
-    const cred = EmailAuthProvider.credential(auth.currentUser.email, current);
-    await reauthenticateWithCredential(auth.currentUser, cred);
-    await updatePassword(auth.currentUser, next);
-    $('#currentPassword').value=''; $('#newPassword').value='';
-    okBox.textContent = t.passwordSaved;
-  }catch(e){
-    errBox.textContent = (e.code==='auth/invalid-credential'||e.code==='auth/wrong-password') ? t.passwordWrongCurrent : authErrorMessage(e.code);
-  }
-});
-$('#settingsSaveBtn').addEventListener('click', async ()=>{
-  const name = $('#settingsName').value.trim();
-  await setDoc(doc(db,'users',state.uid), {
-    name,
-    phone: $('#settingsPhone').value.trim(),
-    goals: $('#settingsGoals').value.trim()
-  }, { merge:true });
-  state.userName = name;
-  updateGreeting();
-  updateLeaderboardEntry();
-  $('#settingsSuccess').textContent = T[state.lang].ui.settingsSaved;
-});
-
-/* =========================================================
-   GREETING — Begrüßung mit Name auf der Startseite
-========================================================= */
-async function updateGreeting(){
-  const box = $('#greetingText');
-  if(!box) return;
-  if(!state.uid){ box.textContent=''; return; }
-  if(state.userName === undefined){
+    state.uid=user.uid;
     try{
-      const snap = await getDoc(doc(db,'users',state.uid));
-      state.userName = snap.exists() ? (snap.data().name||'') : '';
-    }catch(e){ state.userName=''; }
-  }
-  box.textContent = T[state.lang].ui.greetingHello(state.userName);
-}
-
-/* =========================================================
-   LOGO — zurück zur Startseite
-========================================================= */
-$('#brandLogo').addEventListener('click', ()=>{ if(state.uid) show('start'); });
-$('#brandLogo').addEventListener('keydown', e=>{
-  if((e.key==='Enter'||e.key===' ') && state.uid){ e.preventDefault(); show('start'); }
-});
-
-/* =========================================================
-   CHECK-IN ABBRECHEN
-========================================================= */
-
-/* =========================================================
-   CHALLENGES — vom Coach angelegt, Klienten treten bei
-========================================================= */
-$('#challengesBtn').addEventListener('click', async ()=>{
-  show('challenges');
-  await renderChallenges();
-});
-$('#challengesBackBtn').addEventListener('click', ()=> show('start'));
-
-/* =========================================================
-   BESTENLISTE — Name + Streak aller Klienten
-   (zeigt zusätzlich 8 Demo-Einträge, solange wenige echte Klienten aktiv sind)
-========================================================= */
-const FAKE_LEADERBOARD = [
-  { uid:'fake1', name:'Lena K.', streak:14 },
-  { uid:'fake2', name:'Markus B.', streak:11 },
-  { uid:'fake3', name:'Sarah W.', streak:9 },
-  { uid:'fake4', name:'Jonas T.', streak:8 },
-  { uid:'fake5', name:'Aylin D.', streak:6 },
-  { uid:'fake6', name:'Tim H.', streak:5 },
-  { uid:'fake7', name:'Nina R.', streak:3 },
-  { uid:'fake8', name:'Paul S.', streak:2 }
-];
-
-async function renderLeaderboard(){
-  const list = $('#leaderboardList');
-  if(!list) return;
-  list.innerHTML = '';
-  let realEntries = [];
-  try{
-    const snap = await getDocs(collection(db,'leaderboard'));
-    realEntries = snap.docs.map(d=>({ uid:d.id, ...d.data() })).filter(e=>e.streak>0);
-  }catch(e){}
-  const entries = [...FAKE_LEADERBOARD, ...realEntries].sort((a,b)=>b.streak-a.streak);
-  const medals = ['🥇','🥈','🥉'];
-  entries.forEach((e,i)=>{
-    const row = document.createElement('div');
-    row.className = 'lb-row'+(e.uid===state.uid?' lb-me':'');
-    const isYou = e.uid===state.uid;
-    const rankDisplay = i+1;
-    const streakDisplay = (medals[i] || '⚡')+' '+e.streak;
-    row.innerHTML =
-      '<div class="lb-rank">'+rankDisplay+'</div>'+
-      '<div class="lb-name">'+e.name+(isYou?' '+T[state.lang].ui.lbYou:'')+'</div>'+
-      '<div class="lb-streak">'+streakDisplay+'</div>';
-    list.appendChild(row);
-  });
-}
-
-async function renderChallenges(){
-  const list = $('#challengeList');
-  list.innerHTML = '';
-  const today = todayStr();
-  const snap = await getDocs(collection(db,'challenges'));
-  const active = snap.docs.map(d=>({ id:d.id, ...d.data() })).filter(c=> c.endDate >= today).sort((a,b)=> a.endDate < b.endDate ? -1 : 1);
-  $('#challengesEmpty').classList.toggle('hidden', active.length>0);
-  if(!active.length) return;
-
-  const myCheckinsSnap = await getDocs(query(collection(db,'checkins'), where('uid','==',state.uid)));
-  const myDates = myCheckinsSnap.docs.map(d=>d.data().dateStr);
-
-  for(const c of active){
-    const inRange = myDates.filter(d=> d>=c.startDate && d<=c.endDate).length;
-    const pct = Math.min(100, Math.round(inRange / c.target * 100));
-    const partRef = doc(db,'challengeParticipants', c.id+'_'+state.uid);
-    const partSnap = await getDoc(partRef);
-    const joined = partSnap.exists();
-
-    const t = T[state.lang].ui;
-    const card = document.createElement('div');
-    card.className = 'challenge-card';
-    card.innerHTML =
-      '<div class="challenge-title">'+c.title+'</div>'+
-      (c.description ? '<div class="challenge-desc">'+c.description+'</div>' : '') +
-      '<div class="challenge-progress-track"><div class="challenge-progress-fill" style="width:'+pct+'%"></div></div>'+
-      '<div class="challenge-meta"><span>'+t.challengeProgressLabel+': '+inRange+' / '+c.target+'</span><span>'+pct+'%</span></div>';
-    const btn = document.createElement('button');
-    btn.className = 'challenge-join-btn'+(joined?' joined':'');
-    btn.textContent = joined ? t.challengeJoinedLabel : t.challengeJoinBtn;
-    btn.addEventListener('click', async ()=>{
-      if(joined){
-        await deleteDoc(partRef);
-      } else {
-        await setDoc(partRef, { challengeId:c.id, uid:state.uid, joinedAt: serverTimestamp() });
-      }
-      renderChallenges();
-    });
-    card.appendChild(btn);
-    list.appendChild(card);
-  }
-}
-
-async function refreshStreak(){
-  try{
-    const q = query(collection(db,'checkins'), where('uid','==',state.uid));
-    const snap = await getDocs(q);
-    const dates = new Set(snap.docs.map(d=>d.data().dateStr));
-    state.hasHistory = snap.docs.length>0;
-    let streak = 0;
-    const cursor = new Date();
-    while(dates.has(dateStrOf(cursor))){
-      streak++;
-      cursor.setDate(cursor.getDate()-1);
+      const snap=await getDoc(doc(db,'users',state.uid));
+      state.profile = snap.exists()? snap.data() : {};
+    }catch(e){ state.profile={}; }
+    if(state.profile.preferredLanguage){
+      state.lang=state.profile.preferredLanguage;
+      localStorage.setItem('mal_lang',state.lang);
+    } else if(state.lang){
+      try{ await setDoc(doc(db,'users',state.uid),{ preferredLanguage: state.lang },{ merge:true }); }catch(e){}
     }
-    state.streak = streak;
-  }catch(e){
-    state.streak = 0;
-  }
-  $('#streakChip').textContent = state.streak+' '+T[state.lang].ui.streakSuffix;
-  updateLeaderboardEntry();
-  return state.streak;
-}
-
-async function updateLeaderboardEntry(){
-  try{
-    if(state.userName===undefined){
-      const uSnap = await getDoc(doc(db,'users',state.uid));
-      state.userName = uSnap.exists() ? (uSnap.data().name||'') : '';
-    }
-    await setDoc(doc(db,'leaderboard',state.uid), {
-      name: state.userName || (auth.currentUser?.email?.split('@')[0]) || '—',
-      streak: state.streak, updatedAt: serverTimestamp()
-    }, { merge:true });
-  }catch(e){}
-}
-
-function insertAfter(qid, offset=0){
-  const pos = state.idx + 1 + offset;
-  if(!state.queue.includes(qid)) state.queue.splice(pos,0,qid);
-}
-
-function removeFromQueue(qid){
-  const idx = state.queue.indexOf(qid);
-  if(idx > state.idx) state.queue.splice(idx,1);
-}
-
-function startCheckin(){
-  state.answers = {};
-  state.queue = [...BASE_QUEUE];
-  state.idx = 0;
-  show('checkin');
-  renderQuestion();
-}
-
-function renderQuestion(){
-  const q = Q[state.queue[state.idx]];
-  const qt = T[state.lang].q[q.id];
-  const total = state.queue.length;
-  $('#progressFill').style.width = ((state.idx)/total*100)+'%';
-  $('#progressCount').textContent = (state.idx+1)+'/'+total;
-
-  const wrap = $('#qWrap');
-  wrap.innerHTML = '';
-  wrap.style.animation='none'; void wrap.offsetWidth; wrap.style.animation='';
-
-  const pillar = document.createElement('div');
-  pillar.className = 'q-pillar '+q.pClass;
-  pillar.textContent = T[state.lang].pillars[q.pillarKey];
-  wrap.appendChild(pillar);
-
-  const title = document.createElement('div');
-  title.className='q-title';
-  title.textContent = qt.title;
-  wrap.appendChild(title);
-
-  if(qt.caption){
-    const cap = document.createElement('div');
-    cap.className='q-caption';
-    cap.textContent=qt.caption;
-    wrap.appendChild(cap);
-  }
-
-  if(q.type==='slider'){
-    renderSlider(wrap,q,qt);
-  } else if(q.type==='note'){
-    renderNote(wrap,q,qt);
-  } else if(q.type==='combo'){
-    renderCombo(wrap,q,qt);
+    try{ await setDoc(doc(db,'users',state.uid),{ lastSeen: serverTimestamp() },{ merge:true }); }catch(e){}
+    await loadCheckins();
+    $('#settingsBtn').classList.remove('hidden');
   } else {
-    renderOptions(wrap,q,qt);
+    state.uid=null; state.profile=null; state.checkins={};
+    $('#settingsBtn').classList.add('hidden');
   }
+  route();
+});
+
+async function loadCheckins(){
+  state.checkins={};
+  try{
+    const q=query(collection(db,'resetCheckins'), where('uid','==',state.uid));
+    const snap=await getDocs(q);
+    snap.docs.forEach(d=>{ const data=d.data(); state.checkins[data.day]=data; });
+  }catch(e){}
 }
 
-function renderCombo(wrap,q,qt){
-  const container = document.createElement('div');
-  container.className = 'combo-wrap';
+function route(){
+  if(!state.lang){ show('language'); return; }
+  document.documentElement.lang = state.lang;
+  if(!state.uid){ applyAuthText(); show('auth'); return; }
+  if(!state.profile || !state.profile.baselineAt){ renderDay0(false); show('day0'); return; }
+  renderDash(); show('dash');
+}
 
-  q.subs.forEach((sub,si)=>{
-    const subT = qt.subs[si];
-    const block = document.createElement('div');
-    block.className = 'combo-block';
-    const subTitle = document.createElement('div');
-    subTitle.className = 'combo-sub-title';
-    subTitle.textContent = subT.title;
-    block.appendChild(subTitle);
+/* =========================================================
+   DAY 0
+========================================================= */
+function renderDay0(fromDash){
+  const s=t();
+  $('#day0Eyebrow').textContent=s.day0Eyebrow;
+  $('#day0Title').textContent=s.day0Title;
+  $('#day0Text').textContent=s.day0Text;
+  renderVideo($('#day0Video'), VIDEOS.day0[state.lang], s.welcomeVideo);
+  const done = state.profile && state.profile.baselineAt;
+  $('#day0Cta').textContent = done ? s.day0CtaDone : s.day0Cta;
+  $('#day0BackBtn').classList.toggle('hidden', !fromDash);
+  $('#day0Cta').onclick = ()=>{ done ? (renderDash(),show('dash')) : (renderBaseline(),show('baseline')); };
+}
+$('#day0BackBtn').addEventListener('click',()=>{ renderDash(); show('dash'); });
 
-    const box = document.createElement('div');
-    box.className = 'options';
-    subT.opts.forEach(([ico,label],i)=>{
-      if(label==='—') return;
-      const b = document.createElement('button');
-      b.className = 'opt opt-sm'+(state.answers[sub.key]===i ? ' selected':'');
-      b.innerHTML = (ico?'<span class="ico">'+ico+'</span>':'')+'<span>'+label+'</span>';
-      b.addEventListener('click',()=>{
-        box.querySelectorAll('.opt').forEach(o=>o.classList.remove('selected'));
-        b.classList.add('selected');
-        state.answers[sub.key]=i;
-        if(sub.onAnswer) sub.onAnswer(i);
-        checkComboComplete();
-      });
-      box.appendChild(b);
-    });
-    block.appendChild(box);
-    container.appendChild(block);
+/* =========================================================
+   BASELINE
+========================================================= */
+function fillSelect(el, options){
+  el.innerHTML='';
+  options.forEach(([val,label])=>{
+    const o=document.createElement('option'); o.value=val; o.textContent=label; el.appendChild(o);
   });
-  wrap.appendChild(container);
+}
+function renderBaseline(){
+  const s=t();
+  $('#baseEyebrow').textContent=s.baseEyebrow;
+  $('#baseTitle').textContent=s.baseTitle;
+  $('#lblName').textContent=s.lblName;
+  $('#lblPhone').textContent=s.lblPhone;
+  $('#lblSource').textContent=s.lblSource;
+  $('#lblFriend').textContent=s.lblFriend;
+  $('#lblGoal').textContent=s.lblGoal;
+  $('#lblStruggle').textContent=s.lblStruggle;
+  $('#baseSubmit').textContent=s.baseSubmit;
+  fillSelect($('#baseSource'), s.sources);
+  fillSelect($('#baseGoal'), s.goals);
+  fillSelect($('#baseStruggle'), s.struggles);
+  $('#baseSource').onchange=()=>{ $('#friendNameWrap').classList.toggle('hidden', $('#baseSource').value!=='friend'); };
+  const box=$('#baseSliders'); box.innerHTML='';
+  box.style.cssText='display:flex;flex-direction:column;gap:10px;margin-top:4px';
+  s.baseSliders.forEach(([key,label])=>{
+    const w=document.createElement('div'); w.className='slider-block';
+    w.innerHTML='<div class="slider-head"><span class="sl">'+label+'</span><span class="sv" id="bv_'+key+'">5</span></div>'+
+      '<input type="range" min="1" max="10" value="5" id="br_'+key+'">';
+    box.appendChild(w);
+    w.querySelector('input').addEventListener('input',e=>{ $('#bv_'+key).textContent=e.target.value; });
+  });
+}
+$('#baseSubmit').addEventListener('click', async ()=>{
+  const s=t(); const err=$('#baseError'); err.textContent='';
+  const name=$('#baseName').value.trim();
+  if(!name){ err.textContent=s.baseNameReq; return; }
+  const baseline={};
+  s.baseSliders.forEach(([key])=>{ baseline[key]=parseInt($('#br_'+key).value,10); });
+  const data={
+    name,
+    phone: $('#basePhone').value.trim(),
+    source: $('#baseSource').value,
+    invitedBy: $('#baseSource').value==='friend' ? $('#baseFriend').value.trim() : '',
+    mainGoal: $('#baseGoal').value,
+    biggestStruggle: $('#baseStruggle').value,
+    baseline, baselineAt: serverTimestamp(),
+    preferredLanguage: state.lang, email: auth.currentUser?.email || ''
+  };
+  try{
+    await setDoc(doc(db,'users',state.uid), data, { merge:true });
+    Object.assign(state.profile, data, { baselineAt:{ seconds: Date.now()/1000 } });
+    renderDash(); show('dash');
+  }catch(e){ err.textContent=t().errFallback; }
+});
 
-  const foot = document.createElement('div');
-  foot.className = 'q-footer';
-  const btn = document.createElement('button');
-  btn.className = 'cta';
-  btn.textContent = T[state.lang].ui.sliderNextBtn;
-  btn.addEventListener('click', next);
-  foot.appendChild(btn);
-  wrap.appendChild(foot);
+/* =========================================================
+   DASHBOARD
+========================================================= */
+function renderDash(){
+  const s=t();
+  const day=currentDay(), done=completedDays().length;
+  $('#dashHello').textContent = s.dashHello(state.profile?.name || '');
+  $('#dashHead').textContent = s.dashHead;
 
-  function checkComboComplete(){
-    btn.disabled = !q.subs.every(s => state.answers[s.key] !== undefined);
+  // verify note
+  const u=auth.currentUser;
+  const vn=$('#verifyNote');
+  if(u && !u.emailVerified){
+    vn.classList.remove('hidden');
+    $('#verifyNoteText').textContent=s.verifyNote;
+    $('#verifyResendBtn').textContent=s.verifyResend;
+  } else vn.classList.add('hidden');
+
+  // mission card
+  const dcta=$('#missionCta');
+  if(allDone()){
+    $('#missionEyebrow').textContent = s.dayWord+' 7 / 7';
+    $('#missionTitle').textContent = s.missionAllDoneTitle;
+    $('#missionDesc').textContent = s.missionAllDoneDesc;
+    dcta.textContent = s.missionCtaFinal;
+    dcta.onclick=()=>{ renderFinal(); show('final'); };
+  } else if(completedToday()){
+    const lastDay = completedDays()[completedDays().length-1];
+    $('#missionEyebrow').textContent = s.dayWord+' '+lastDay+' / 7 — '+dc(lastDay).name;
+    $('#missionTitle').textContent = s.missionDoneTitle;
+    $('#missionDesc').textContent = s.missionDoneDesc;
+    dcta.textContent = s.missionCtaDone;
+    dcta.onclick=()=>{ openDay(lastDay,true); };
+  } else {
+    $('#missionEyebrow').textContent = s.dayWord+' '+day+' / 7 — '+dc(day).name;
+    $('#missionTitle').textContent = dc(day).theme;
+    $('#missionDesc').textContent = dc(day).desc;
+    dcta.textContent = s.missionCta;
+    dcta.onclick=()=>{ openDay(day,false); };
   }
-  checkComboComplete();
+
+  // stats
+  $('#statDay').textContent = done+'/7';
+  $('#statDayLbl').textContent = s.statDayLbl;
+  $('#statBar').style.width = Math.round(done/7*100)+'%';
+  $('#statStreak').textContent = computeStreak();
+  $('#statStreakLbl').textContent = s.statStreakLbl;
+  $('#statPoints').textContent = totalPoints();
+  $('#statPointsLbl').textContent = s.statPointsLbl;
+  $('#levelChip').textContent = '● '+(latestBadge() || s.levelDefault);
+
+  // unlock cards
+  const bn=$('#bottleneckCard');
+  bn.classList.toggle('hidden', !(done>=4));
+  $('#bnCardTitle').textContent=s.bnCardTitle; $('#bnCardSub').textContent=s.bnCardSub;
+  bn.onclick=()=>{ renderBottleneck(); show('bottleneck'); };
+  const mc=$('#mapCard');
+  mc.classList.toggle('hidden', !allDone());
+  $('#mapCardTitle').textContent=s.mapCardTitle; $('#mapCardSub').textContent=s.mapCardSub;
+  mc.onclick=()=>{ renderFinal(); show('final'); };
+
+  // archive
+  $('#archiveHead').textContent=s.archiveHead;
+  const list=$('#archiveList'); list.innerHTML='';
+  for(let d=1; d<=7; d++){
+    const row=document.createElement('div');
+    const isDone=!!state.checkins[d];
+    const isCurrent=!isDone && d===day && !completedToday();
+    row.className='archive-row'+(isDone||isCurrent?' clickable':' locked');
+    row.innerHTML='<span class="a-day">'+s.dayWord+' '+d+'</span><span class="a-name">'+dc(d).name+'</span>'+
+      '<span class="a-state">'+(isDone?'✅':(isCurrent?'🔓':'🔒'))+'</span>';
+    if(isDone) row.onclick=()=>openDay(d,true);
+    else if(isCurrent) row.onclick=()=>openDay(d,false);
+    list.appendChild(row);
+  }
+  $('#startHereLbl').textContent=s.startHereLbl;
+  $('#startHereRow').onclick=()=>{ renderDay0(true); show('day0'); };
+  $('#logoutBtn').textContent=s.logout;
+}
+$('#verifyResendBtn').addEventListener('click', async ()=>{
+  if(!auth.currentUser) return;
+  try{ await sendEmailVerification(auth.currentUser,{ url: window.location.origin+'/verify.html' }); }catch(e){}
+  $('#verifyResendBtn').textContent=t().verifySent;
+});
+$('#logoutBtn').addEventListener('click',()=>signOut(auth));
+$('#brandLogo').addEventListener('click',()=>{ if(state.uid && state.profile?.baselineAt){ renderDash(); show('dash'); } });
+
+/* =========================================================
+   DAY SCREEN
+========================================================= */
+function openDay(day, archived){
+  const s=t(); const c=dc(day);
+  state.viewDay=day;
+  state.currentTasks=new Set(); state.missionAnswer=null;
+  $('#dayEyebrow').textContent = s.dayWord+' '+day+' / 7';
+  $('#dayTitle').textContent = c.name;
+  $('#dayTheme').textContent = c.theme;
+  $('#dayDesc').textContent = c.desc;
+  renderVideo($('#dayVideo'), VIDEOS[day][state.lang], s.dayWord+' '+day+' — '+c.name);
+  $('#tasksHead').textContent = DAYS[day].chooseOne ? s.tasksHeadChoose : s.tasksHead;
+
+  const existing = archived ? state.checkins[day] : null;
+  const list=$('#taskList'); list.innerHTML='';
+  c.tasks.forEach((task,i)=>{
+    const el=document.createElement('div');
+    const done = existing ? (existing.tasksChecked||[]).includes(i) : false;
+    el.className='task'+(done?' done':'');
+    el.innerHTML='<span class="box">✓</span><span>'+task+'</span>';
+    if(!archived){
+      el.addEventListener('click',()=>{
+        if(state.currentTasks.has(i)){ state.currentTasks.delete(i); el.classList.remove('done'); }
+        else { state.currentTasks.add(i); el.classList.add('done'); }
+      });
+    }
+    list.appendChild(el);
+  });
+
+  $('#checkinBlock').classList.toggle('hidden', !!archived);
+  $('#archiveView').classList.toggle('hidden', !archived);
+
+  if(archived){
+    $('#arcQuote').textContent='“'+c.quote+'”';
+    $('#arcTipLbl').textContent=s.tipLbl;
+    $('#arcTip').textContent=c.tip;
+    const e=existing;
+    $('#arcStats').innerHTML =
+      '<b>'+s.lblEnergy+':</b> '+e.energy+'/10 · <b>'+s.lblSleep+':</b> '+e.sleep+'/10 · <b>+'+(e.points||0)+' '+s.pointsSuffix+'</b>'+
+      (e.biggestWin?'<br><b>'+s.lblWin+':</b> '+e.biggestWin:'')+
+      (e.reflection?'<br><b>'+s.lblReflection+':</b> '+e.reflection:'');
+  } else {
+    $('#checkinHead').textContent=s.checkinHead;
+    $('#lblEnergy').textContent=s.lblEnergy;
+    $('#lblSleep').textContent=s.lblSleep;
+    $('#lblMission').textContent=s.lblMission;
+    $('#lblReflection').textContent=s.lblReflection+' — '+c.reflection;
+    $('#lblWin').textContent=s.lblWin;
+    $('#lblHard').textContent=s.lblHard;
+    $('#lblFeedback').textContent=s.lblFeedback;
+    $('#coachNote').textContent=s.coachNote;
+    $('#daySubmit').textContent=s.daySubmit;
+    $('#dayError').textContent='';
+    $('#rngEnergy').value=5; $('#valEnergy').textContent='5';
+    $('#rngSleep').value=5; $('#valSleep').textContent='5';
+    $('#txtReflection').value=''; $('#txtWin').value=''; $('#txtHard').value=''; $('#txtFeedback').value='';
+    const seg=$('#segMission'); seg.innerHTML='';
+    s.segMission.forEach(([val,label])=>{
+      const b=document.createElement('button');
+      b.textContent=label;
+      b.onclick=()=>{ state.missionAnswer=val; seg.querySelectorAll('button').forEach(x=>x.classList.remove('sel')); b.classList.add('sel'); };
+      seg.appendChild(b);
+    });
+  }
+  show('day');
+}
+$('#rngEnergy').addEventListener('input',e=>{ $('#valEnergy').textContent=e.target.value; });
+$('#rngSleep').addEventListener('input',e=>{ $('#valSleep').textContent=e.target.value; });
+$('#dayBackBtn').addEventListener('click',()=>{ renderDash(); show('dash'); });
+
+$('#daySubmit').addEventListener('click', async ()=>{
+  const s=t(); const day=state.viewDay; const c=dc(day);
+  const err=$('#dayError'); err.textContent='';
+  if(!state.missionAnswer){ err.textContent=s.missionReq; return; }
+  if(DAYS[day].chooseOne && state.currentTasks.size===0){ err.textContent=s.chooseOneReq; return; }
+
+  // points: tasks share 70 (chooseOne day: any task = full 70), check-in 10, reflection 20
+  const n=c.tasks.length;
+  let taskPts;
+  if(DAYS[day].chooseOne) taskPts = state.currentTasks.size>0 ? 70 : 0;
+  else taskPts = Math.min(70, Math.round(70/n*state.currentTasks.size));
+  const reflection=$('#txtReflection').value.trim();
+  const points = taskPts + 10 + (reflection?20:0);
+
+  const data={
+    uid:state.uid, day, dateStr:todayStr(),
+    energy:parseInt($('#rngEnergy').value,10),
+    sleep:parseInt($('#rngSleep').value,10),
+    completedMission:state.missionAnswer,
+    reflection,
+    biggestWin:$('#txtWin').value.trim(),
+    biggestStruggle:$('#txtHard').value.trim(),
+    wantsFeedback:$('#txtFeedback').value.trim(),
+    tasksChecked:[...state.currentTasks].sort((a,b)=>a-b),
+    points, createdAt:serverTimestamp()
+  };
+  const btn=$('#daySubmit'); btn.disabled=true;
+  try{
+    await setDoc(doc(db,'resetCheckins',state.uid+'_day'+day), data);
+    state.checkins[day]=data;
+    await setDoc(doc(db,'users',state.uid),{
+      currentDay: currentDay(), completedDays: completedDays().length,
+      points: totalPoints(), streak: computeStreak(),
+      lastCompletionDate: todayStr(), lastActive: serverTimestamp(),
+      latestBadge: BADGES[day]
+    },{ merge:true });
+    state.lastReward={ day, points };
+    renderReward(day, points);
+    show('reward');
+  }catch(e){ err.textContent=t().errFallback; }
+  finally{ btn.disabled=false; }
+});
+
+/* =========================================================
+   REWARD
+========================================================= */
+function renderReward(day, points){
+  const s=t(); const c=dc(day);
+  $('#rewardEyebrow').textContent=s.rewardEyebrow;
+  $('#rewardPoints').textContent='+'+points+' '+s.pointsSuffix;
+  $('#rewardBadge').textContent='🏅 '+BADGES[day]+' — '+s.badgeUnlocked;
+  $('#rewardStreak').textContent=s.streakWord(computeStreak());
+  $('#rewardQuote').textContent='“'+c.quote+'”';
+  $('#rewardTipLbl').textContent=s.tipLbl;
+  $('#rewardTip').textContent=c.tip;
+  const teaser=$('#teaserCard');
+  if(c.teaser){
+    teaser.classList.remove('hidden');
+    $('#teaserLbl').textContent=s.teaserLbl;
+    $('#teaserText').textContent=c.teaser;
+  } else teaser.classList.add('hidden');
+  const wa=$('#rewardWhatsapp');
+  wa.textContent=s.rewardWhatsapp;
+  const ci=state.checkins[day];
+  wa.onclick=()=>window.open(waLink(s.waCheckin(day, ci.energy, ci.sleep, ci.biggestWin, ci.biggestStruggle)),'_blank');
+  const cont=$('#rewardContinue');
+  cont.textContent=s.rewardContinue;
+  cont.onclick=()=>{
+    if(day===4){ renderBottleneck(); show('bottleneck'); }
+    else if(day===7){ renderFinal(); show('final'); }
+    else { renderDash(); show('dash'); }
+  };
 }
 
-function renderOptions(wrap,q,qt){
-  const box = document.createElement('div');
-  box.className='options'+(q.grid?' grid-2':'');
-  const preselected = state.answers[q.id] !== undefined ? state.answers[q.id] : q.defaultIndex;
-  qt.opts.forEach(([ico,label],i)=>{
-    if(label==='—') return;
-    const b = document.createElement('button');
-    b.className='opt'+(preselected===i ? ' selected':'');
-    b.innerHTML = (ico?'<span class="ico">'+ico+'</span>':'')+'<span>'+label+'</span>';
-    b.addEventListener('click',()=>{
-      box.querySelectorAll('.opt').forEach(o=>o.classList.remove('selected'));
-      b.classList.add('selected');
-      state.answers[q.id]=i;
-      if(q.onAnswer) q.onAnswer(i);
-      setTimeout(next, 190);
-    });
+/* =========================================================
+   DAY 4 — BOTTLENECK
+========================================================= */
+function renderBottleneck(){
+  const s=t();
+  $('#bnEyebrow').textContent=s.bnEyebrow;
+  $('#bnTitle').textContent=s.bnTitle;
+  $('#bnIntro').textContent=s.bnIntro;
+  renderVideo($('#bnVideo'), VIDEOS.bottleneck[state.lang], 'Bottleneck Snapshot™');
+  const box=$('#bnOptions'); box.innerHTML='';
+  s.bnOptions.forEach(opt=>{
+    const card=document.createElement('div');
+    card.className='option-card';
+    const chosen = state.profile?.guidanceInterest===opt.key;
+    card.innerHTML='<h3>'+opt.title+(chosen?' ✓':'')+'</h3><p>'+opt.desc+'</p>';
+    const b=document.createElement('button');
+    b.className='cta'+(opt.key==='not_sure'?' secondary':'');
+    b.textContent=opt.cta;
+    b.onclick=async ()=>{
+      try{
+        await setDoc(doc(db,'users',state.uid),{
+          guidanceInterest:opt.key, hotLead:true, guidanceSelectedAt:serverTimestamp()
+        },{ merge:true });
+        state.profile.guidanceInterest=opt.key; state.profile.hotLead=true;
+      }catch(e){}
+      window.open(waLink(opt.wa),'_blank');
+      renderBottleneck();
+    };
+    card.appendChild(b);
+    box.appendChild(card);
+  });
+}
+$('#bnBackBtn').addEventListener('click',()=>{ renderDash(); show('dash'); });
+
+/* =========================================================
+   DAY 7 — FINAL
+========================================================= */
+function renderFinal(){
+  const s=t();
+  $('#finalEyebrow').textContent=s.finalEyebrow;
+  $('#finalTitle').textContent=s.finalTitle;
+  $('#finalIntro').textContent=s.finalIntro;
+  $('#prizeNote').textContent=s.prizeNote;
+  renderVideo($('#finalVideo'), VIDEOS.final[state.lang], 'Personal MAP™');
+  $('#offerTitle').textContent=s.offerTitle;
+  $('#offerPrice').textContent=s.offerPrice;
+  const ol=$('#offerList'); ol.innerHTML='';
+  s.offerList.forEach(x=>{ const d=document.createElement('div'); d.textContent=x; ol.appendChild(d); });
+  const box=$('#finalCtas'); box.innerHTML='';
+  s.finalCtas.forEach(([label,msg],i)=>{
+    const b=document.createElement('button');
+    b.className='cta'+(i>0?' secondary':'');
+    b.textContent=label;
+    b.onclick=()=>window.open(waLink(msg),'_blank');
     box.appendChild(b);
   });
-  if(state.answers[q.id]===undefined && q.defaultIndex!==undefined) state.answers[q.id]=q.defaultIndex;
-  wrap.appendChild(box);
 }
+$('#finalBackBtn').addEventListener('click',()=>{ renderDash(); show('dash'); });
 
-function renderSlider(wrap,q,qt){
-  const block = document.createElement('div');
-  block.className='slider-block';
-  const val = document.createElement('div');
-  val.className='slider-value';
-  const start = state.answers[q.id] !== undefined ? state.answers[q.id] : 3;
-  val.textContent = start;
-  const range = document.createElement('input');
-  range.type='range'; range.min=q.min; range.max=q.max; range.value=start; range.step=1;
-  range.setAttribute('aria-label',qt.title);
-  range.addEventListener('input',()=>{ val.textContent=range.value; });
-  const labels = document.createElement('div');
-  labels.className='slider-labels';
-  labels.innerHTML='<span>'+qt.lo+'</span><span>'+qt.hi+'</span>';
-  block.append(val,range,labels);
-  wrap.appendChild(block);
-
-  const foot = document.createElement('div');
-  foot.className='q-footer';
-  const btn = document.createElement('button');
-  btn.className='cta';
-  btn.textContent=T[state.lang].ui.sliderNextBtn;
-  btn.addEventListener('click',()=>{
-    state.answers[q.id]=parseInt(range.value,10);
-    next();
-  });
-  foot.appendChild(btn);
-  wrap.appendChild(foot);
+/* =========================================================
+   SETTINGS
+========================================================= */
+function renderSettings(){
+  const s=t();
+  $('#settingsTitle').textContent=s.settingsTitle;
+  $('#lblLang').textContent=s.lblLang;
+  $('#lblPw').textContent=s.lblPw;
+  $('#pwSaveBtn').textContent=s.pwSave;
+  $('#setLangEn').classList.toggle('sel', state.lang==='en');
+  $('#setLangDe').classList.toggle('sel', state.lang==='de');
+  $('#pwError').textContent=''; $('#pwSuccess').textContent='';
+  $('#curPw').value=''; $('#newPw').value='';
+  $('#curPw').placeholder = state.lang==='de'?'Aktuelles Passwort':'Current password';
+  $('#newPw').placeholder = state.lang==='de'?'Neues Passwort':'New password';
 }
-
-function renderNote(wrap,q,qt){
-  const ta = document.createElement('textarea');
-  ta.placeholder=qt.placeholder;
-  wrap.appendChild(ta);
-  const foot = document.createElement('div');
-  foot.className='q-footer';
-  const btn = document.createElement('button');
-  btn.className='cta';
-  btn.textContent=T[state.lang].ui.noteDoneBtn;
-  btn.addEventListener('click',()=>{ state.answers.note=ta.value.trim(); finish(); });
-  const skip = document.createElement('button');
-  skip.className='skip-btn';
-  skip.textContent=T[state.lang].ui.skipBtn;
-  skip.addEventListener('click',()=>{ state.answers.note=''; finish(); });
-  foot.append(btn,skip);
-  wrap.appendChild(foot);
-}
-
-function next(){
-  if(state.idx < state.queue.length-1){
-    state.idx++;
-    renderQuestion();
-  } else {
-    finish();
-  }
-}
-$('#backBtn').addEventListener('click',()=>{
-  if(state.idx>0){ state.idx--; renderQuestion(); }
-  else { show('start'); }
+$('#settingsBtn').addEventListener('click',()=>{
+  if(currentScreen==='settings'){ route(); return; }
+  renderSettings(); show('settings');
 });
-
-/* =========================================================
-   SCORING — deterministisch, exakt nach Spec
-========================================================= */
-function computeScores(a){
-  const waterPts=[0,.5,1,2,2], protPts=[2,1,0], qualPts=[2,1,0];
-  const digest = a.digestion===0?1:(a.digestion===4?0:.5);
-  // Rohsumme max 7 (2+2+2+1) — auf 10er-Skala hochskaliert, damit sie zu
-  // den anderen beiden Säulen (Training/Recovery, je max 10) passt.
-  let ern = (waterPts[a.water]+protPts[a.protein]+qualPts[a.quality]+digest) * (10/7);
-
-  const trainPts=[4,2,4,0], mobPts=[0,.5,1,1], painPts=[2,1.5,.5,0];
-  // Rohsumme max 7 (4+1+2) — auf 10er-Skala hochskaliert.
-  let tra = (trainPts[a.training]+mobPts[a.mobility]+painPts[a.pain]) * (10/7);
-
-  const sleepPts=[0,1,2,3,4];
-  // Schlaf max 4, Energie&Motivation max 3, Stress max 3 — Summe max 10.
-  let rec = sleepPts[a.sleep] + (a.energyMotivation-1)*0.75 + (5-a.stress)*0.75;
-
-  return { ern:round1(ern), tra:round1(tra), rec:round1(rec) };
+$('#settingsBackBtn').addEventListener('click',()=>route());
+async function switchLang(l){
+  state.lang=l; localStorage.setItem('mal_lang',l);
+  document.documentElement.lang=l;
+  if(state.uid){ try{ await setDoc(doc(db,'users',state.uid),{ preferredLanguage:l },{ merge:true }); }catch(e){} }
+  if(state.profile) state.profile.preferredLanguage=l;
+  renderSettings();
 }
-const round1 = n=>Math.round(n*10)/10;
-function zone(s){ return s>=7?'g':(s>=4?'y':'r'); }
-const zoneColor = { g:'var(--green)', y:'var(--amber)', r:'var(--red)' };
-
-/* =========================================================
-   MINIMUM / TARGET / ELITE STANDARD
-========================================================= */
-function standardTier(score){
-  if(score>=9) return 'elite';
-  if(score>=7) return 'target';
-  if(score>=4) return 'minimum';
-  return 'miss';
-}
-function applyStandardTag(tagId, score){
-  const tier = standardTier(score);
-  const el = $('#'+tagId);
-  el.className = 'standard-tag tag-'+tier;
-  el.textContent = T[state.lang].ui['tag'+tier[0].toUpperCase()+tier.slice(1)];
-}
-
-/* =========================================================
-   INSIGHT — regelbasiert, Priorität nach Dringlichkeit
-========================================================= */
-function buildInsight(a,s){
-  if(a.pain===3) return 'painSevere';
-  if(a.sleep===0) return 'sleepLow';
-  if(a.stress===5 && a.energyMotivation<=2) return 'stressEnergyLow';
-  if(a.energyMotivation===1) return 'exhausted';
-  if(a.hunger===3) return 'hungerConstant';
-  const worst = Math.min(s.ern,s.tra,s.rec);
-  if(worst===s.rec && zone(s.rec)!=='g') return 'worstRecovery';
-  if(worst===s.ern && zone(s.ern)!=='g') return 'worstNutrition';
-  if(worst===s.tra && zone(s.tra)!=='g') return 'worstTraining';
-  return 'allGood';
-}
-
-/* =========================================================
-   RESULT SCREEN
-========================================================= */
-async function finish(){
-  const a = state.answers;
-  const s = computeScores(a);
-  const wasComeback = $('#reminderBanner') && !$('#reminderBanner').classList.contains('hidden') && $('#reminderBanner').dataset.mode==='comeback';
-  show('result');
-  await saveCheckin(a,s);
-  await refreshStreak();
-  $('#streakBig').textContent = state.streak+' '+T[state.lang].ui.daysWord;
-
-  const worstScore = Math.min(s.ern,s.tra,s.rec);
-  const t = T[state.lang].ui;
-  let insightText = T[state.lang].insights[buildInsight(a,s)];
-  if(wasComeback){
-    insightText = t.comebackText + ' ' + t.comebackText2 + ' ' + insightText;
-  } else if(standardTier(worstScore)==='miss'){
-    insightText = t.honestCheckin + ' ' + insightText;
+$('#setLangEn').addEventListener('click',()=>switchLang('en'));
+$('#setLangDe').addEventListener('click',()=>switchLang('de'));
+$('#pwSaveBtn').addEventListener('click', async ()=>{
+  const s=t();
+  const cur=$('#curPw').value, next=$('#newPw').value;
+  const err=$('#pwError'), ok=$('#pwSuccess');
+  err.textContent=''; ok.textContent='';
+  if(!cur||!next){ err.textContent=s.pwFill; return; }
+  if(next.length<6){ err.textContent=s.pwShort; return; }
+  try{
+    const cred=EmailAuthProvider.credential(auth.currentUser.email, cur);
+    await reauthenticateWithCredential(auth.currentUser, cred);
+    await updatePassword(auth.currentUser, next);
+    $('#curPw').value=''; $('#newPw').value='';
+    ok.textContent=s.pwSaved;
+  }catch(e){
+    err.textContent=(e.code==='auth/invalid-credential'||e.code==='auth/wrong-password')?s.pwWrong:s.errFallback;
   }
-  $('#insightText').textContent = insightText;
-
-  animateRing('ringErn','scoreErn',s.ern);
-  animateRing('ringTra','scoreTra',s.tra);
-  animateRing('ringRec','scoreRec',s.rec);
-  applyStandardTag('tagErn', s.ern);
-  applyStandardTag('tagTra', s.tra);
-  applyStandardTag('tagRec', s.rec);
-}
-
-function animateRing(ringId,scoreId,score){
-  const ring = $('#'+ringId), inner = $('#'+scoreId);
-  const c = zoneColor[zone(score)];
-  ring.style.setProperty('--c',c);
-  inner.style.color = c;
-  const target = score*10;
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(reduced){
-    ring.style.setProperty('--p',target);
-    inner.textContent = score.toFixed(1).replace('.',',');
-    return;
-  }
-  let p=0;
-  const t0 = performance.now();
-  function step(t){
-    const k = Math.min((t-t0)/900,1);
-    const e = 1-Math.pow(1-k,3);
-    p = target*e;
-    ring.style.setProperty('--p',p);
-    inner.textContent = (score*e).toFixed(1).replace('.',',');
-    if(k<1) requestAnimationFrame(step);
-    else inner.textContent = score.toFixed(1).replace('.',',');
-  }
-  requestAnimationFrame(step);
-}
-
-$('#doneBtn').addEventListener('click', async ()=>{ show('start'); await updateEngagementBanners(); await updateCommunityChip(); });
-$('#startBtn').addEventListener('click',startCheckin);
-
-/* =========================================================
-   PRIZE COUNTDOWN
-========================================================= */
-const PRIZE_DEADLINE = new Date('2026-08-10T23:59:59');
-function updatePrizeCountdown(){
-  const el = $('#prizeCountdown');
-  if(!el) return;
-  const diffMs = PRIZE_DEADLINE - new Date();
-  if(diffMs <= 0){ el.textContent = '⏱ Frist beendet'; return; }
-  const hours = Math.floor(diffMs / 3600000);
-  const minutes = Math.floor((diffMs % 3600000) / 60000);
-  const seconds = Math.floor((diffMs % 60000) / 1000);
-  const pad = n=> String(n).padStart(2,'0');
-  el.textContent = '⏱ '+hours+':'+pad(minutes)+':'+pad(seconds)+' bis 10.08.2026';
-}
-updatePrizeCountdown();
-setInterval(updatePrizeCountdown, 1000);
-
-/* =========================================================
-   INIT
-========================================================= */
-applyTheme('light');
-applyLanguage('de');
+});
 </script>
 </body>
 </html>

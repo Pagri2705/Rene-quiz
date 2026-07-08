@@ -3,117 +3,93 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Modern Athlete Lab — Coach-Dashboard</title>
+<title>Modern Athlete LAB™ — Coach Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0D1219; --panel:#141B25; --panel-2:#1A2230; --line:#232D3D;
-  --text:#EDF1F7; --muted:#8B97A8; --accent:#4C8EFF; --accent-strong:#6FA6FF;
-  --green:#3DDC97; --amber:#FFC24B; --red:#FF6B6B; --radius:18px;
+  --bg:#F6F6F3; --card:#FFFFFF; --ink:#15181D; --muted:#6A7076; --line:#E7E7E2;
+  --accent:#2456D6; --accent-soft:#EEF2FE; --success:#178A5B; --success-soft:#E9F6F0;
+  --hot:#C0392B; --hot-soft:#FBEAE7; --warn:#B7791F; --warn-soft:#FBF3E4; --radius:18px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{
-  background: radial-gradient(1200px 600px at 80% -10%, rgba(76,142,255,.08), transparent 60%), var(--bg);
-  color:var(--text); font-family:'Inter',system-ui,sans-serif; font-size:16px; line-height:1.5;
-  -webkit-font-smoothing:antialiased; display:flex; justify-content:center;
-}
-.app{ width:100%; max-width:920px; min-height:100dvh; display:flex; flex-direction:column;
-  padding:0 20px 40px; position:relative; }
-@media(min-width:1000px){ .app{border-left:1px solid var(--line);border-right:1px solid var(--line)} }
-header{ display:flex;align-items:center;justify-content:space-between;padding:18px 0 14px; }
+html,body{height:100%;overflow-x:hidden}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;display:flex;justify-content:center}
+.app{width:100%;max-width:960px;min-height:100dvh;display:flex;flex-direction:column;padding:0 20px 40px}
+@media(min-width:1000px){.app{border-left:1px solid var(--line);border-right:1px solid var(--line)}}
+header{display:flex;align-items:center;justify-content:space-between;padding:20px 0 12px}
 .brand{display:flex;align-items:center;gap:10px}
-.brand-mark{ width:30px;height:30px;border-radius:9px; background:linear-gradient(135deg,var(--accent),#2E6FE0);
-  display:grid;place-items:center; font-family:'Sora';font-weight:800;font-size:14px;color:#0D1219; }
-.brand-name{font-family:'Sora';font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase}
+.brand-mark{width:32px;height:32px;border-radius:10px;background:var(--ink);display:grid;place-items:center;color:#fff;font-family:'Sora';font-weight:800;font-size:14px}
+.brand-name{font-family:'Sora';font-weight:700;font-size:12px;letter-spacing:.16em;text-transform:uppercase}
 .brand-name span{color:var(--muted);font-weight:600}
-.logout-btn{ background:none;border:none;color:var(--muted);cursor:pointer;
-  font-size:12px;font-weight:600;font-family:'Inter'; }
-.logout-btn:hover{color:var(--text)}
+.ghost-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;font-weight:600;font-family:'Inter'}
+.ghost-btn:hover{color:var(--ink)}
 .screen{display:none;flex:1;flex-direction:column;gap:16px}
 .screen.active{display:flex}
-h1{font-family:'Sora';font-weight:800;font-size:28px;letter-spacing:-.01em}
-h2{font-family:'Sora';font-weight:700;font-size:18px;margin-top:8px}
+h1{font-family:'Sora';font-weight:800;font-size:26px;letter-spacing:-.01em}
+h2{font-family:'Sora';font-weight:700;font-size:16px}
+.hidden{display:none!important}
 
-/* Auth */
-.auth-wrap{justify-content:center;align-items:center;text-align:center;gap:16px;flex:1}
-.auth-field{
-  width:100%;max-width:340px;background:var(--panel);border:1px solid var(--line);border-radius:14px;
-  color:var(--text);font-family:'Inter';font-size:15px;padding:15px 16px;
-}
-.auth-error{font-size:13px;color:var(--red);min-height:18px}
+/* auth */
+.auth-wrap{justify-content:center;align-items:center;text-align:center;gap:14px;flex:1}
+.field{width:100%;max-width:340px;background:var(--card);border:1px solid var(--line);border-radius:14px;color:var(--ink);font-family:'Inter';font-size:15px;padding:14px 16px}
+.field:focus-visible{outline:none;border-color:var(--accent)}
+.err{font-size:13px;color:var(--hot);min-height:18px}
+.ok{font-size:13px;color:var(--success);min-height:18px}
+.cta{appearance:none;border:none;cursor:pointer;background:var(--ink);color:#fff;font-family:'Sora';font-weight:700;font-size:14px;border-radius:14px;padding:13px 20px;max-width:340px;width:100%}
+.cta:hover{opacity:.92}
+.cta.secondary{background:var(--card);color:var(--ink);border:1px solid var(--line)}
 .remember-me{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);cursor:pointer}
 .remember-me input{width:16px;height:16px;accent-color:var(--accent)}
-.cta{
-  appearance:none;border:none;cursor:pointer;background:var(--accent);color:#0D1219;
-  font-family:'Sora';font-weight:700;font-size:15px;border-radius:14px;padding:14px 20px;
-  max-width:340px;width:100%;
-}
-.cta:hover{background:var(--accent-strong)}
-.cta.secondary{background:var(--panel-2);color:var(--text);border:1px solid var(--line)}
 
-/* Stats row */
-.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.stat-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;text-align:center}
-.stat-num{font-family:'Sora';font-weight:800;font-size:26px}
-.stat-label{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:4px}
+/* tabs & stats */
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);padding-bottom:10px}
+.tab-btn{background:none;border:none;color:var(--muted);font-family:'Sora';font-weight:700;font-size:14px;cursor:pointer;padding:8px 10px;border-bottom:2px solid transparent}
+.tab-btn.active{color:var(--ink);border-color:var(--accent)}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:640px){.stats-row{grid-template-columns:repeat(2,1fr)}}
+.stat-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px;text-align:center}
+.stat-num{font-family:'Sora';font-weight:800;font-size:24px}
+.stat-label{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
 
-/* Alerts */
-.alerts{display:flex;flex-direction:column;gap:8px}
-.alert{ display:flex;align-items:flex-start;gap:10px; background:rgba(255,107,107,.08);
-  border:1px solid rgba(255,107,107,.35); border-radius:14px;padding:12px 14px;font-size:13.5px; }
-.alert .dot{width:8px;height:8px;border-radius:50%;background:var(--red);margin-top:6px;flex-shrink:0}
-.alert strong{font-weight:600}
-.alert .a-detail{color:var(--muted)}
-
-/* Client list */
-.client-list{display:flex;flex-direction:column;gap:10px}
-.client{ background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
-  padding:14px 16px;cursor:pointer;transition:border-color .15s; }
-.client:hover{border-color:#3A465C}
-.client.flagged{border-color:rgba(255,107,107,.45)}
-.client-row{display:flex;align-items:center;gap:12px}
-.avatar{ width:38px;height:38px;border-radius:12px;flex-shrink:0; background:var(--panel-2);
-  display:grid;place-items:center; font-family:'Sora';font-weight:700;font-size:13px;color:var(--accent); }
-.client-meta{flex:1;min-width:0}
-.client-name{font-weight:600;font-size:15px}
-.client-last{font-size:12px;color:var(--muted)}
-.pillar-dots{display:flex;gap:7px}
-.pdot{width:13px;height:13px;border-radius:50%}
-.pdot.g{background:var(--green)} .pdot.y{background:var(--amber)} .pdot.r{background:var(--red)}
-.client-detail{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--line);flex-direction:column;gap:10px}
-.client.open .client-detail{display:flex}
-.client-note{font-size:13px;color:var(--muted);background:var(--panel-2);border-radius:12px;padding:10px 12px}
-.client-note b{color:var(--text);font-weight:600}
-.client-goals{font-size:13px;color:var(--muted);background:var(--panel-2);border-radius:12px;padding:10px 12px}
-.client-goals b{color:var(--text);font-weight:600}
-.empty-note{font-size:13px;color:var(--muted);text-align:center;padding:20px 0}
-
-/* Challenge management */
-.challenge-form{ background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
-  padding:16px;display:flex;flex-direction:column;gap:10px; }
-.challenge-form label{font-size:12px;font-weight:600;color:var(--muted)}
-.challenge-form input,.challenge-form select,.challenge-form textarea{
-  width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;
-  color:var(--text);font-family:'Inter';font-size:14px;padding:10px 12px;
-}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.challenge-list{display:flex;flex-direction:column;gap:10px}
-.challenge-item{ background:var(--panel);border:1px solid var(--line);border-radius:14px;
-  padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px; }
-.challenge-item-title{font-weight:600;font-size:14.5px}
-.challenge-item-meta{font-size:12px;color:var(--muted)}
-.delete-btn{ background:none;border:1px solid rgba(255,107,107,.4);color:var(--red);
-  font-family:'Inter';font-size:12px;font-weight:600;padding:7px 12px;border-radius:999px;cursor:pointer; }
-.delete-btn:hover{background:rgba(255,107,107,.1)}
-
-.tabs{display:flex;gap:8px;border-bottom:1px solid var(--line);padding-bottom:10px}
-.tab-btn{ background:none;border:none;color:var(--muted);font-family:'Sora';font-weight:700;
-  font-size:14px;cursor:pointer;padding:8px 4px;border-bottom:2px solid transparent; }
-.tab-btn.active{color:var(--text);border-color:var(--accent)}
-.hidden{display:none!important}
+/* participants */
+.p-list{display:flex;flex-direction:column;gap:10px}
+.p-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;cursor:pointer;transition:border-color .15s}
+.p-card:hover{border-color:#C9C9C2}
+.p-card.hot{border-color:rgba(192,57,43,.5)}
+.p-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.avatar{width:40px;height:40px;border-radius:12px;flex-shrink:0;background:var(--accent-soft);display:grid;place-items:center;font-family:'Sora';font-weight:700;font-size:13px;color:var(--accent)}
+.p-meta{flex:1;min-width:180px}
+.p-name{font-weight:600;font-size:15px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.p-sub{font-size:12px;color:var(--muted)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.chip{font-size:11px;font-weight:700;border-radius:999px;padding:4px 10px;background:var(--bg);border:1px solid var(--line);color:var(--muted)}
+.chip.day{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+.chip.hotlead{background:var(--hot-soft);color:var(--hot);border-color:transparent}
+.chip.done7{background:var(--success-soft);color:var(--success);border-color:transparent}
+.p-detail{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--line);flex-direction:column;gap:12px}
+.p-card.open .p-detail{display:flex}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;font-size:13px}
+@media(max-width:640px){.kv{grid-template-columns:1fr}}
+.kv b{color:var(--muted);font-weight:600}
+.trend{display:flex;gap:4px;align-items:flex-end;height:36px;margin-top:4px}
+.trend .bar{flex:1;border-radius:3px;background:var(--line);min-height:3px}
+.trend .bar.e{background:var(--accent)}
+.trend .bar.s{background:var(--success)}
+.trend-label{font-size:11.5px;color:var(--muted);font-weight:600;margin-top:6px}
+.ci-row{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:12.5px}
+.ci-row b{font-family:'Sora';font-size:11px}
+.ci-flag{color:var(--warn);font-weight:600}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn-sm{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:8px 14px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:'Inter';color:var(--ink)}
+.btn-sm:hover{border-color:#C9C9C2}
+.btn-sm.wa{background:#1FAF5F;color:#fff;border-color:transparent}
+.btn-sm.wa[disabled]{opacity:.45;cursor:not-allowed}
+.btn-sm.toggled{background:var(--success-soft);color:var(--success);border-color:transparent}
+.notes{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:12px;font-family:'Inter';font-size:13px;padding:10px 12px;min-height:60px;resize:vertical}
+.empty-note{font-size:13px;color:var(--muted);text-align:center;padding:24px 0}
+.filter-row{display:flex;gap:8px;flex-wrap:wrap}
 </style>
 </head>
 <body>
@@ -122,90 +98,56 @@ h2{font-family:'Sora';font-weight:700;font-size:18px;margin-top:8px}
   <header>
     <div class="brand">
       <div class="brand-mark">M</div>
-      <div class="brand-name">Modern Athlete <span>Lab · Coach</span></div>
+      <div class="brand-name">Modern Athlete <span>LAB™ · Coach</span></div>
     </div>
-    <button class="logout-btn hidden" id="logoutBtn">Abmelden</button>
+    <button class="ghost-btn hidden" id="logoutBtn">Abmelden</button>
   </header>
 
   <!-- AUTH -->
   <section class="screen auth-wrap active" id="screen-auth">
     <div>
-      <div style="font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Coach-Zugang</div>
+      <div style="font-size:11.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)">Coach-Zugang</div>
       <h1 style="margin-top:8px">Anmelden</h1>
     </div>
-    <input class="auth-field" id="authEmail" type="email" placeholder="E-Mail" autocomplete="email">
-    <input class="auth-field" id="authPassword" type="password" placeholder="Passwort" autocomplete="current-password">
+    <input class="field" id="authEmail" type="email" placeholder="E-Mail" autocomplete="email">
+    <input class="field" id="authPassword" type="password" placeholder="Passwort" autocomplete="current-password">
     <label class="remember-me"><input type="checkbox" id="rememberMe" checked> Angemeldet bleiben</label>
-    <div class="auth-error" id="authError"></div>
+    <div class="err" id="authError"></div>
     <button class="cta" id="authSubmitBtn">Anmelden</button>
   </section>
 
-  <!-- DASHBOARD -->
+  <!-- DASH -->
   <section class="screen" id="screen-dash">
-    <h1>Coach-Dashboard</h1>
+    <h1>Coach Dashboard</h1>
     <div class="tabs">
-      <button class="tab-btn active" data-tab="overview">Übersicht</button>
-      <button class="tab-btn" data-tab="challenges">Challenges</button>
+      <button class="tab-btn active" data-tab="participants">Teilnehmer</button>
       <button class="tab-btn" data-tab="account">Konto</button>
     </div>
 
-    <div id="tab-overview">
+    <div id="tab-participants" style="display:flex;flex-direction:column;gap:14px">
       <div class="stats-row">
-        <div class="stat-card"><div class="stat-num" id="statTotal">–</div><div class="stat-label">Klienten</div></div>
-        <div class="stat-card"><div class="stat-num" id="statToday">–</div><div class="stat-label">Heute eingecheckt</div></div>
-        <div class="stat-card"><div class="stat-num" id="statFlagged">–</div><div class="stat-label">Auffällig</div></div>
+        <div class="stat-card"><div class="stat-num" id="statTotal">–</div><div class="stat-label">Teilnehmer</div></div>
+        <div class="stat-card"><div class="stat-num" id="statActive">–</div><div class="stat-label">Heute aktiv</div></div>
+        <div class="stat-card"><div class="stat-num" id="statDone">–</div><div class="stat-label">7 Tage geschafft</div></div>
+        <div class="stat-card"><div class="stat-num" id="statHot">–</div><div class="stat-label">Hot Leads</div></div>
       </div>
-      <button class="cta secondary" id="exportCsvBtn" style="max-width:none">Als CSV exportieren</button>
-      <h2>Hinweise</h2>
-      <div class="alerts" id="alertList"></div>
-      <h2>Klienten</h2>
-      <div class="client-list" id="clientList"></div>
-      <div class="empty-note" id="clientsEmpty" style="display:none">Noch keine registrierten Klienten.</div>
+      <div class="filter-row">
+        <button class="btn-sm" id="filterAll">Alle</button>
+        <button class="btn-sm" id="filterHot">🔥 Nur Hot Leads</button>
+        <button class="btn-sm" id="exportCsvBtn">⬇ CSV exportieren</button>
+        <button class="btn-sm" id="reloadBtn">↻ Aktualisieren</button>
+      </div>
+      <div class="p-list" id="pList"></div>
+      <div class="empty-note hidden" id="pEmpty">Noch keine Teilnehmer im Reset.</div>
     </div>
 
-    <div id="tab-challenges" class="hidden">
-      <h2>Neue Challenge anlegen</h2>
-      <div class="challenge-form">
-        <label>Titel</label>
-        <input id="chTitle" type="text" placeholder="z. B. 7 Tage Streak">
-        <label>Beschreibung (optional)</label>
-        <textarea id="chDesc" rows="2" placeholder="Kurze Erklärung für die Klienten"></textarea>
-        <div class="form-row">
-          <div>
-            <label>Ziel-Wert (Anzahl Check-ins im Zeitraum)</label>
-            <input id="chTarget" type="number" min="1" value="7">
-          </div>
-          <div></div>
-        </div>
-        <div class="form-row">
-          <div>
-            <label>Start</label>
-            <input id="chStart" type="date">
-          </div>
-          <div>
-            <label>Ende</label>
-            <input id="chEnd" type="date">
-          </div>
-        </div>
-        <button class="cta" id="chCreateBtn" style="max-width:none">Challenge erstellen</button>
-        <div class="auth-error" id="chError"></div>
-      </div>
-      <h2>Bestehende Challenges</h2>
-      <div class="challenge-list" id="challengeMgmtList"></div>
-      <div class="empty-note" id="challengesEmpty" style="display:none">Noch keine Challenges angelegt.</div>
-    </div>
-
-    <div id="tab-account" class="hidden">
-      <h2 style="margin-top:0">Passwort ändern</h2>
-      <div class="challenge-form" style="max-width:340px">
-        <label>Aktuelles Passwort</label>
-        <input id="curPw" type="password" autocomplete="current-password">
-        <label>Neues Passwort</label>
-        <input id="newPw" type="password" autocomplete="new-password">
-        <div class="auth-error" id="pwError"></div>
-        <div class="auth-error" id="pwSuccess" style="color:var(--green)"></div>
-        <button class="cta" id="pwSaveBtn" style="max-width:none">Speichern</button>
-      </div>
+    <div id="tab-account" class="hidden" style="display:flex;flex-direction:column;gap:10px;max-width:360px">
+      <h2>Passwort ändern</h2>
+      <input class="field" id="curPw" type="password" placeholder="Aktuelles Passwort" autocomplete="current-password">
+      <input class="field" id="newPw" type="password" placeholder="Neues Passwort" autocomplete="new-password">
+      <div class="err" id="pwError"></div>
+      <div class="ok" id="pwSuccess"></div>
+      <button class="cta secondary" id="pwSaveBtn" style="max-width:340px">Speichern</button>
     </div>
   </section>
 
@@ -219,7 +161,7 @@ import {
   setPersistence, browserLocalPersistence, browserSessionPersistence
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 import {
-  getFirestore, doc, setDoc, deleteDoc, collection, getDocs, query, where, serverTimestamp
+  getFirestore, doc, setDoc, collection, getDocs, query, where
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -235,249 +177,255 @@ const COACH_EMAILS = ['rene.schneider1410@gmail.com'];
 const fbApp = initializeApp(firebaseConfig);
 const auth = getAuth(fbApp);
 const db = getFirestore(fbApp);
-
 const $ = s=>document.querySelector(s);
+
 const screens = { auth:$('#screen-auth'), dash:$('#screen-dash') };
-function show(name){
-  Object.values(screens).forEach(s=>s.classList.remove('active'));
-  screens[name].classList.add('active');
-}
+function show(name){ Object.values(screens).forEach(s=>s.classList.remove('active')); screens[name].classList.add('active'); }
+function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 
-function todayStr(){
-  const d = new Date();
-  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-}
-const round1 = n=>Math.round(n*10)/10;
-function zone(s){ return s>=7?'g':(s>=4?'y':'r'); }
+const SOURCE_LBL = { instagram:'Instagram', rene:'René persönlich', friend:'Freund', other:'Sonstiges' };
+const GOAL_LBL = { energy:'Mehr Energie', nutrition:'Bessere Ernährung', training:'Bessere Trainingsroutine', sleep:'Besserer Schlaf', stiffness:'Weniger Steifheit', consistency:'Mehr Konstanz', fat:'Fett verlieren', strength:'Kraft aufbauen', healthy:'Gesund fühlen' };
+const STRUGGLE_LBL = { nutrition:'Ernährung', training:'Training', sleep:'Schlaf', stress:'Stress', energy:'Wenig Energie', structure:'Keine Struktur', not_sure:'Nicht sicher' };
+const GUIDE_LBL = { nutrition:'Fuel MAP™ (Ernährung)', training:'Movement MAP™ (Training)', lifestyle:'Recovery/Lifestyle MAP™', not_sure:'Bottleneck unklar' };
 
+/* ---------- Auth ---------- */
 $('#authSubmitBtn').addEventListener('click', async ()=>{
-  const email = $('#authEmail').value.trim().toLowerCase();
-  const password = $('#authPassword').value;
-  const errBox = $('#authError');
-  errBox.textContent = '';
-  if(!email || !password){ errBox.textContent = 'Bitte E-Mail und Passwort eingeben.'; return; }
-  if(!COACH_EMAILS.includes(email.toLowerCase())){
-    errBox.textContent = 'Diese E-Mail hat keinen Coach-Zugang.';
-    return;
-  }
+  const email=$('#authEmail').value.trim().toLowerCase();
+  const password=$('#authPassword').value;
+  const err=$('#authError'); err.textContent='';
+  if(!email||!password){ err.textContent='Bitte E-Mail und Passwort eingeben.'; return; }
+  if(!COACH_EMAILS.includes(email)){ err.textContent='Diese E-Mail hat keinen Coach-Zugang.'; return; }
   try{
     await setPersistence(auth, $('#rememberMe').checked ? browserLocalPersistence : browserSessionPersistence);
     await signInWithEmailAndPassword(auth,email,password);
-  }catch(e){
-    errBox.textContent = 'E-Mail oder Passwort ist falsch.';
-  }
+  }catch(e){ err.textContent='E-Mail oder Passwort ist falsch.'; }
 });
-$('#logoutBtn').addEventListener('click', ()=> signOut(auth));
+$('#logoutBtn').addEventListener('click',()=>signOut(auth));
 
 onAuthStateChanged(auth, async (user)=>{
   if(user && COACH_EMAILS.includes((user.email||'').toLowerCase())){
     $('#logoutBtn').classList.remove('hidden');
     show('dash');
-    await loadDashboard();
-    await loadChallengeManagement();
+    await loadParticipants();
   } else {
-    // Kein signOut hier: index.html und admin.html teilen sich die Firebase-Session
-    // auf derselben Domain — ein erzwungener signOut würde auch eingeloggte
-    // Klienten in anderen Tabs ausloggen.
     $('#logoutBtn').classList.add('hidden');
     show('auth');
   }
 });
 
+/* ---------- Tabs ---------- */
 document.querySelectorAll('.tab-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
+  btn.addEventListener('click',()=>{
     document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    const tab = btn.dataset.tab;
-    $('#tab-overview').classList.toggle('hidden', tab!=='overview');
-    $('#tab-challenges').classList.toggle('hidden', tab!=='challenges');
-    $('#tab-account').classList.toggle('hidden', tab!=='account');
+    $('#tab-participants').classList.toggle('hidden', btn.dataset.tab!=='participants');
+    $('#tab-account').classList.toggle('hidden', btn.dataset.tab!=='account');
   });
 });
 
-$('#pwSaveBtn').addEventListener('click', async ()=>{
-  const current = $('#curPw').value;
-  const next = $('#newPw').value;
-  const errBox = $('#pwError'); const okBox = $('#pwSuccess');
-  errBox.textContent=''; okBox.textContent='';
-  if(!current || !next){ errBox.textContent = 'Bitte beide Felder ausfüllen.'; return; }
-  if(next.length < 6){ errBox.textContent = 'Neues Passwort braucht mindestens 6 Zeichen.'; return; }
-  try{
-    const cred = EmailAuthProvider.credential(auth.currentUser.email, current);
-    await reauthenticateWithCredential(auth.currentUser, cred);
-    await updatePassword(auth.currentUser, next);
-    $('#curPw').value=''; $('#newPw').value='';
-    okBox.textContent = 'Passwort geändert.';
-  }catch(e){
-    errBox.textContent = (e.code==='auth/invalid-credential'||e.code==='auth/wrong-password') ? 'Aktuelles Passwort ist falsch.' : 'Etwas ist schiefgelaufen.';
-  }
-});
+/* ---------- Participants ---------- */
+let participants=[];
+let filterHot=false;
 
-/* =========================================================
-   ÜBERSICHT — echte Klienten-Daten aus Firestore
-========================================================= */
-let lastClients = [];
+function isHotLead(p){
+  if(p.hotLead) return true;
+  if(p.guidanceInterest) return true;
+  if((p.doneCount||0)>=7) return true;
+  if(p.checkins.some(c=>c.wantsFeedback)) return true;
+  if((p.doneCount||0)>=4 && p.avgEnergy>0 && p.avgEnergy<=4) return true;
+  return false;
+}
 
-async function loadDashboard(){
-  const today = todayStr();
-  const usersSnap = await getDocs(collection(db,'users'));
-  const users = usersSnap.docs.map(d=>({ uid:d.id, ...d.data() }));
+async function loadParticipants(){
+  const usersSnap=await getDocs(collection(db,'users'));
+  const users=usersSnap.docs.map(d=>({ uid:d.id, ...d.data() }))
+    .filter(u=>!COACH_EMAILS.includes((u.email||'').toLowerCase()));
 
-  $('#statTotal').textContent = users.length;
-  $('#clientsEmpty').style.display = users.length ? 'none' : 'block';
-
-  const clients = [];
+  participants=[];
   for(const u of users){
-    const cSnap = await getDocs(query(collection(db,'checkins'), where('uid','==',u.uid)));
-    const all = cSnap.docs.map(d=>d.data()).sort((a,b)=> a.dateStr < b.dateStr ? 1 : -1);
-    const last7 = all.slice(0,7);
-    const checkedInToday = all.some(c=>c.dateStr===today);
-    const ern = last7.map(c=>c.scores?.ern).filter(v=>v!=null);
-    const tra = last7.map(c=>c.scores?.tra).filter(v=>v!=null);
-    const rec = last7.map(c=>c.scores?.rec).filter(v=>v!=null);
-    const avg = arr => arr.length ? round1(arr.reduce((a,b)=>a+b,0)/arr.length) : 0;
-    const aE=avg(ern), aT=avg(tra), aR=avg(rec);
-
-    const flags = [];
-    if(!all.length) flags.push('Noch nie eingecheckt');
-    else if(!all.some(c=>c.dateStr >= addDays(today,-3))) flags.push('Kein Check-in seit 3+ Tagen');
-    const sleepLowCount = last7.filter(c=>c.answers?.sleep===0).length;
-    if(sleepLowCount>=2) flags.push('Schlaf < 5 h ('+sleepLowCount+' von '+last7.length+' Tagen)');
-    const missedCount = last7.filter(c=>c.answers?.training===3).length;
-    if(missedCount>=3) flags.push('Training '+missedCount+'× verpasst in den letzten '+last7.length+' Check-ins');
-    if(last7[0]?.answers?.pain===3) flags.push('Starke Schmerzen beim letzten Check-in');
-
-    const lastSeenStr = u.lastSeen?.toDate ? u.lastSeen.toDate().toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'}) : null;
-    clients.push({ ...u, aE, aT, aR, flags, lastDate: all[0]?.dateStr || null, lastSeenStr, checkedInToday, checkinCount: all.length });
+    let checkins=[];
+    try{
+      const snap=await getDocs(query(collection(db,'resetCheckins'), where('uid','==',u.uid)));
+      checkins=snap.docs.map(d=>d.data()).sort((a,b)=>a.day-b.day);
+    }catch(e){}
+    const doneCount=checkins.length;
+    const energies=checkins.map(c=>c.energy).filter(v=>v!=null);
+    const avgEnergy=energies.length? Math.round(energies.reduce((a,b)=>a+b,0)/energies.length*10)/10 : 0;
+    const last=checkins[checkins.length-1];
+    const lastSeenStr=u.lastSeen?.toDate ? u.lastSeen.toDate().toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'}) : null;
+    const activeToday = checkins.some(c=>c.dateStr===todayStr());
+    participants.push({ ...u, checkins, doneCount, avgEnergy, last, lastSeenStr, activeToday });
   }
-
-  $('#statToday').textContent = clients.filter(c=>c.checkedInToday).length;
-  $('#statFlagged').textContent = clients.filter(c=>c.flags.length).length;
-
-  const alertBox = $('#alertList');
-  alertBox.innerHTML = '';
-  clients.forEach(c=>{
-    c.flags.forEach(f=>{
-      const el = document.createElement('div');
-      el.className='alert';
-      el.innerHTML = '<span class="dot"></span><div><strong>'+(c.name||c.email)+'</strong> · <span class="a-detail">'+f+'</span></div>';
-      alertBox.appendChild(el);
-    });
+  participants.forEach(p=>{ p.hot=isHotLead(p); });
+  participants.sort((a,b)=>{
+    if(a.hot!==b.hot) return a.hot?-1:1;
+    return (b.doneCount||0)-(a.doneCount||0);
   });
+  renderStats(); renderList();
+}
+$('#reloadBtn').addEventListener('click',loadParticipants);
+$('#filterAll').addEventListener('click',()=>{ filterHot=false; renderList(); });
+$('#filterHot').addEventListener('click',()=>{ filterHot=true; renderList(); });
 
-  const sorted = clients.sort((a,b)=>{
-    if(b.flags.length!==a.flags.length) return b.flags.length-a.flags.length;
-    const wa = Math.min(a.aE,a.aT,a.aR), wb = Math.min(b.aE,b.aT,b.aR);
-    return wa-wb;
-  });
+function renderStats(){
+  $('#statTotal').textContent=participants.length;
+  $('#statActive').textContent=participants.filter(p=>p.activeToday).length;
+  $('#statDone').textContent=participants.filter(p=>p.doneCount>=7).length;
+  $('#statHot').textContent=participants.filter(p=>p.hot).length;
+}
 
-  const list = $('#clientList');
-  list.innerHTML = '';
-  sorted.forEach(c=>{
-    const initials = (c.name || c.email || '?').split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase();
-    const card = document.createElement('div');
-    card.className = 'client'+(c.flags.length?' flagged':'');
-    card.innerHTML =
-      '<div class="client-row">'+
-        '<div class="avatar">'+initials+'</div>'+
-        '<div class="client-meta"><div class="client-name">'+(c.name||'(kein Name)')+'</div>'+
-        '<div class="client-last">'+c.email+' · Letzter Check-in: '+(c.lastDate||'nie')+' · Zuletzt online: '+(c.lastSeenStr||'nie')+'</div></div>'+
-        '<div class="pillar-dots">'+
-          '<span class="pdot '+zone(c.aE)+'"></span>'+
-          '<span class="pdot '+zone(c.aT)+'"></span>'+
-          '<span class="pdot '+zone(c.aR)+'"></span>'+
-        '</div>'+
+function esc(s){ return String(s??'').replace(/[&<>"]/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c])); }
+
+function waReply(p){
+  const name=p.name||'';
+  const day=p.doneCount||0;
+  const lang=p.preferredLanguage==='de'?'de':'en';
+  const msg = lang==='de'
+    ? 'Hey '+name+', ich habe deinen Tag-'+day+'-Check-in gesehen. Stark, dass du dranbleibst. Für morgen: Halte es simpel — eine proteinreiche Mahlzeit und ein Walk reichen als Fokus.'
+    : 'Hey '+name+', I saw your Day '+day+' check-in. Good work showing up. For tomorrow, keep it simple: focus on one protein-first meal and one walk.';
+  const phone=(p.phone||'').replace(/[^0-9]/g,'');
+  return phone ? 'https://wa.me/'+phone+'?text='+encodeURIComponent(msg) : null;
+}
+
+function renderList(){
+  const list=$('#pList'); list.innerHTML='';
+  const shown=participants.filter(p=>!filterHot||p.hot);
+  $('#pEmpty').classList.toggle('hidden', shown.length>0);
+  shown.forEach(p=>{
+    const card=document.createElement('div');
+    card.className='p-card'+(p.hot?' hot':'');
+    const initials=(p.name||p.email||'?').split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
+
+    const chips=[];
+    chips.push('<span class="chip day">Tag '+(p.doneCount||0)+'/7</span>');
+    chips.push('<span class="chip">'+(p.preferredLanguage==='de'?'DE':'EN')+'</span>');
+    if(p.points) chips.push('<span class="chip">'+p.points+' P</span>');
+    if(p.streak) chips.push('<span class="chip">⚡ '+p.streak+'</span>');
+    if(p.doneCount>=7) chips.push('<span class="chip done7">Reset ✓</span>');
+    if(p.hot) chips.push('<span class="chip hotlead">🔥 Hot Lead</span>');
+    if(p.contacted) chips.push('<span class="chip">Kontaktiert ✓</span>');
+
+    const b=p.baseline||{};
+    const kv=[
+      ['E-Mail', esc(p.email||'—')],
+      ['WhatsApp/LINE', esc(p.phone||'—')],
+      ['Quelle', (SOURCE_LBL[p.source]||'—')+(p.invitedBy?' · von '+esc(p.invitedBy):'')],
+      ['Hauptziel', GOAL_LBL[p.mainGoal]||'—'],
+      ['Größte Baustelle', STRUGGLE_LBL[p.biggestStruggle]||'—'],
+      ['Guidance-Interesse', p.guidanceInterest?(GUIDE_LBL[p.guidanceInterest]||p.guidanceInterest):'—'],
+      ['Zuletzt online', esc(p.lastSeenStr||'nie')],
+      ['Baseline', b.energy?('Energie '+b.energy+' · Schlaf '+b.sleep+' · Stress '+b.stress+' · Bewegung '+b.movement+' · Ernährung '+b.nutrition):'—']
+    ].map(([k,v])=>'<b>'+k+'</b><span>'+v+'</span>').join('');
+
+    const eBars=p.checkins.map(c=>'<div class="bar e" style="height:'+(c.energy*10)+'%" title="Tag '+c.day+': '+c.energy+'/10"></div>').join('');
+    const sBars=p.checkins.map(c=>'<div class="bar s" style="height:'+(c.sleep*10)+'%" title="Tag '+c.day+': '+c.sleep+'/10"></div>').join('');
+
+    const ciRows=p.checkins.map(c=>{
+      const flag=c.wantsFeedback?'<div class="ci-flag">⚑ Für René: '+esc(c.wantsFeedback)+'</div>':'';
+      return '<div class="ci-row"><b>Tag '+c.day+'</b> · '+esc(c.dateStr)+' · Energie '+c.energy+'/10 · Schlaf '+c.sleep+'/10 · Mission: '+esc(c.completedMission)+' · +'+(c.points||0)+' P'+
+        (c.biggestWin?'<br><b>Win:</b> '+esc(c.biggestWin):'')+
+        (c.biggestStruggle?'<br><b>Schwer:</b> '+esc(c.biggestStruggle):'')+
+        (c.reflection?'<br><b>Reflexion:</b> '+esc(c.reflection):'')+flag+'</div>';
+    }).join('') || '<div class="empty-note" style="padding:8px 0">Noch keine Check-ins.</div>';
+
+    card.innerHTML=
+      '<div class="p-head">'+
+        '<div class="avatar">'+esc(initials)+'</div>'+
+        '<div class="p-meta"><div class="p-name">'+esc(p.name||'(kein Name)')+'</div>'+
+        '<div class="p-sub">'+esc(p.email||'')+'</div></div>'+
+        '<div class="chips">'+chips.join('')+'</div>'+
       '</div>'+
-      '<div class="client-detail">'+
-        '<div>Ø Ernährung: '+c.aE+' / 10 · Ø Training: '+c.aT+' / 10 · Ø Recovery: '+c.aR+' / 10</div>'+
-        (c.phone ? '<div class="client-note"><b>Telefon:</b> '+c.phone+'</div>' : '') +
-        (c.goals ? '<div class="client-goals"><b>Ziele:</b> '+c.goals+'</div>' : '') +
+      '<div class="p-detail">'+
+        '<div class="kv">'+kv+'</div>'+
+        (p.checkins.length?'<div><div class="trend">'+eBars+'</div><div class="trend-label">Energie-Trend</div>'+
+        '<div class="trend" style="margin-top:8px">'+sBars+'</div><div class="trend-label">Schlaf-Trend</div></div>':'')+
+        '<div style="display:flex;flex-direction:column;gap:8px">'+ciRows+'</div>'+
+        '<textarea class="notes" placeholder="Coach-Notizen zu diesem Teilnehmer …">'+esc(p.coachNotes||'')+'</textarea>'+
+        '<div class="actions"></div>'+
       '</div>';
-    card.addEventListener('click', ()=>card.classList.toggle('open'));
+
+    // actions
+    const actions=card.querySelector('.actions');
+    const waBtn=document.createElement('button');
+    waBtn.className='btn-sm wa';
+    waBtn.textContent='💬 Auf WhatsApp antworten';
+    const link=waReply(p);
+    if(link) waBtn.onclick=(e)=>{ e.stopPropagation(); window.open(link,'_blank'); };
+    else { waBtn.disabled=true; waBtn.title='Keine Nummer hinterlegt'; }
+    actions.appendChild(waBtn);
+
+    const cBtn=document.createElement('button');
+    cBtn.className='btn-sm'+(p.contacted?' toggled':'');
+    cBtn.textContent=p.contacted?'✓ Kontaktiert':'Als kontaktiert markieren';
+    cBtn.onclick=async (e)=>{
+      e.stopPropagation();
+      p.contacted=!p.contacted;
+      try{ await setDoc(doc(db,'users',p.uid),{ contacted:p.contacted },{ merge:true }); }catch(err){}
+      renderList();
+    };
+    actions.appendChild(cBtn);
+
+    const hBtn=document.createElement('button');
+    hBtn.className='btn-sm'+(p.hotLead?' toggled':'');
+    hBtn.textContent=p.hotLead?'🔥 Hot Lead (manuell)':'Als Hot Lead markieren';
+    hBtn.onclick=async (e)=>{
+      e.stopPropagation();
+      p.hotLead=!p.hotLead; p.hot=isHotLead(p);
+      try{ await setDoc(doc(db,'users',p.uid),{ hotLead:p.hotLead },{ merge:true }); }catch(err){}
+      renderStats(); renderList();
+    };
+    actions.appendChild(hBtn);
+
+    const nBtn=document.createElement('button');
+    nBtn.className='btn-sm';
+    nBtn.textContent='Notizen speichern';
+    nBtn.onclick=async (e)=>{
+      e.stopPropagation();
+      const val=card.querySelector('.notes').value.trim();
+      p.coachNotes=val;
+      try{ await setDoc(doc(db,'users',p.uid),{ coachNotes:val },{ merge:true }); nBtn.textContent='Gespeichert ✓'; setTimeout(()=>nBtn.textContent='Notizen speichern',1500); }catch(err){}
+    };
+    actions.appendChild(nBtn);
+
+    card.querySelector('.notes').addEventListener('click',e=>e.stopPropagation());
+    card.querySelector('.p-head').addEventListener('click',()=>card.classList.toggle('open'));
     list.appendChild(card);
   });
-
-  lastClients = sorted;
 }
 
-function csvEscape(val){
-  const s = String(val ?? '');
-  return /[",\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s;
-}
-
-$('#exportCsvBtn').addEventListener('click', ()=>{
-  const headers = ['Name','E-Mail','Telefon','Letzter Check-in','Zuletzt online','Anzahl Check-ins','Ø Ernährung','Ø Training','Ø Recovery','Heute eingecheckt','Hinweise','Ziele'];
-  const rows = lastClients.map(c=>[
-    c.name||'', c.email||'', c.phone||'', c.lastDate||'', c.lastSeenStr||'', c.checkinCount,
-    c.aE, c.aT, c.aR, c.checkedInToday?'Ja':'Nein', c.flags.join(' | '), c.goals||''
+/* ---------- CSV ---------- */
+function csvEsc(v){ const s=String(v??''); return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; }
+$('#exportCsvBtn').addEventListener('click',()=>{
+  const headers=['Name','E-Mail','Telefon','Sprache','Quelle','Eingeladen von','Tag','Punkte','Streak','Ø Energie','Hauptziel','Baustelle','Guidance','Hot Lead','Kontaktiert','Zuletzt online','Notizen'];
+  const rows=participants.map(p=>[
+    p.name||'', p.email||'', p.phone||'', p.preferredLanguage||'', SOURCE_LBL[p.source]||'', p.invitedBy||'',
+    (p.doneCount||0)+'/7', p.points||0, p.streak||0, p.avgEnergy||'', GOAL_LBL[p.mainGoal]||'', STRUGGLE_LBL[p.biggestStruggle]||'',
+    p.guidanceInterest||'', p.hot?'Ja':'Nein', p.contacted?'Ja':'Nein', p.lastSeenStr||'', p.coachNotes||''
   ]);
-  const csv = [headers, ...rows].map(r=>r.map(csvEscape).join(',')).join('\r\n');
-  const blob = new Blob(['﻿'+csv], { type:'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'klienten-'+todayStr()+'.csv';
-  a.click();
+  const csv=[headers,...rows].map(r=>r.map(csvEsc).join(',')).join('\r\n');
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='reset-teilnehmer-'+todayStr()+'.csv'; a.click();
   URL.revokeObjectURL(url);
 });
 
-function addDays(dateStr, delta){
-  const d = new Date(dateStr+'T00:00:00');
-  d.setDate(d.getDate()+delta);
-  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-}
-
-/* =========================================================
-   CHALLENGE-VERWALTUNG
-========================================================= */
-$('#chCreateBtn').addEventListener('click', async ()=>{
-  const title = $('#chTitle').value.trim();
-  const description = $('#chDesc').value.trim();
-  const target = parseInt($('#chTarget').value,10);
-  const startDate = $('#chStart').value;
-  const endDate = $('#chEnd').value;
-  const errBox = $('#chError');
-  errBox.textContent = '';
-  if(!title || !target || !startDate || !endDate){
-    errBox.textContent = 'Bitte Titel, Ziel-Wert, Start- und Enddatum ausfüllen.';
-    return;
+/* ---------- Account ---------- */
+$('#pwSaveBtn').addEventListener('click', async ()=>{
+  const cur=$('#curPw').value, next=$('#newPw').value;
+  const err=$('#pwError'), ok=$('#pwSuccess');
+  err.textContent=''; ok.textContent='';
+  if(!cur||!next){ err.textContent='Bitte beide Felder ausfüllen.'; return; }
+  if(next.length<6){ err.textContent='Neues Passwort braucht mindestens 6 Zeichen.'; return; }
+  try{
+    const cred=EmailAuthProvider.credential(auth.currentUser.email,cur);
+    await reauthenticateWithCredential(auth.currentUser,cred);
+    await updatePassword(auth.currentUser,next);
+    $('#curPw').value=''; $('#newPw').value='';
+    ok.textContent='Passwort geändert.';
+  }catch(e){
+    err.textContent=(e.code==='auth/invalid-credential'||e.code==='auth/wrong-password')?'Aktuelles Passwort ist falsch.':'Etwas ist schiefgelaufen.';
   }
-  if(endDate < startDate){
-    errBox.textContent = 'Enddatum muss nach dem Startdatum liegen.';
-    return;
-  }
-  const id = 'ch_'+Date.now();
-  await setDoc(doc(db,'challenges',id), { title, description, target, startDate, endDate, createdAt: serverTimestamp() });
-  $('#chTitle').value=''; $('#chDesc').value=''; $('#chTarget').value='7'; $('#chStart').value=''; $('#chEnd').value='';
-  await loadChallengeManagement();
 });
-
-async function loadChallengeManagement(){
-  const snap = await getDocs(collection(db,'challenges'));
-  const challenges = snap.docs.map(d=>({ id:d.id, ...d.data() })).sort((a,b)=> a.startDate < b.startDate ? 1 : -1);
-  $('#challengesEmpty').style.display = challenges.length ? 'none' : 'block';
-
-  const list = $('#challengeMgmtList');
-  list.innerHTML = '';
-  for(const c of challenges){
-    const partSnap = await getDocs(query(collection(db,'challengeParticipants'), where('challengeId','==',c.id)));
-    const item = document.createElement('div');
-    item.className = 'challenge-item';
-    item.innerHTML =
-      '<div><div class="challenge-item-title">'+c.title+'</div>'+
-      '<div class="challenge-item-meta">'+c.startDate+' → '+c.endDate+' · Ziel: '+c.target+' · '+partSnap.size+' Teilnehmer</div></div>';
-    const delBtn = document.createElement('button');
-    delBtn.className = 'delete-btn';
-    delBtn.textContent = 'Löschen';
-    delBtn.addEventListener('click', async ()=>{
-      if(!confirm('Challenge "'+c.title+'" wirklich löschen?')) return;
-      await deleteDoc(doc(db,'challenges',c.id));
-      await loadChallengeManagement();
-    });
-    item.appendChild(delBtn);
-    list.appendChild(item);
-  }
-}
 </script>
 </body>
 </html>

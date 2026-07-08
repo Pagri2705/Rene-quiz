@@ -10,32 +10,36 @@ service cloud.firestore {
       return isSignedIn() && request.auth.token.email == 'rene.schneider1410@gmail.com';
     }
 
+    // Profil + Progress + Lead-Felder. Coach darf schreiben, um
+    // contacted/hotLead/coachNotes zu pflegen.
+    match /users/{uid} {
+      allow read: if isSignedIn() && (request.auth.uid == uid || isCoach());
+      allow write: if isSignedIn() && (request.auth.uid == uid || isCoach());
+    }
+
+    // 7-Day-Reset Check-ins (ein Dokument pro Nutzer/Tag).
+    match /resetCheckins/{checkinId} {
+      allow read: if isSignedIn() && (resource == null || request.auth.uid == resource.data.uid || isCoach());
+      allow create: if isSignedIn() && request.auth.uid == request.resource.data.uid;
+      allow update, delete: if isSignedIn() && request.auth.uid == resource.data.uid;
+    }
+
+    // ---- Legacy-Collections der vorherigen Check-in-App ----
+    // (bleiben bestehen, damit der Branch legacy-checkin-v1 lauffähig ist)
     match /checkins/{checkinId} {
-      // resource == null: Dokument existiert noch nicht (z.B. heutiger Check-in vor dem
-      // ersten Speichern) — Lesen erlauben, da es ohnehin keine Daten preisgibt.
       allow read: if isSignedIn() && (resource == null || request.auth.uid == resource.data.uid || isCoach());
       allow update, delete: if isSignedIn() && request.auth.uid == resource.data.uid;
       allow create: if isSignedIn() && request.auth.uid == request.resource.data.uid;
     }
-
-    match /users/{uid} {
-      allow read: if isSignedIn() && (request.auth.uid == uid || isCoach());
-      allow write: if isSignedIn() && request.auth.uid == uid;
-    }
-
     match /challenges/{challengeId} {
       allow read: if isSignedIn();
       allow write: if isCoach();
     }
-
     match /challengeParticipants/{participantId} {
       allow read: if isSignedIn() && (resource == null || resource.data.uid == request.auth.uid || isCoach());
       allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
       allow delete: if isSignedIn() && resource.data.uid == request.auth.uid;
     }
-
-    // Aggregate-only counters, keine personenbezogenen Daten — bewusst offen
-    // lesbar/schreibbar für den anonymisierten "X von Y" Check-in-Zähler.
     match /stats/{statId} {
       allow read: if isSignedIn();
       allow write: if isSignedIn();
@@ -44,10 +48,6 @@ service cloud.firestore {
       allow read: if isSignedIn();
       allow write: if isSignedIn();
     }
-
-    // Bestenliste: nur Name + Streak, keine E-Mail/Telefon/Ziele — daher
-    // bewusst für alle eingeloggten Nutzer lesbar. Jeder darf nur sein
-    // eigenes Dokument schreiben.
     match /leaderboard/{uid} {
       allow read: if isSignedIn();
       allow write: if isSignedIn() && request.auth.uid == uid;
