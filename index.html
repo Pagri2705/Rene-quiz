@@ -598,6 +598,9 @@ const db = getFirestore(fbApp);
 const storage = getStorage(fbApp);
 
 const PRIZE_DEADLINE = new Date('2026-08-10T23:59:59');
+/* Firebase Storage needs the Blaze plan — set to true once that's upgraded
+   and storage.rules is published, to switch on PDF plan uploads/downloads. */
+const STORAGE_ENABLED = false;
 const COLLAGE_PHOTOS = Array.from({length:10},(_,i)=>'assets/collage/photo'+(i+1)+'.png');
 const FAKE_LEADERBOARD = [
   { uid:'fake1', name:'Lena K.', streak:14 },
@@ -1316,6 +1319,7 @@ updatePrizeCountdown();
    PLANS — request nutrition/training plan, show coach PDFs
 ========================================================= */
 async function listPlanFiles(type){
+  if(!STORAGE_ENABLED) return [];
   try{
     const folderRef=ref(storage,'plans/'+state.uid+'/'+type);
     const res=await listAll(folderRef);

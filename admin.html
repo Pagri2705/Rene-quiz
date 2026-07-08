@@ -183,6 +183,9 @@ const firebaseConfig = {
   appId: "1:1050370639137:web:7280095aaa905f0e806a60"
 };
 const COACH_EMAILS = ['rene.schneider1410@gmail.com'];
+/* Firebase Storage needs the Blaze plan — set to true once that's upgraded
+   and storage.rules is published, to switch on PDF plan uploads/downloads. */
+const STORAGE_ENABLED = false;
 
 const fbApp = initializeApp(firebaseConfig);
 const auth = getAuth(fbApp);
@@ -357,13 +360,17 @@ function renderList(){
         '<div class="plan-uploads">'+
           '<div class="plan-upload-row">'+
             '<b>🥗 Ernährungsplan'+(p.nutritionPlanRequestedAt?' — angefragt':'')+'</b>'+
-            '<div class="plan-file-list" id="nfiles-'+p.uid+'">…</div>'+
-            '<label class="btn-sm">PDF hochladen<input type="file" accept="application/pdf" class="plan-file-input" data-uid="'+p.uid+'" data-type="nutrition" hidden></label>'+
+            (STORAGE_ENABLED
+              ? '<div class="plan-file-list" id="nfiles-'+p.uid+'">…</div>'+
+                '<label class="btn-sm">PDF hochladen<input type="file" accept="application/pdf" class="plan-file-input" data-uid="'+p.uid+'" data-type="nutrition" hidden></label>'
+              : '<span style="font-size:12px;color:var(--muted)">PDF-Upload folgt, sobald Storage aktiviert ist — bis dahin bitte manuell schicken.</span>')+
           '</div>'+
           '<div class="plan-upload-row">'+
             '<b>🏋 Trainingsplan'+(p.trainingPlanRequestedAt?' — angefragt':'')+'</b>'+
-            '<div class="plan-file-list" id="tfiles-'+p.uid+'">…</div>'+
-            '<label class="btn-sm">PDF hochladen<input type="file" accept="application/pdf" class="plan-file-input" data-uid="'+p.uid+'" data-type="training" hidden></label>'+
+            (STORAGE_ENABLED
+              ? '<div class="plan-file-list" id="tfiles-'+p.uid+'">…</div>'+
+                '<label class="btn-sm">PDF hochladen<input type="file" accept="application/pdf" class="plan-file-input" data-uid="'+p.uid+'" data-type="training" hidden></label>'
+              : '<span style="font-size:12px;color:var(--muted)">PDF-Upload folgt, sobald Storage aktiviert ist — bis dahin bitte manuell schicken.</span>')+
           '</div>'+
         '</div>'+
         '<textarea class="notes" placeholder="Coach-Notizen zu diesem Teilnehmer …">'+esc(p.coachNotes||'')+'</textarea>'+
@@ -428,7 +435,7 @@ function renderList(){
     let filesLoaded=false;
     card.querySelector('.p-head').addEventListener('click',()=>{
       card.classList.toggle('open');
-      if(card.classList.contains('open') && !filesLoaded){
+      if(STORAGE_ENABLED && card.classList.contains('open') && !filesLoaded){
         filesLoaded=true;
         loadPlanFiles(p.uid,'nutrition');
         loadPlanFiles(p.uid,'training');
