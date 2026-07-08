@@ -81,6 +81,13 @@ h2{font-family:'Sora';font-weight:700;font-size:16px}
 .ci-row{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:12.5px}
 .ci-row b{font-family:'Sora';font-size:11px}
 .ci-flag{color:var(--warn);font-weight:600}
+.plan-uploads{display:flex;flex-direction:column;gap:10px}
+.plan-upload-row{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.plan-upload-row b{font-family:'Sora';font-size:12px}
+.plan-file-list{display:flex;flex-direction:column;gap:4px}
+.plan-file-link{font-size:12.5px;color:var(--accent);text-decoration:none;font-weight:600}
+.plan-file-link:hover{text-decoration:underline}
+.plan-upload-row .btn-sm{align-self:flex-start;cursor:pointer}
 .actions{display:flex;gap:8px;flex-wrap:wrap}
 .btn-sm{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:8px 14px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:'Inter';color:var(--ink)}
 .btn-sm:hover{border-color:#C9C9C2}
@@ -163,6 +170,9 @@ import {
 import {
   getFirestore, doc, setDoc, collection, getDocs, query, where
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+import {
+  getStorage, ref, listAll, getDownloadURL, uploadBytes
+} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAmNKAXWVxAanUpqB-1KQawyM7Wl-LR0vM",
@@ -177,6 +187,7 @@ const COACH_EMAILS = ['rene.schneider1410@gmail.com'];
 const fbApp = initializeApp(firebaseConfig);
 const auth = getAuth(fbApp);
 const db = getFirestore(fbApp);
+const storage = getStorage(fbApp);
 const $ = s=>document.querySelector(s);
 
 const screens = { auth:$('#screen-auth'), dash:$('#screen-dash') };
@@ -230,6 +241,7 @@ let filterHot=false;
 function isHotLead(p){
   if(p.hotLead) return true;
   if(p.guidanceInterest) return true;
+  if(p.nutritionPlanRequestedAt || p.trainingPlanRequestedAt) return true;
   if((p.doneCount||0)>=7) return true;
   if(p.checkins.some(c=>c.wantsFeedback)) return true;
   if((p.doneCount||0)>=4 && p.avgEnergy>0 && p.avgEnergy<=4) return true;
@@ -304,6 +316,8 @@ function renderList(){
     if(p.doneCount>=7) chips.push('<span class="chip done7">Reset ✓</span>');
     if(p.hot) chips.push('<span class="chip hotlead">🔥 Hot Lead</span>');
     if(p.contacted) chips.push('<span class="chip">Kontaktiert ✓</span>');
+    if(p.nutritionPlanRequestedAt) chips.push('<span class="chip hotlead">🥗 Ernährungsplan angefragt</span>');
+    if(p.trainingPlanRequestedAt) chips.push('<span class="chip hotlead">🏋 Trainingsplan angefragt</span>');
 
     const b=p.baseline||{};
     const kv=[
@@ -340,6 +354,18 @@ function renderList(){
         (p.checkins.length?'<div><div class="trend">'+eBars+'</div><div class="trend-label">Energie-Trend</div>'+
         '<div class="trend" style="margin-top:8px">'+sBars+'</div><div class="trend-label">Schlaf-Trend</div></div>':'')+
         '<div style="display:flex;flex-direction:column;gap:8px">'+ciRows+'</div>'+
+        '<div class="plan-uploads">'+
+          '<div class="plan-upload-row">'+
+            '<b>🥗 Ernährungsplan'+(p.nutritionPlanRequestedAt?' — angefragt':'')+'</b>'+
+            '<div class="plan-file-list" id="nfiles-'+p.uid+'">…</div>'+
+            '<label class="btn-sm">PDF hochladen<input type="file" accept="application/pdf" class="plan-file-input" data-uid="'+p.uid+'" data-type="nutrition" hidden></label>'+
+          '</div>'+
+          '<div class="plan-upload-row">'+
+            '<b>🏋 Trainingsplan'+(p.trainingPlanRequestedAt?' — angefragt':'')+'</b>'+
+            '<div class="plan-file-list" id="tfiles-'+p.uid+'">…</div>'+
+            '<label class="btn-sm">PDF hochladen<input type="file" accept="application/pdf" class="plan-file-input" data-uid="'+p.uid+'" data-type="training" hidden></label>'+
+          '</div>'+
+        '</div>'+
         '<textarea class="notes" placeholder="Coach-Notizen zu diesem Teilnehmer …">'+esc(p.coachNotes||'')+'</textarea>'+
         '<div class="actions"></div>'+
       '</div>';
@@ -388,19 +414,55 @@ function renderList(){
     actions.appendChild(nBtn);
 
     card.querySelector('.notes').addEventListener('click',e=>e.stopPropagation());
-    card.querySelector('.p-head').addEventListener('click',()=>card.classList.toggle('open'));
+    card.querySelectorAll('.plan-file-input').forEach(input=>{
+      input.addEventListener('click',e=>e.stopPropagation());
+      input.addEventListener('change',async ()=>{
+        const file=input.files[0];
+        if(!file) return;
+        try{
+          await uploadBytes(ref(storage,'plans/'+input.dataset.uid+'/'+input.dataset.type+'/'+file.name), file);
+          await loadPlanFiles(input.dataset.uid, input.dataset.type);
+        }catch(err){ alert('Upload fehlgeschlagen: '+err.message); }
+      });
+    });
+    let filesLoaded=false;
+    card.querySelector('.p-head').addEventListener('click',()=>{
+      card.classList.toggle('open');
+      if(card.classList.contains('open') && !filesLoaded){
+        filesLoaded=true;
+        loadPlanFiles(p.uid,'nutrition');
+        loadPlanFiles(p.uid,'training');
+      }
+    });
     list.appendChild(card);
   });
+}
+
+async function loadPlanFiles(uid, type){
+  const el=document.getElementById((type==='nutrition'?'nfiles-':'tfiles-')+uid);
+  if(!el) return;
+  try{
+    const res=await listAll(ref(storage,'plans/'+uid+'/'+type));
+    if(!res.items.length){ el.innerHTML='<span style="font-size:12px;color:var(--muted)">Noch kein PDF hochgeladen.</span>'; return; }
+    const links=await Promise.all(res.items.map(async item=>{
+      const url=await getDownloadURL(item);
+      return '<a class="plan-file-link" href="'+url+'" target="_blank" rel="noopener">⬇ '+item.name+'</a>';
+    }));
+    el.innerHTML=links.join('');
+  }catch(err){
+    el.innerHTML='<span style="font-size:12px;color:var(--muted)">Konnte Dateien nicht laden.</span>';
+  }
 }
 
 /* ---------- CSV ---------- */
 function csvEsc(v){ const s=String(v??''); return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; }
 $('#exportCsvBtn').addEventListener('click',()=>{
-  const headers=['Name','E-Mail','Telefon','Sprache','Quelle','Eingeladen von','Tag','Punkte','Streak','Ø Energie','Hauptziel','Baustelle','Guidance','Hot Lead','Kontaktiert','Zuletzt online','Notizen'];
+  const headers=['Name','E-Mail','Telefon','Sprache','Quelle','Eingeladen von','Tag','Punkte','Streak','Ø Energie','Hauptziel','Baustelle','Guidance','Ernährungsplan angefragt','Trainingsplan angefragt','Hot Lead','Kontaktiert','Zuletzt online','Notizen'];
   const rows=participants.map(p=>[
     p.name||'', p.email||'', p.phone||'', p.preferredLanguage||'', SOURCE_LBL[p.source]||'', p.invitedBy||'',
     (p.doneCount||0)+'/7', p.points||0, p.streak||0, p.avgEnergy||'', GOAL_LBL[p.mainGoal]||'', STRUGGLE_LBL[p.biggestStruggle]||'',
-    p.guidanceInterest||'', p.hot?'Ja':'Nein', p.contacted?'Ja':'Nein', p.lastSeenStr||'', p.coachNotes||''
+    p.guidanceInterest||'', p.nutritionPlanRequestedAt?'Ja':'Nein', p.trainingPlanRequestedAt?'Ja':'Nein',
+    p.hot?'Ja':'Nein', p.contacted?'Ja':'Nein', p.lastSeenStr||'', p.coachNotes||''
   ]);
   const csv=[headers,...rows].map(r=>r.map(csvEsc).join(',')).join('\r\n');
   const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'});

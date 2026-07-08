@@ -240,6 +240,31 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 .offer-list div::before{content:"✓";color:var(--success);font-weight:700;margin-right:8px}
 .price-tag{font-family:'Sora';font-weight:800;font-size:22px}
 .prize-note{background:var(--warn-soft);border:1px solid #EAD9B0;border-radius:var(--radius-sm);padding:12px 16px;font-size:13.5px;text-align:center}
+.prize-note{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;text-align:left}
+.prize-countdown{font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:700}
+
+/* ---------- Leaderboard ---------- */
+.leaderboard-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.lb-list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.lb-row{display:flex;align-items:center;gap:12px;background:var(--bg);border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 14px}
+.lb-row.lb-me{border-color:var(--accent);background:var(--accent-soft)}
+.lb-rank{font-family:'Sora';font-weight:800;font-size:14px;color:var(--muted);width:22px;text-align:center}
+.lb-row:nth-child(1) .lb-rank{color:#C08A1E}
+.lb-row:nth-child(2) .lb-rank{color:#8C8C8C}
+.lb-row:nth-child(3) .lb-rank{color:#B0703C}
+.lb-name{flex:1;font-weight:600;font-size:13.5px}
+.lb-streak{font-family:'Sora';font-weight:700;font-size:13px;color:var(--accent);font-variant-numeric:tabular-nums}
+
+/* ---------- Collage strip ---------- */
+.collage-strip{width:100%;height:120px;overflow:hidden;border-radius:var(--radius);border:1px solid var(--line)}
+.collage-track{display:flex;height:100%;animation:collageScroll 36s linear infinite alternate}
+.collage-track img{height:100%;width:auto;flex-shrink:0;object-fit:cover;margin-right:4px}
+@keyframes collageScroll{ from{transform:translateX(0)} to{transform:translateX(-40%)} }
+
+/* ---------- Plan files ---------- */
+.plan-files{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.plan-file-link{font-size:13px;color:var(--accent);text-decoration:none;font-weight:600}
+.plan-file-link:hover{text-decoration:underline}
 
 /* ---------- Settings ---------- */
 .settings{gap:12px}
@@ -373,6 +398,24 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
       </div>
     </div>
     <div class="level-chip" id="levelChip"></div>
+
+    <div class="collage-strip" id="collageStrip"><div class="collage-track" id="collageTrack"></div></div>
+
+    <div class="card small-link-row" id="plansRow" role="button" tabindex="0">
+      <span id="plansRowLbl"></span><span>→</span>
+    </div>
+
+    <div class="card" id="leaderboardCard">
+      <div class="leaderboard-head">
+        <h2 id="lbHead"></h2>
+      </div>
+      <div class="prize-note" id="lbPrizeNote">
+        <span id="lbPrizeText"></span>
+        <span class="prize-countdown" id="prizeCountdown">⏱ –</span>
+      </div>
+      <div class="lb-list" id="lbList"></div>
+    </div>
+
     <div class="card unlock-card hidden" id="bottleneckCard" role="button" tabindex="0" style="cursor:pointer">
       <h2 id="bnCardTitle"></h2>
       <p class="sub" id="bnCardSub"></p>
@@ -481,6 +524,30 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
     <div id="finalCtas" style="display:flex;flex-direction:column;gap:10px"></div>
   </section>
 
+  <!-- PLANS -->
+  <section class="screen" id="screen-plans">
+    <button class="back-btn" id="plansBackBtn">←</button>
+    <div>
+      <div class="eyebrow" id="plansEyebrow"></div>
+      <h1 id="plansTitle"></h1>
+    </div>
+    <p class="sub" id="plansIntro"></p>
+    <div class="option-card">
+      <h3 id="plansNutritionTitle"></h3>
+      <p id="plansNutritionSub"></p>
+      <button class="cta secondary" id="requestNutritionBtn"></button>
+      <div class="ok" id="nutritionRequestedNote"></div>
+      <div id="nutritionFiles" class="plan-files"></div>
+    </div>
+    <div class="option-card">
+      <h3 id="plansTrainingTitle"></h3>
+      <p id="plansTrainingSub"></p>
+      <button class="cta secondary" id="requestTrainingBtn"></button>
+      <div class="ok" id="trainingRequestedNote"></div>
+      <div id="trainingFiles" class="plan-files"></div>
+    </div>
+  </section>
+
   <!-- SETTINGS -->
   <section class="screen settings" id="screen-settings">
     <button class="back-btn" id="settingsBackBtn">←</button>
@@ -513,6 +580,9 @@ import {
   getFirestore, doc, setDoc, getDoc, collection, query, where,
   getDocs, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+import {
+  getStorage, ref, listAll, getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAmNKAXWVxAanUpqB-1KQawyM7Wl-LR0vM",
@@ -525,6 +595,17 @@ const firebaseConfig = {
 const fbApp = initializeApp(firebaseConfig);
 const auth = getAuth(fbApp);
 const db = getFirestore(fbApp);
+const storage = getStorage(fbApp);
+
+const PRIZE_DEADLINE = new Date('2026-08-10T23:59:59');
+const COLLAGE_PHOTOS = Array.from({length:10},(_,i)=>'assets/collage/photo'+(i+1)+'.png');
+const FAKE_LEADERBOARD = [
+  { uid:'fake1', name:'Lena K.', streak:14 },
+  { uid:'fake2', name:'Markus B.', streak:11 },
+  { uid:'fake3', name:'Sarah W.', streak:9 },
+  { uid:'fake4', name:'Jonas T.', streak:8 },
+  { uid:'fake5', name:'Aylin D.', streak:6 }
+];
 
 /* René's WhatsApp number in international format without +, e.g. "886912345678".
    Leave empty to let WhatsApp open with the message and free contact choice. */
@@ -733,7 +814,18 @@ en:{
   settingsTitle:"Settings", lblLang:"Language / Sprache", lblPw:"Change password (current, then new)",
   pwSave:"Update password", pwFill:"Please fill in both fields.", pwShort:"New password needs at least 6 characters.",
   pwSaved:"Password changed.", pwWrong:"Current password is incorrect.",
-  verifyNote:"Please verify your email — check your inbox.", verifyResend:"Resend email", verifySent:"Email sent."
+  verifyNote:"Please verify your email — check your inbox.", verifyResend:"Resend email", verifySent:"Email sent.",
+  lbHead:"🏆 Leaderboard", lbPrizeText:"🎁 Top 3 win a gift!", lbYou:"(you)",
+  plansRowLbl:"📄 My Plans — request nutrition & training plans",
+  plansEyebrow:"My Plans", plansTitle:"Request your personal plans",
+  plansIntro:"Ask René for a personal nutrition or training plan. He'll get notified and upload your PDF here as soon as it's ready.",
+  plansNutritionTitle:"Nutrition Plan", plansNutritionSub:"A simple plan built around your goals and your real life.",
+  plansTrainingTitle:"Training Plan", plansTrainingSub:"Structure for strength, mobility and consistency.",
+  requestBtn:"Request", requestedBtn:"Requested ✓",
+  nutritionRequested:"Requested — René will upload it here once it's ready.",
+  trainingRequested:"Requested — René will upload it here once it's ready.",
+  waPlanRequest:(type,name)=> "Hey René, I'd like to request my "+type+" plan."+(name?" ("+name+")":""),
+  noPlanYet:"No plan uploaded yet.", downloadPlan:"⬇ Download PDF"
 },
 de:{
   authEyebrow:"Willkommen", authTitleLogin:"Willkommen zurück.", authTitleRegister:"Du bist jetzt im Reset.",
@@ -809,7 +901,18 @@ de:{
   settingsTitle:"Einstellungen", lblLang:"Sprache / Language", lblPw:"Passwort ändern (aktuell, dann neu)",
   pwSave:"Passwort aktualisieren", pwFill:"Bitte beide Felder ausfüllen.", pwShort:"Neues Passwort braucht mindestens 6 Zeichen.",
   pwSaved:"Passwort geändert.", pwWrong:"Aktuelles Passwort ist falsch.",
-  verifyNote:"Bitte bestätige deine E-Mail — check dein Postfach.", verifyResend:"Erneut senden", verifySent:"E-Mail verschickt."
+  verifyNote:"Bitte bestätige deine E-Mail — check dein Postfach.", verifyResend:"Erneut senden", verifySent:"E-Mail verschickt.",
+  lbHead:"🏆 Bestenliste", lbPrizeText:"🎁 Platz 1–3 kriegen ein Geschenk!", lbYou:"(du)",
+  plansRowLbl:"📄 Meine Pläne — Ernährungs- & Trainingsplan anfordern",
+  plansEyebrow:"Meine Pläne", plansTitle:"Fordere deine persönlichen Pläne an",
+  plansIntro:"Frag René nach einem persönlichen Ernährungs- oder Trainingsplan. Er bekommt eine Benachrichtigung und lädt dein PDF hier hoch, sobald es fertig ist.",
+  plansNutritionTitle:"Ernährungsplan", plansNutritionSub:"Ein einfacher Plan, gebaut um deine Ziele und dein echtes Leben.",
+  plansTrainingTitle:"Trainingsplan", plansTrainingSub:"Struktur für Kraft, Mobility und Konstanz.",
+  requestBtn:"Anfordern", requestedBtn:"Angefordert ✓",
+  nutritionRequested:"Angefordert — René lädt ihn hier hoch, sobald er fertig ist.",
+  trainingRequested:"Angefordert — René lädt ihn hier hoch, sobald er fertig ist.",
+  waPlanRequest:(type,name)=> "Hey René, ich würde gerne meinen "+type+" anfordern."+(name?" ("+name+")":""),
+  noPlanYet:"Noch kein Plan hochgeladen.", downloadPlan:"⬇ PDF herunterladen"
 }
 };
 
@@ -1143,7 +1246,123 @@ function renderDash(){
   $('#startHereLbl').textContent=s.startHereLbl;
   $('#startHereRow').onclick=()=>{ renderDay0(true); show('day0'); };
   $('#logoutBtn').textContent=s.logout;
+
+  renderCollageStrip();
+  $('#plansRowLbl').textContent=s.plansRowLbl;
+  $('#plansRow').onclick=()=>{ renderPlans(); show('plans'); };
+  renderLeaderboard();
 }
+
+/* =========================================================
+   COLLAGE STRIP
+========================================================= */
+let collageRendered=false;
+function renderCollageStrip(){
+  if(collageRendered) return;
+  collageRendered=true;
+  const track=$('#collageTrack');
+  const doubled=[...COLLAGE_PHOTOS,...COLLAGE_PHOTOS];
+  track.innerHTML = doubled.map(src=>'<img src="'+src+'" alt="">').join('');
+}
+
+/* =========================================================
+   LEADERBOARD
+========================================================= */
+async function updateLeaderboardEntry(){
+  if(!state.uid) return;
+  try{
+    await setDoc(doc(db,'leaderboard',state.uid),{
+      name: state.profile?.name || (auth.currentUser?.email?.split('@')[0]) || '—',
+      streak: computeStreak(), updatedAt: serverTimestamp()
+    },{ merge:true });
+  }catch(e){}
+}
+async function renderLeaderboard(){
+  const s=t();
+  $('#lbHead').textContent=s.lbHead;
+  $('#lbPrizeText').textContent=s.lbPrizeText;
+  updateLeaderboardEntry();
+  let real=[];
+  try{
+    const snap=await getDocs(collection(db,'leaderboard'));
+    real = snap.docs.map(d=>({ uid:d.id, ...d.data() })).filter(e=>e.streak>0);
+  }catch(e){}
+  const entries=[...FAKE_LEADERBOARD, ...real].sort((a,b)=>b.streak-a.streak);
+  const medals=['🥇','🥈','🥉'];
+  const list=$('#lbList'); list.innerHTML='';
+  entries.forEach((e,i)=>{
+    const row=document.createElement('div');
+    row.className='lb-row'+(e.uid===state.uid?' lb-me':'');
+    const streakDisplay=(medals[i]||'⚡')+' '+e.streak;
+    row.innerHTML='<div class="lb-rank">'+(i+1)+'</div><div class="lb-name">'+e.name+(e.uid===state.uid?' '+s.lbYou:'')+'</div><div class="lb-streak">'+streakDisplay+'</div>';
+    list.appendChild(row);
+  });
+}
+function updatePrizeCountdown(){
+  const el=$('#prizeCountdown');
+  if(!el) return;
+  const diffMs=PRIZE_DEADLINE-new Date();
+  if(diffMs<=0){ el.textContent='⏱ –'; return; }
+  const hours=Math.floor(diffMs/3600000);
+  const minutes=Math.floor((diffMs%3600000)/60000);
+  const seconds=Math.floor((diffMs%60000)/1000);
+  const pad=n=>String(n).padStart(2,'0');
+  el.textContent='⏱ '+hours+':'+pad(minutes)+':'+pad(seconds);
+}
+setInterval(updatePrizeCountdown,1000);
+updatePrizeCountdown();
+
+/* =========================================================
+   PLANS — request nutrition/training plan, show coach PDFs
+========================================================= */
+async function listPlanFiles(type){
+  try{
+    const folderRef=ref(storage,'plans/'+state.uid+'/'+type);
+    const res=await listAll(folderRef);
+    const files=await Promise.all(res.items.map(async item=>({ name:item.name, url:await getDownloadURL(item) })));
+    return files;
+  }catch(e){ return []; }
+}
+async function renderPlans(){
+  const s=t();
+  $('#plansEyebrow').textContent=s.plansEyebrow;
+  $('#plansTitle').textContent=s.plansTitle;
+  $('#plansIntro').textContent=s.plansIntro;
+  $('#plansNutritionTitle').textContent=s.plansNutritionTitle;
+  $('#plansNutritionSub').textContent=s.plansNutritionSub;
+  $('#plansTrainingTitle').textContent=s.plansTrainingTitle;
+  $('#plansTrainingSub').textContent=s.plansTrainingSub;
+
+  const nRequested=!!state.profile?.nutritionPlanRequestedAt;
+  const tRequested=!!state.profile?.trainingPlanRequestedAt;
+  const nBtn=$('#requestNutritionBtn'), tBtn=$('#requestTrainingBtn');
+  nBtn.textContent = nRequested ? s.requestedBtn : s.requestBtn;
+  tBtn.textContent = tRequested ? s.requestedBtn : s.requestBtn;
+  $('#nutritionRequestedNote').textContent = nRequested ? s.nutritionRequested : '';
+  $('#trainingRequestedNote').textContent = tRequested ? s.trainingRequested : '';
+
+  nBtn.onclick = async ()=>{
+    try{ await setDoc(doc(db,'users',state.uid),{ nutritionPlanRequestedAt: serverTimestamp() },{ merge:true }); state.profile.nutritionPlanRequestedAt=true; }catch(e){}
+    window.open(waLink(s.waPlanRequest(s.plansNutritionTitle, state.profile?.name)),'_blank');
+    renderPlans();
+  };
+  tBtn.onclick = async ()=>{
+    try{ await setDoc(doc(db,'users',state.uid),{ trainingPlanRequestedAt: serverTimestamp() },{ merge:true }); state.profile.trainingPlanRequestedAt=true; }catch(e){}
+    window.open(waLink(s.waPlanRequest(s.plansTrainingTitle, state.profile?.name)),'_blank');
+    renderPlans();
+  };
+
+  const nFiles=await listPlanFiles('nutrition');
+  const tFiles=await listPlanFiles('training');
+  const renderFiles=(el,files,requested)=>{
+    el.innerHTML = files.length
+      ? files.map(f=>'<a class="plan-file-link" href="'+f.url+'" target="_blank" rel="noopener">'+s.downloadPlan+' — '+f.name+'</a>').join('')
+      : (requested ? '' : '<span style="font-size:12.5px;color:var(--muted)">'+s.noPlanYet+'</span>');
+  };
+  renderFiles($('#nutritionFiles'), nFiles, nRequested);
+  renderFiles($('#trainingFiles'), tFiles, tRequested);
+}
+$('#plansBackBtn').addEventListener('click',()=>{ renderDash(); show('dash'); });
 $('#verifyResendBtn').addEventListener('click', async ()=>{
   if(!auth.currentUser) return;
   try{ await sendEmailVerification(auth.currentUser,{ url: window.location.origin+'/verify.html' }); }catch(e){}
