@@ -43,7 +43,7 @@
   --warn-soft:#3A2F16;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow-x:hidden;max-width:100vw;overflow-anchor:none}
+html,body{height:100%;overflow-x:hidden;max-width:100vw;overflow-anchor:none;background:var(--bg)}
 body{
   background:var(--bg);
   color:var(--ink);
@@ -100,7 +100,7 @@ em{font-style:normal;color:var(--accent)}
 /* ---------- Side carousels (dekorativ, hinter der App) ---------- */
 .side-carousel{
   position:fixed;top:0;bottom:0;width:0;overflow:hidden;
-  z-index:-1;pointer-events:none;
+  z-index:-1;pointer-events:none;background:var(--bg);
 }
 .side-carousel.left{left:0}
 .side-carousel.right{right:0}
