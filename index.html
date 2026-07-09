@@ -28,7 +28,7 @@
   --radius-sm:14px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow-x:hidden;max-width:100vw}
+html,body{height:100%;overflow-x:hidden;max-width:100vw;overflow-anchor:none}
 body{
   background:var(--bg);
   color:var(--ink);
@@ -939,6 +939,8 @@ function show(name){
   screens[name].classList.add('active');
   currentScreen = name;
   window.scrollTo(0,0);
+  requestAnimationFrame(()=>window.scrollTo(0,0));
+  setTimeout(()=>window.scrollTo(0,0),150);
 }
 
 function todayStr(){
