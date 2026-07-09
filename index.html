@@ -26,6 +26,21 @@
   --warn-soft:#FBF3E4;
   --radius:20px;
   --radius-sm:14px;
+  --contrast:#15181D;
+}
+:root[data-theme="dark"]{
+  --contrast:#0B0C0E;
+  --bg:#111316;
+  --card:#1B1E23;
+  --ink:#F3F4F1;
+  --muted:#9A9FA6;
+  --line:#2C2F35;
+  --accent:#5C86EE;
+  --accent-soft:#1E2740;
+  --success:#3FBE8B;
+  --success-soft:#123328;
+  --warn:#E0A83E;
+  --warn-soft:#3A2F16;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow-x:hidden;max-width:100vw;overflow-anchor:none}
@@ -51,7 +66,7 @@ body{
 header{display:flex;align-items:center;justify-content:space-between;padding:20px 0 10px}
 .brand{display:flex;align-items:center;gap:10px;cursor:pointer}
 .brand-mark{
-  width:32px;height:32px;border-radius:10px;background:var(--ink);
+  width:32px;height:32px;border-radius:10px;background:var(--contrast);
   display:grid;place-items:center;color:#fff;
   font-family:'Sora';font-weight:800;font-size:14px;
 }
@@ -83,7 +98,7 @@ em{font-style:normal;color:var(--accent)}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
 .cta{
   appearance:none;border:none;cursor:pointer;width:100%;
-  background:var(--ink);color:#fff;
+  background:var(--contrast);color:#fff;
   font-family:'Sora';font-weight:700;font-size:15px;
   border-radius:16px;padding:16px 20px;
   transition:transform .12s ease,opacity .15s;
@@ -132,7 +147,7 @@ select.field{appearance:auto}
 
 /* ---------- Video placeholder ---------- */
 .video-card{
-  position:relative;border-radius:var(--radius);overflow:hidden;background:var(--ink);
+  position:relative;border-radius:var(--radius);overflow:hidden;background:var(--contrast);
   aspect-ratio:16/9;display:grid;place-items:center;color:#fff;
 }
 .video-card video{width:100%;height:100%;object-fit:cover}
@@ -145,11 +160,11 @@ select.field{appearance:auto}
 .video-ph .vsub{font-size:12px;color:rgba(255,255,255,.65)}
 
 /* ---------- Dashboard ---------- */
-.mission-card{background:var(--ink);color:#fff;border:none}
+.mission-card{background:var(--contrast);color:#fff;border:none}
 .mission-card .eyebrow{color:rgba(255,255,255,.6)}
 .mission-card h2{font-size:22px;margin:6px 0 4px;color:#fff}
 .mission-card .sub{color:rgba(255,255,255,.72)}
-.mission-card .cta{background:#fff;color:var(--ink);margin-top:16px}
+.mission-card .cta{background:#fff;color:var(--contrast);margin-top:16px}
 .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .stat-tile{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 12px;text-align:center}
 .stat-num{font-family:'Sora';font-weight:800;font-size:20px}
@@ -225,7 +240,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 .reward-points{font-family:'Sora';font-weight:800;font-size:34px}
 .reward-badge{
   display:inline-flex;align-items:center;gap:10px;align-self:center;
-  background:var(--ink);color:#fff;border-radius:999px;padding:10px 20px;
+  background:var(--contrast);color:#fff;border-radius:999px;padding:10px 20px;
   font-family:'Sora';font-weight:700;font-size:14px;
   animation:pop .6s .15s cubic-bezier(.34,1.56,.64,1) backwards;
 }
@@ -285,6 +300,10 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
       <div class="brand-name">Modern Athlete <span>LAB™</span></div>
     </div>
     <div class="header-right">
+      <button class="icon-btn" id="themeToggleBtn" aria-label="Toggle theme">
+        <svg id="themeIconSun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+        <svg id="themeIconMoon" class="hidden" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      </button>
       <button class="icon-btn hidden" id="settingsBtn" aria-label="Settings">
         <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
       </button>
@@ -934,6 +953,17 @@ const dc = (day)=> DAYS[day][state.lang || 'en'];
 const screens = {};
 document.querySelectorAll('.screen').forEach(s=>{ screens[s.id.replace('screen-','')] = s; });
 let currentScreen = null;
+function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('marTheme', theme);
+  $('#themeIconSun').classList.toggle('hidden', theme==='dark');
+  $('#themeIconMoon').classList.toggle('hidden', theme!=='dark');
+}
+applyTheme(localStorage.getItem('marTheme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+$('#themeToggleBtn').addEventListener('click', ()=>{
+  applyTheme(document.documentElement.getAttribute('data-theme')==='dark' ? 'light' : 'dark');
+});
+
 function show(name){
   Object.values(screens).forEach(s=>s.classList.remove('active'));
   screens[name].classList.add('active');
