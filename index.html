@@ -1252,6 +1252,7 @@ function renderDash(){
 
   renderCollageStrip();
   $('#plansRowLbl').textContent=s.plansRowLbl;
+  $('#plansRow').classList.toggle('hidden', completedDays().length < 4);
   $('#plansRow').onclick=()=>{ renderPlans(); show('plans'); };
   renderLeaderboard();
 }
