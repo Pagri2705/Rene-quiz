@@ -47,7 +47,7 @@ h2{font-family:'Sora';font-weight:700;font-size:16px}
 .tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);padding-bottom:10px}
 .tab-btn{background:none;border:none;color:var(--muted);font-family:'Sora';font-weight:700;font-size:14px;cursor:pointer;padding:8px 10px;border-bottom:2px solid transparent}
 .tab-btn.active{color:var(--ink);border-color:var(--accent)}
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
 @media(max-width:640px){.stats-row{grid-template-columns:repeat(2,1fr)}}
 .stat-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px;text-align:center}
 .stat-num{font-family:'Sora';font-weight:800;font-size:24px}
@@ -58,6 +58,8 @@ h2{font-family:'Sora';font-weight:700;font-size:16px}
 .p-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;cursor:pointer;transition:border-color .15s}
 .p-card:hover{border-color:#C9C9C2}
 .p-card.hot{border-color:rgba(192,57,43,.5)}
+.p-card.nudge{border-color:rgba(183,121,31,.5)}
+.btn-sm.nudge-btn{background:var(--warn-soft);color:var(--warn);border-color:transparent}
 .p-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .avatar{width:40px;height:40px;border-radius:12px;flex-shrink:0;background:var(--accent-soft);display:grid;place-items:center;font-family:'Sora';font-weight:700;font-size:13px;color:var(--accent)}
 .p-meta{flex:1;min-width:180px}
@@ -68,6 +70,7 @@ h2{font-family:'Sora';font-weight:700;font-size:16px}
 .chip.day{background:var(--accent-soft);color:var(--accent);border-color:transparent}
 .chip.hotlead{background:var(--hot-soft);color:var(--hot);border-color:transparent}
 .chip.done7{background:var(--success-soft);color:var(--success);border-color:transparent}
+.chip.nudge{background:var(--warn-soft);color:var(--warn);border-color:transparent}
 .p-detail{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--line);flex-direction:column;gap:12px}
 .p-card.open .p-detail{display:flex}
 .kv{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;font-size:13px}
@@ -137,13 +140,18 @@ h2{font-family:'Sora';font-weight:700;font-size:16px}
         <div class="stat-card"><div class="stat-num" id="statActive">–</div><div class="stat-label">Heute aktiv</div></div>
         <div class="stat-card"><div class="stat-num" id="statDone">–</div><div class="stat-label">7 Tage geschafft</div></div>
         <div class="stat-card"><div class="stat-num" id="statHot">–</div><div class="stat-label">Hot Leads</div></div>
+        <div class="stat-card"><div class="stat-num" id="statNudge">–</div><div class="stat-label">Reminder fällig</div></div>
       </div>
       <div class="filter-row">
         <button class="btn-sm" id="filterAll">Alle</button>
         <button class="btn-sm" id="filterHot">🔥 Nur Hot Leads</button>
+        <button class="btn-sm" id="filterNudge">⏰ Nur Reminder fällig</button>
+        <button class="btn-sm" id="filterAttention">⚠️ Braucht Aufmerksamkeit</button>
+        <button class="btn-sm" id="copyBroadcastBtn">📋 Kontakte kopieren</button>
         <button class="btn-sm" id="exportCsvBtn">⬇ CSV exportieren</button>
         <button class="btn-sm" id="reloadBtn">↻ Aktualisieren</button>
       </div>
+      <input class="field" id="searchBox" placeholder="Suche nach Name oder E-Mail …" style="padding:10px 14px">
       <div class="p-list" id="pList"></div>
       <div class="empty-note hidden" id="pEmpty">Noch keine Teilnehmer im Reset.</div>
     </div>
@@ -168,7 +176,7 @@ import {
   setPersistence, browserLocalPersistence, browserSessionPersistence
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 import {
-  getFirestore, doc, setDoc, collection, getDocs, query, where
+  getFirestore, doc, setDoc, collection, getDocs, query, where, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 import {
   getStorage, ref, listAll, getDownloadURL, uploadBytes
@@ -239,7 +247,25 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
 
 /* ---------- Participants ---------- */
 let participants=[];
-let filterHot=false;
+let filterMode='all'; // 'all' | 'hot' | 'nudge' | 'attention'
+let searchTerm='';
+
+function daysBetween(dateStr, ref){
+  const d=new Date(dateStr+'T00:00:00');
+  return Math.round((ref-d)/86400000);
+}
+
+// 'ok' = has a '+' country code, or looks plausible; 'maybe-local' = starts with 0,
+// likely missing the country code (link would open the wrong/no chat); 'too-short' = unusable; 'empty' = none given.
+function phoneStatus(raw){
+  const v=(raw||'').trim();
+  if(!v) return 'empty';
+  if(v.startsWith('+')) return 'ok';
+  const digits=v.replace(/[^0-9]/g,'');
+  if(digits.length<8) return 'too-short';
+  if(v.startsWith('0')) return 'maybe-local';
+  return 'ok';
+}
 
 function isHotLead(p){
   if(p.hotLead) return true;
@@ -269,29 +295,47 @@ async function loadParticipants(){
     const last=checkins[checkins.length-1];
     const lastSeenStr=u.lastSeen?.toDate ? u.lastSeen.toDate().toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'}) : null;
     const activeToday = checkins.some(c=>c.dateStr===todayStr());
-    participants.push({ ...u, checkins, doneCount, avgEnergy, last, lastSeenStr, activeToday });
+
+    const today=new Date(todayStr()+'T00:00:00');
+    const baselineDate = u.baselineAt?.toDate ? u.baselineAt.toDate() : null;
+    let daysInactive=null;
+    if(last?.dateStr) daysInactive=daysBetween(last.dateStr, today);
+    else if(baselineDate) daysInactive=Math.round((today-new Date(baselineDate.toDateString()))/86400000);
+    const needsNudge = baselineDate!=null && doneCount<7 && daysInactive!=null && daysInactive>=1;
+    const channel = u.contactChannel==='line' ? 'line' : 'whatsapp';
+    const lastNudgeSentStr = u.lastNudgeSentAt?.toDate ? u.lastNudgeSentAt.toDate().toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'}) : null;
+    const nudgeSentToday = u.lastNudgeSentAt?.toDate ? u.lastNudgeSentAt.toDate().toDateString()===today.toDateString() : false;
+
+    participants.push({ ...u, checkins, doneCount, avgEnergy, last, lastSeenStr, activeToday, daysInactive, needsNudge,
+      channel, phoneStat: phoneStatus(u.phone), lastNudgeSentStr, nudgeSentToday });
   }
-  participants.forEach(p=>{ p.hot=isHotLead(p); });
+  participants.forEach(p=>{ p.hot=isHotLead(p); p.needsAttention=p.hot||p.needsNudge; });
   participants.sort((a,b)=>{
     if(a.hot!==b.hot) return a.hot?-1:1;
+    if(a.needsNudge!==b.needsNudge) return a.needsNudge?-1:1;
     return (b.doneCount||0)-(a.doneCount||0);
   });
   renderStats(); renderList();
 }
 $('#reloadBtn').addEventListener('click',loadParticipants);
-$('#filterAll').addEventListener('click',()=>{ filterHot=false; renderList(); });
-$('#filterHot').addEventListener('click',()=>{ filterHot=true; renderList(); });
+$('#filterAll').addEventListener('click',()=>{ filterMode='all'; renderList(); });
+$('#filterHot').addEventListener('click',()=>{ filterMode='hot'; renderList(); });
+$('#filterNudge').addEventListener('click',()=>{ filterMode='nudge'; renderList(); });
+$('#filterAttention').addEventListener('click',()=>{ filterMode='attention'; renderList(); });
+$('#searchBox').addEventListener('input',(e)=>{ searchTerm=e.target.value.trim().toLowerCase(); renderList(); });
 
 function renderStats(){
   $('#statTotal').textContent=participants.length;
   $('#statActive').textContent=participants.filter(p=>p.activeToday).length;
   $('#statDone').textContent=participants.filter(p=>p.doneCount>=7).length;
   $('#statHot').textContent=participants.filter(p=>p.hot).length;
+  $('#statNudge').textContent=participants.filter(p=>p.needsNudge).length;
 }
 
 function esc(s){ return String(s??'').replace(/[&<>"]/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c])); }
 
 function waReply(p){
+  if(p.channel!=='whatsapp') return null;
   const name=p.name||'';
   const day=p.doneCount||0;
   const lang=p.preferredLanguage==='de'?'de':'en';
@@ -302,13 +346,44 @@ function waReply(p){
   return phone ? 'https://wa.me/'+phone+'?text='+encodeURIComponent(msg) : null;
 }
 
+function nudgeReply(p){
+  if(p.channel!=='whatsapp') return null;
+  const name=p.name||'';
+  const day=p.doneCount||0;
+  const lang=p.preferredLanguage==='de'?'de':'en';
+  const msg = lang==='de'
+    ? 'Hey '+name+', mir ist aufgefallen, dass du seit '+p.daysInactive+' Tag'+(p.daysInactive===1?'':'en')+' nicht mehr eingecheckt hast (zuletzt Tag '+day+'/7). Alles gut bei dir? Kein Stress — steig einfach wieder ein, ein kleiner Schritt heute reicht völlig 💪'
+    : 'Hey '+name+', I noticed you haven\'t checked in for '+p.daysInactive+' day'+(p.daysInactive===1?'':'s')+' (last one was Day '+day+'/7). Everything okay? No pressure — just jump back in, one small step today is enough 💪';
+  const phone=(p.phone||'').replace(/[^0-9]/g,'');
+  return phone ? 'https://wa.me/'+phone+'?text='+encodeURIComponent(msg) : null;
+}
+
+async function markNudgeSent(p){
+  p.nudgeSentToday=true;
+  p.lastNudgeSentStr=new Date().toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'});
+  try{ await setDoc(doc(db,'users',p.uid),{ lastNudgeSentAt: serverTimestamp() },{ merge:true }); }catch(e){}
+}
+
+function currentlyShown(){
+  return participants.filter(p=>{
+    if(filterMode==='hot'&&!p.hot) return false;
+    if(filterMode==='nudge'&&!p.needsNudge) return false;
+    if(filterMode==='attention'&&!p.needsAttention) return false;
+    if(searchTerm){
+      const hay=((p.name||'')+' '+(p.email||'')).toLowerCase();
+      if(!hay.includes(searchTerm)) return false;
+    }
+    return true;
+  });
+}
+
 function renderList(){
   const list=$('#pList'); list.innerHTML='';
-  const shown=participants.filter(p=>!filterHot||p.hot);
+  const shown=currentlyShown();
   $('#pEmpty').classList.toggle('hidden', shown.length>0);
   shown.forEach(p=>{
     const card=document.createElement('div');
-    card.className='p-card'+(p.hot?' hot':'');
+    card.className='p-card'+(p.hot?' hot':'')+(p.needsNudge&&!p.hot?' nudge':'');
     const initials=(p.name||p.email||'?').split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
 
     const chips=[];
@@ -317,15 +392,21 @@ function renderList(){
     if(p.points) chips.push('<span class="chip">'+p.points+' P</span>');
     if(p.streak) chips.push('<span class="chip">⚡ '+p.streak+'</span>');
     if(p.doneCount>=7) chips.push('<span class="chip done7">Reset ✓</span>');
+    if(p.needsNudge) chips.push('<span class="chip nudge">⏰ '+p.daysInactive+'d inaktiv</span>');
     if(p.hot) chips.push('<span class="chip hotlead">🔥 Hot Lead</span>');
+    if(p.channel==='line') chips.push('<span class="chip">LINE</span>');
+    if(p.channel==='whatsapp'&&(p.phoneStat==='maybe-local'||p.phoneStat==='too-short')) chips.push('<span class="chip nudge">⚠️ Nummer prüfen</span>');
     if(p.contacted) chips.push('<span class="chip">Kontaktiert ✓</span>');
     if(p.nutritionPlanRequestedAt) chips.push('<span class="chip hotlead">🥗 Ernährungsplan angefragt</span>');
     if(p.trainingPlanRequestedAt) chips.push('<span class="chip hotlead">🏋 Trainingsplan angefragt</span>');
 
+    const phoneWarn = p.channel==='whatsapp' && p.phoneStat==='maybe-local' ? ' ⚠️ beginnt mit 0 — evtl. fehlt Ländervorwahl'
+      : p.channel==='whatsapp' && p.phoneStat==='too-short' ? ' ⚠️ Format prüfen' : '';
     const b=p.baseline||{};
     const kv=[
       ['E-Mail', esc(p.email||'—')],
-      ['WhatsApp/LINE', esc(p.phone||'—')],
+      ['Kontakt', (p.channel==='line'?'LINE: ':'WhatsApp: ')+esc(p.phone||'—')+phoneWarn],
+      ['Letzter Reminder', esc(p.lastNudgeSentStr||'—')],
       ['Quelle', (SOURCE_LBL[p.source]||'—')+(p.invitedBy?' · von '+esc(p.invitedBy):'')],
       ['Hauptziel', GOAL_LBL[p.mainGoal]||'—'],
       ['Größte Baustelle', STRUGGLE_LBL[p.biggestStruggle]||'—'],
@@ -379,13 +460,46 @@ function renderList(){
 
     // actions
     const actions=card.querySelector('.actions');
-    const waBtn=document.createElement('button');
-    waBtn.className='btn-sm wa';
-    waBtn.textContent='💬 Auf WhatsApp antworten';
-    const link=waReply(p);
-    if(link) waBtn.onclick=(e)=>{ e.stopPropagation(); window.open(link,'_blank'); };
-    else { waBtn.disabled=true; waBtn.title='Keine Nummer hinterlegt'; }
-    actions.appendChild(waBtn);
+    if(p.channel==='line'){
+      const lineBtn=document.createElement('button');
+      lineBtn.className='btn-sm';
+      lineBtn.textContent='📋 LINE-ID kopieren';
+      if(p.phone){
+        lineBtn.onclick=async (e)=>{ e.stopPropagation(); await navigator.clipboard.writeText(p.phone); lineBtn.textContent='✓ Kopiert'; setTimeout(()=>{ lineBtn.textContent='📋 LINE-ID kopieren'; },1500); };
+      } else { lineBtn.disabled=true; lineBtn.title='Keine LINE-ID hinterlegt'; }
+      actions.appendChild(lineBtn);
+
+      const lineNudgeBtn=document.createElement('button');
+      lineNudgeBtn.className='btn-sm nudge-btn';
+      lineNudgeBtn.textContent=p.nudgeSentToday?'✓ Reminder heute kopiert':'⏰ Reminder (LINE-ID kopieren)';
+      if(p.phone){
+        lineNudgeBtn.onclick=async (e)=>{ e.stopPropagation(); await navigator.clipboard.writeText(p.phone); await markNudgeSent(p); lineNudgeBtn.textContent='✓ Kopiert'; setTimeout(renderList,1200); };
+      } else { lineNudgeBtn.disabled=true; lineNudgeBtn.title='Keine LINE-ID hinterlegt'; }
+      actions.appendChild(lineNudgeBtn);
+    } else {
+      const phoneWarnTitle = p.phoneStat==='maybe-local' ? '⚠️ Nummer beginnt mit 0 — evtl. fehlt die Ländervorwahl. Bitte vor dem Senden prüfen.'
+        : p.phoneStat==='too-short' ? '⚠️ Nummer sieht unvollständig aus. Bitte vor dem Senden prüfen.' : '';
+
+      const waBtn=document.createElement('button');
+      waBtn.className='btn-sm wa';
+      waBtn.textContent='💬 Auf WhatsApp antworten';
+      const link=waReply(p);
+      if(link){
+        waBtn.onclick=(e)=>{ e.stopPropagation(); window.open(link,'_blank'); };
+        if(phoneWarnTitle){ waBtn.title=phoneWarnTitle; waBtn.style.outline='2px solid var(--warn)'; }
+      } else { waBtn.disabled=true; waBtn.title='Keine Nummer hinterlegt'; }
+      actions.appendChild(waBtn);
+
+      const nudgeBtn=document.createElement('button');
+      nudgeBtn.className='btn-sm nudge-btn';
+      nudgeBtn.textContent=p.nudgeSentToday?'✓ Reminder heute gesendet':'⏰ Reminder senden';
+      const nudgeLink=nudgeReply(p);
+      if(nudgeLink){
+        nudgeBtn.onclick=async (e)=>{ e.stopPropagation(); window.open(nudgeLink,'_blank'); await markNudgeSent(p); renderList(); };
+        if(phoneWarnTitle){ nudgeBtn.title=phoneWarnTitle; nudgeBtn.style.outline='2px solid var(--warn)'; }
+      } else { nudgeBtn.disabled=true; nudgeBtn.title='Keine Nummer hinterlegt'; }
+      actions.appendChild(nudgeBtn);
+    }
 
     const cBtn=document.createElement('button');
     cBtn.className='btn-sm'+(p.contacted?' toggled':'');
@@ -461,15 +575,28 @@ async function loadPlanFiles(uid, type){
   }
 }
 
+/* ---------- Broadcast copy ---------- */
+$('#copyBroadcastBtn').addEventListener('click', async ()=>{
+  const btn=$('#copyBroadcastBtn');
+  const shown=currentlyShown().filter(p=>p.phone);
+  if(!shown.length){ btn.textContent='Keine Kontakte'; setTimeout(()=>{ btn.textContent='📋 Kontakte kopieren'; },1500); return; }
+  const text=shown.map(p=>(p.name||p.email||'—')+' — '+(p.channel==='line'?'LINE: ':'WhatsApp: ')+p.phone).join('\n');
+  try{
+    await navigator.clipboard.writeText(text);
+    btn.textContent='✓ '+shown.length+' kopiert';
+  }catch(e){ btn.textContent='Kopieren fehlgeschlagen'; }
+  setTimeout(()=>{ btn.textContent='📋 Kontakte kopieren'; },1500);
+});
+
 /* ---------- CSV ---------- */
 function csvEsc(v){ const s=String(v??''); return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; }
 $('#exportCsvBtn').addEventListener('click',()=>{
-  const headers=['Name','E-Mail','Telefon','Sprache','Quelle','Eingeladen von','Tag','Punkte','Streak','Ø Energie','Hauptziel','Baustelle','Guidance','Ernährungsplan angefragt','Trainingsplan angefragt','Hot Lead','Kontaktiert','Zuletzt online','Notizen'];
+  const headers=['Name','E-Mail','Kanal','Kontakt','Nummer-Status','Sprache','Quelle','Eingeladen von','Tag','Punkte','Streak','Ø Energie','Hauptziel','Baustelle','Guidance','Ernährungsplan angefragt','Trainingsplan angefragt','Hot Lead','Reminder fällig','Tage inaktiv','Letzter Reminder','Kontaktiert','Zuletzt online','Notizen'];
   const rows=participants.map(p=>[
-    p.name||'', p.email||'', p.phone||'', p.preferredLanguage||'', SOURCE_LBL[p.source]||'', p.invitedBy||'',
+    p.name||'', p.email||'', p.channel==='line'?'LINE':'WhatsApp', p.phone||'', p.channel==='whatsapp'?p.phoneStat:'', p.preferredLanguage||'', SOURCE_LBL[p.source]||'', p.invitedBy||'',
     (p.doneCount||0)+'/7', p.points||0, p.streak||0, p.avgEnergy||'', GOAL_LBL[p.mainGoal]||'', STRUGGLE_LBL[p.biggestStruggle]||'',
     p.guidanceInterest||'', p.nutritionPlanRequestedAt?'Ja':'Nein', p.trainingPlanRequestedAt?'Ja':'Nein',
-    p.hot?'Ja':'Nein', p.contacted?'Ja':'Nein', p.lastSeenStr||'', p.coachNotes||''
+    p.hot?'Ja':'Nein', p.needsNudge?'Ja':'Nein', p.daysInactive??'', p.lastNudgeSentStr||'', p.contacted?'Ja':'Nein', p.lastSeenStr||'', p.coachNotes||''
   ]);
   const csv=[headers,...rows].map(r=>r.map(csvEsc).join(',')).join('\r\n');
   const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'});

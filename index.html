@@ -399,8 +399,13 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
     </div>
     <label class="field-label" id="lblName">Name</label>
     <input class="field" id="baseName" type="text" autocomplete="name">
-    <label class="field-label" id="lblPhone">WhatsApp / LINE (optional)</label>
-    <input class="field" id="basePhone" type="tel" autocomplete="tel">
+    <label class="field-label" id="lblChannel">Contact channel</label>
+    <select class="field" id="baseChannel">
+      <option value="whatsapp">WhatsApp</option>
+      <option value="line">LINE</option>
+    </select>
+    <label class="field-label" id="lblPhone">WhatsApp number (optional, recommended)</label>
+    <input class="field" id="basePhone" type="tel" autocomplete="tel" placeholder="+886 912 345 678">
     <label class="field-label" id="lblSource">Who invited you?</label>
     <select class="field" id="baseSource"></select>
     <div id="friendNameWrap" class="hidden">
@@ -858,7 +863,11 @@ en:{
   day0Cta:"Start Baseline Check-In", day0CtaDone:"Back to dashboard",
   videoSoon:"Video from René — coming soon", welcomeVideo:"Welcome video",
   baseEyebrow:"Baseline Check-In", baseTitle:"Where are you starting from?",
-  lblName:"Name", lblPhone:"WhatsApp / LINE (optional, recommended)", lblSource:"Who invited you?",
+  lblName:"Name", lblChannel:"Contact channel",
+  lblPhoneWhatsapp:"WhatsApp number (optional, recommended — include country code, e.g. +886...)",
+  lblPhoneLine:"LINE ID (optional, recommended)",
+  phWhatsapp:"+886 912 345 678", phLine:"your_line_id",
+  lblSource:"Who invited you?",
   lblFriend:"Name of the friend", lblGoal:"Main goal", lblStruggle:"Biggest current struggle",
   sources:[["instagram","Instagram"],["rene","René personally"],["friend","A friend"],["other","Other"]],
   goals:[["energy","More energy"],["nutrition","Better nutrition"],["training","Better training routine"],["sleep","Better sleep"],["stiffness","Less stiffness"],["consistency","More consistency"],["fat","Lose fat"],["strength","Build strength"],["healthy","Feel healthy again"]],
@@ -906,6 +915,14 @@ en:{
   bnSaved:"Saved. René will see your choice in his dashboard.",
   finalEyebrow:"Day 7 completed", finalTitle:"Ready To Build Your Personal MAP™?",
   finalIntro:"You've seen what seven simple days can change. Now imagine what happens when your nutrition, training, recovery and lifestyle are built around your real life — your schedule, your goals, your body and your current bottlenecks. This is where your Personal MAP™ begins.",
+  finalTiers:{
+    top:{ title:"You Didn't Just Finish — You Showed You Can Be Consistent.",
+      intro:"Seven days, real consistency, no shortcuts. That's exactly the kind of person who gets the most out of a Personal MAP™ — because you've already proven you follow through. Let's build the version of this that runs on autopilot for the next 90 days." },
+    mid:{ title:"You Finished. Now Let's Find What Was Missing.",
+      intro:"You showed up, you learned what small changes can do — and you also felt where things got hard. That's normal, and it's useful data. A Personal MAP™ is built exactly for this: turning what worked (and what didn't) into a plan that actually fits your life." },
+    low:{ title:"You Finished — That Already Puts You Ahead.",
+      intro:"Life doesn't pause for a 7-day reset, and you still made it to Day 7. That matters more than a perfect scorecard. If consistency was the hard part, that's precisely what a Personal MAP™ is designed to fix — a plan built around your real schedule, not an idealized one." }
+  },
   prizeNote:"🎁 You're in: everyone who completes all 7 days enters the draw for a free Modern Athlete Assessment™ (worth 1,800 NTD).",
   offerTitle:"Modern Athlete Assessment™", offerPrice:"1,800 NTD",
   offerList:["Nutrition review","Movement / training review","Lifestyle score","Main bottleneck analysis","Personal next-step recommendation"],
@@ -945,7 +962,11 @@ de:{
   day0Cta:"Baseline-Check-in starten", day0CtaDone:"Zurück zum Dashboard",
   videoSoon:"Video von René — folgt in Kürze", welcomeVideo:"Willkommens-Video",
   baseEyebrow:"Baseline-Check-in", baseTitle:"Wo startest du gerade?",
-  lblName:"Name", lblPhone:"WhatsApp / LINE (optional, empfohlen)", lblSource:"Wer hat dich eingeladen?",
+  lblName:"Name", lblChannel:"Kontaktkanal",
+  lblPhoneWhatsapp:"WhatsApp-Nummer (optional, empfohlen — mit Ländervorwahl, z. B. +886...)",
+  lblPhoneLine:"LINE-ID (optional, empfohlen)",
+  phWhatsapp:"+886 912 345 678", phLine:"deine_line_id",
+  lblSource:"Wer hat dich eingeladen?",
   lblFriend:"Name des Freundes", lblGoal:"Hauptziel", lblStruggle:"Größte aktuelle Herausforderung",
   sources:[["instagram","Instagram"],["rene","René persönlich"],["friend","Ein Freund"],["other","Sonstiges"]],
   goals:[["energy","Mehr Energie"],["nutrition","Bessere Ernährung"],["training","Bessere Trainingsroutine"],["sleep","Besserer Schlaf"],["stiffness","Weniger Steifheit"],["consistency","Mehr Konstanz"],["fat","Fett verlieren"],["strength","Kraft aufbauen"],["healthy","Mich wieder gesund fühlen"]],
@@ -993,6 +1014,14 @@ de:{
   bnSaved:"Gespeichert. René sieht deine Auswahl in seinem Dashboard.",
   finalEyebrow:"Tag 7 abgeschlossen", finalTitle:"Bereit für deine Personal MAP™?",
   finalIntro:"Du hast gesehen, was sieben einfache Tage verändern können. Stell dir vor, was passiert, wenn Ernährung, Training, Regeneration und Lifestyle um dein echtes Leben herum gebaut werden — deinen Zeitplan, deine Ziele, deinen Körper und deine aktuellen Bottlenecks. Hier beginnt deine Personal MAP™.",
+  finalTiers:{
+    top:{ title:"Du hast nicht nur durchgezogen — du hast bewiesen, dass du dranbleibst.",
+      intro:"Sieben Tage, echte Konstanz, keine Abkürzungen. Genau das ist der Typ Mensch, der am meisten aus einer Personal MAP™ rausholt — weil du schon bewiesen hast, dass du dranbleibst. Lass uns daraus eine Version bauen, die auch die nächsten 90 Tage von allein läuft." },
+    mid:{ title:"Du hast es geschafft. Jetzt finden wir raus, was gefehlt hat.",
+      intro:"Du warst dabei, hast gemerkt, was kleine Veränderungen bewirken können — und du hast auch gespürt, wo es schwer wurde. Das ist normal und genau die Information, die wir brauchen. Eine Personal MAP™ ist genau dafür gemacht: aus dem, was funktioniert hat (und was nicht), einen Plan zu bauen, der wirklich zu deinem Leben passt." },
+    low:{ title:"Du hast durchgehalten — das bringt dich schon jetzt weiter.",
+      intro:"Das Leben pausiert nicht für einen 7-Tage-Reset, und trotzdem hast du es bis Tag 7 geschafft. Das zählt mehr als eine perfekte Punktzahl. Wenn Konstanz der schwierige Teil war — genau dafür ist eine Personal MAP™ gemacht: ein Plan rund um deinen echten Alltag, nicht um einen Idealfall." }
+  },
   prizeNote:"🎁 Du bist dabei: Alle, die alle 7 Tage abschließen, nehmen an der Verlosung eines kostenlosen Modern Athlete Assessment™ teil (Wert: 1.800 NTD).",
   offerTitle:"Modern Athlete Assessment™", offerPrice:"1.800 NTD",
   offerList:["Ernährungs-Review","Bewegungs- / Trainings-Review","Lifestyle-Score","Analyse deines größten Bottlenecks","Persönliche Next-Step-Empfehlung"],
@@ -1032,7 +1061,11 @@ zh:{
   day0Cta:"開始基準 Check-In", day0CtaDone:"回到儀表板",
   videoSoon:"René 的影片——即將推出", welcomeVideo:"歡迎影片",
   baseEyebrow:"基準 Check-In", baseTitle:"你現在的起點在哪裡？",
-  lblName:"姓名", lblPhone:"WhatsApp / LINE（選填，建議填寫）", lblSource:"是誰邀請你的？",
+  lblName:"姓名", lblChannel:"聯絡方式",
+  lblPhoneWhatsapp:"WhatsApp 號碼（選填，建議填寫——請含國碼，例如 +886...）",
+  lblPhoneLine:"LINE ID（選填，建議填寫）",
+  phWhatsapp:"+886 912 345 678", phLine:"你的_line_id",
+  lblSource:"是誰邀請你的？",
   lblFriend:"朋友的名字", lblGoal:"主要目標", lblStruggle:"目前最大的困難",
   sources:[["instagram","Instagram"],["rene","René 本人"],["friend","朋友"],["other","其他"]],
   goals:[["energy","更多能量"],["nutrition","更好的飲食"],["training","更好的訓練習慣"],["sleep","更好的睡眠"],["stiffness","減少僵硬"],["consistency","更有恆心"],["fat","減脂"],["strength","增肌力"],["healthy","重新感覺健康"]],
@@ -1080,6 +1113,14 @@ zh:{
   bnSaved:"已儲存。René 會在他的後台看到你的選擇。",
   finalEyebrow:"第7天完成", finalTitle:"準備好建立你的 Personal MAP™ 了嗎？",
   finalIntro:"你已經看到簡單的七天能帶來什麼改變。現在想像一下，當你的飲食、訓練、恢復與生活型態都圍繞著你真實的生活——你的行程、你的目標、你的身體與你目前的瓶頸——來打造時會發生什麼。這就是你的 Personal MAP™ 的起點。",
+  finalTiers:{
+    top:{ title:"你不只完成了——你證明了自己能夠保持一致。",
+      intro:"七天，真正的一致性，沒有捷徑。這正是最能從 Personal MAP™ 中獲益的人——因為你已經證明自己會堅持到底。讓我們把這個節奏打造成接下來90天都能自動運行的版本。" },
+    mid:{ title:"你完成了。現在讓我們找出缺少的那一塊。",
+      intro:"你出現了，你也感受到小改變能帶來什麼——同時你也感覺到哪裡變得困難。這很正常，而且是很有用的資訊。Personal MAP™ 正是為此而生：把有效與無效的部分，變成真正適合你生活的計畫。" },
+    low:{ title:"你完成了——這已經讓你領先一步。",
+      intro:"生活不會為了七天重啟而暫停，而你還是撐到了第7天。這比完美的分數更重要。如果堅持是最難的部分——這正是 Personal MAP™ 要解決的：一個圍繞你真實日常打造的計畫，而不是理想化的版本。" }
+  },
   prizeNote:"🎁 你已經入圍：所有完成7天的人都會參加免費 Modern Athlete Assessment™ 的抽獎（價值 1,800 NTD）。",
   offerTitle:"Modern Athlete Assessment™", offerPrice:"1,800 NTD",
   offerList:["飲食檢視","活動／訓練檢視","生活型態評分","主要瓶頸分析","個人化下一步建議"],
@@ -1154,6 +1195,8 @@ function completedDays(){ return Object.keys(state.checkins).map(Number).sort((a
 function currentDay(){ return Math.min(7, completedDays().length + 1); }
 function allDone(){ return completedDays().length >= 7; }
 function totalPoints(){ return completedDays().reduce((sum,d)=> sum + (state.checkins[d].points||0), 0); }
+const MAX_TOTAL_POINTS = 700; // 7 days x 100 max/day (70 tasks + 10 check-in + 20 reflection)
+function scoreTier(points){ if(points>=MAX_TOTAL_POINTS*0.8) return 'top'; if(points>=MAX_TOTAL_POINTS*0.4) return 'mid'; return 'low'; }
 function completedToday(){ return Object.values(state.checkins).some(c=>c.dateStr===todayStr()); }
 function computeStreak(){
   const dates = new Set(Object.values(state.checkins).map(c=>c.dateStr));
@@ -1328,7 +1371,14 @@ function renderBaseline(){
   $('#baseEyebrow').textContent=s.baseEyebrow;
   $('#baseTitle').textContent=s.baseTitle;
   $('#lblName').textContent=s.lblName;
-  $('#lblPhone').textContent=s.lblPhone;
+  $('#lblChannel').textContent=s.lblChannel;
+  const syncChannel=()=>{
+    const isLine=$('#baseChannel').value==='line';
+    $('#lblPhone').textContent=isLine ? s.lblPhoneLine : s.lblPhoneWhatsapp;
+    $('#basePhone').placeholder=isLine ? s.phLine : s.phWhatsapp;
+  };
+  $('#baseChannel').onchange=syncChannel;
+  syncChannel();
   $('#lblSource').textContent=s.lblSource;
   $('#lblFriend').textContent=s.lblFriend;
   $('#lblGoal').textContent=s.lblGoal;
@@ -1357,6 +1407,7 @@ $('#baseSubmit').addEventListener('click', async ()=>{
   const data={
     name,
     phone: $('#basePhone').value.trim(),
+    contactChannel: $('#baseChannel').value,
     source: $('#baseSource').value,
     invitedBy: $('#baseSource').value==='friend' ? $('#baseFriend').value.trim() : '',
     mainGoal: $('#baseGoal').value,
@@ -1768,9 +1819,11 @@ $('#bnBackBtn').addEventListener('click',()=>{ renderDash(); show('dash'); });
 ========================================================= */
 function renderFinal(){
   const s=t();
+  const points=totalPoints();
+  const tier=s.finalTiers?.[scoreTier(points)];
   $('#finalEyebrow').textContent=s.finalEyebrow;
-  $('#finalTitle').textContent=s.finalTitle;
-  $('#finalIntro').textContent=s.finalIntro;
+  $('#finalTitle').textContent=tier?.title || s.finalTitle;
+  $('#finalIntro').textContent=tier?.intro || s.finalIntro;
   $('#prizeNote').textContent=s.prizeNote;
   renderVideo($('#finalVideo'), VIDEOS.final[state.lang], 'Personal MAP™');
   $('#offerTitle').textContent=s.offerTitle;
