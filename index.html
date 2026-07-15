@@ -79,9 +79,19 @@ header{display:flex;align-items:center;justify-content:space-between;padding:20p
 .icon-btn{
   width:38px;height:38px;border-radius:50%;border:1px solid var(--line);
   background:var(--card);color:var(--muted);cursor:pointer;
-  display:grid;place-items:center;transition:color .15s,border-color .15s;
+  display:grid;place-items:center;
+  transition:color .15s,border-color .15s,transform .18s,box-shadow .18s;
 }
-.icon-btn:hover{color:var(--ink);border-color:#C9C9C2}
+.icon-btn:hover{color:var(--accent);border-color:var(--accent);box-shadow:0 4px 14px rgba(36,86,214,.16);transform:translateY(-1px)}
+.icon-btn:active{transform:translateY(0) scale(.92)}
+.theme-icon-wrap{position:relative;width:18px;height:18px}
+.theme-icon{position:absolute;inset:0;transition:transform .45s cubic-bezier(.34,1.56,.64,1),opacity .25s}
+.theme-icon.sun{opacity:1;transform:rotate(0deg) scale(1)}
+.theme-icon.moon{opacity:0;transform:rotate(-90deg) scale(.4)}
+:root[data-theme="dark"] .theme-icon.sun{opacity:0;transform:rotate(90deg) scale(.4)}
+:root[data-theme="dark"] .theme-icon.moon{opacity:1;transform:rotate(0deg) scale(1)}
+#settingsBtn svg{transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
+#settingsBtn:hover svg{transform:rotate(90deg)}
 .hidden{display:none!important}
 
 /* ---------- Screens ---------- */
@@ -95,6 +105,8 @@ h1{font-family:'Sora';font-weight:800;font-size:28px;line-height:1.18;letter-spa
 h2{font-family:'Sora';font-weight:700;font-size:18px;text-align:center}
 .eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);text-align:center}
 .sub{color:var(--muted);font-size:14.5px;text-align:center}
+.day0-copy{text-align:justify;text-align-last:left;hyphens:auto;-webkit-hyphens:auto}
+.day0-sign{margin-top:2px;text-align:center;font-family:'Sora';font-weight:700;font-size:13px;letter-spacing:.03em;color:var(--accent)}
 em{font-style:normal;color:var(--accent)}
 
 /* ---------- Side carousels (dekorativ, hinter der App) ---------- */
@@ -193,6 +205,46 @@ select.field{appearance:auto}
 .video-ph .vtitle{font-family:'Sora';font-weight:700;font-size:14px}
 .video-ph .vsub{font-size:12px;color:rgba(255,255,255,.65)}
 
+/* ---------- Custom video player ---------- */
+.vplayer{position:relative;width:100%;height:100%}
+.vplay-big{
+  appearance:none;position:absolute;inset:0;margin:auto;width:56px;height:56px;
+  border-radius:50%;border:none;cursor:pointer;
+  background:rgba(0,0,0,.45);color:#fff;padding:14px;
+  display:flex;align-items:center;justify-content:center;
+  opacity:1;transition:opacity .15s,background .15s;
+}
+.vplay-big svg{width:100%;height:100%}
+.vplay-big:hover{background:rgba(0,0,0,.6)}
+.vplayer.playing .vplay-big{opacity:0;pointer-events:none}
+.vbar{
+  position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:8px;
+  padding:20px 10px 10px;color:#fff;
+  background:linear-gradient(to top,rgba(0,0,0,.75),rgba(0,0,0,0));
+  opacity:0;transform:translateY(4px);
+  transition:opacity .18s,transform .18s;
+}
+.vplayer:hover .vbar,.vplayer:focus-within .vbar,.vplayer.playing .vbar{opacity:1;transform:translateY(0)}
+.vbtn{
+  appearance:none;background:none;border:none;cursor:pointer;color:#fff;
+  width:26px;height:26px;padding:0;display:flex;align-items:center;justify-content:center;
+  flex:0 0 auto;opacity:.9;
+}
+.vbtn svg{width:100%;height:100%}
+.vbtn:hover{opacity:1}
+.vbtn.vspeed{width:auto;padding:0 6px;font-family:'Sora';font-weight:700;font-size:12px;border:1px solid rgba(255,255,255,.4);border-radius:8px;height:22px}
+.vtime{font-size:11.5px;font-variant-numeric:tabular-nums;color:rgba(255,255,255,.85);flex:0 0 auto;white-space:nowrap}
+.vseek{
+  flex:1 1 auto;height:4px;-webkit-appearance:none;appearance:none;
+  background:rgba(255,255,255,.35);border-radius:99px;cursor:pointer;
+}
+.vseek::-webkit-slider-thumb{
+  -webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:#fff;
+  box-shadow:0 1px 3px rgba(0,0,0,.4);cursor:pointer;margin-top:0;
+}
+.vseek::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:#fff;border:none;box-shadow:0 1px 3px rgba(0,0,0,.4);cursor:pointer}
+.vseek::-moz-range-track{background:rgba(255,255,255,.35);height:4px;border-radius:99px}
+
 /* ---------- Dashboard ---------- */
 .mission-card{background:var(--contrast);color:#fff;border:none}
 .mission-card .eyebrow{color:rgba(255,255,255,.6)}
@@ -225,6 +277,8 @@ select.field{appearance:auto}
 .unlock-card{border:1px solid var(--accent);background:var(--accent-soft)}
 .small-link-row{display:flex;align-items:center;justify-content:space-between;font-size:13.5px;font-weight:600;cursor:pointer;background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 16px}
 .small-link-row:hover{border-color:#C9C9C2}
+.small-link-row .row-arrow{width:16px;height:16px;color:var(--muted);flex:0 0 auto;transition:transform .12s}
+.small-link-row:hover .row-arrow{transform:translateX(2px);color:var(--ink)}
 .verify-note{background:var(--warn-soft);border:1px solid #EAD9B0;border-radius:var(--radius-sm);padding:10px 14px;font-size:12.5px;color:var(--warn);display:flex;flex-direction:column;gap:6px;align-items:center;text-align:center}
 .verify-note button{background:none;border:1px solid #EAD9B0;border-radius:999px;color:var(--warn);font-size:12px;font-weight:600;padding:5px 12px;cursor:pointer}
 
@@ -255,6 +309,11 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
   padding:12px;font-size:13.5px;font-weight:600;font-family:'Inter';cursor:pointer;color:var(--ink);
 }
 .seg button.sel{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.seg button.disabled{opacity:.35;cursor:not-allowed}
+.seg-wrap{grid-template-columns:1fr 1fr;margin-top:4px}
+.seg-num{grid-template-columns:repeat(5,1fr);margin-top:8px}
+.seg-num button{padding:10px 0;font-family:'Sora';font-weight:700}
+.choice-count{font-size:12px;color:var(--muted);margin-top:-6px}
 .coach-note{
   background:var(--accent-soft);border:1px solid #D7E1FA;border-radius:var(--radius-sm);
   padding:12px 14px;font-size:13px;color:var(--accent);text-align:center;
@@ -320,8 +379,11 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 .seg2{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .seg2 button{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter';color:var(--ink)}
 .seg2 button.sel{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
-.back-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;font-weight:600;font-family:'Inter';padding:6px 8px 6px 0;align-self:flex-start}
+.back-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;font-weight:600;font-family:'Inter';padding:6px 8px 6px 0;align-self:flex-start;display:inline-flex;align-items:center;gap:4px}
 .back-btn:hover{color:var(--ink)}
+.back-btn svg{width:16px;height:16px}
+.danger-zone{margin-top:10px;padding-top:16px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.cta.danger{background:#C0392B}
 .footer-note{font-size:11.5px;color:var(--muted);text-align:center;padding-top:8px}
 </style>
 </head>
@@ -341,8 +403,10 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
     </div>
     <div class="header-right">
       <button class="icon-btn" id="themeToggleBtn" aria-label="Toggle theme">
-        <svg id="themeIconSun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
-        <svg id="themeIconMoon" class="hidden" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <span class="theme-icon-wrap">
+          <svg id="themeIconSun" class="theme-icon sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+          <svg id="themeIconMoon" class="theme-icon moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </span>
       </button>
       <button class="icon-btn hidden" id="settingsBtn" aria-label="Settings">
         <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
@@ -395,13 +459,14 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 
   <!-- DAY 0 — WELCOME -->
   <section class="screen" id="screen-day0">
-    <button class="back-btn hidden" id="day0BackBtn">← Back</button>
+    <button class="back-btn hidden" id="day0BackBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg> Back</button>
     <div>
       <div class="eyebrow" id="day0Eyebrow">Day 0 · Start Here</div>
       <h1 id="day0Title">Welcome to the Reset.</h1>
     </div>
     <div class="video-card" id="day0Video"></div>
-    <p class="sub" id="day0Text"></p>
+    <p class="sub day0-copy" id="day0Text"></p>
+    <p class="day0-sign" id="day0Sign"></p>
     <button class="cta wave" id="day0Cta">Start Baseline Check-In</button>
   </section>
 
@@ -422,9 +487,9 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
       <input class="field" id="baseFriend" type="text">
     </div>
     <label class="field-label" id="lblGoal">Main goal</label>
-    <select class="field" id="baseGoal"></select>
+    <div class="seg seg-wrap" id="baseGoal"></div>
     <label class="field-label" id="lblStruggle">Biggest current struggle</label>
-    <select class="field" id="baseStruggle"></select>
+    <div class="seg seg-wrap" id="baseStruggle"></div>
     <div id="baseSliders"></div>
     <div class="err" id="baseError"></div>
     <button class="cta" id="baseSubmit">Enter the Reset</button>
@@ -466,18 +531,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
     <div class="collage-strip" id="collageStrip"><div class="collage-track" id="collageTrack"></div></div>
 
     <div class="card small-link-row" id="plansRow" role="button" tabindex="0">
-      <span id="plansRowLbl"></span><span>→</span>
-    </div>
-
-    <div class="card" id="leaderboardCard">
-      <div class="leaderboard-head">
-        <h2 id="lbHead"></h2>
-      </div>
-      <div class="prize-note" id="lbPrizeNote">
-        <span id="lbPrizeText"></span>
-        <span class="prize-countdown" id="prizeCountdown">⏱ –</span>
-      </div>
-      <div class="lb-list" id="lbList"></div>
+      <span id="plansRowLbl"></span><svg class="row-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </div>
 
     <div class="card unlock-card hidden" id="bottleneckCard" role="button" tabindex="0" style="cursor:pointer">
@@ -490,13 +544,23 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
     </div>
     <h2 id="archiveHead"></h2>
     <div class="archive" id="archiveList"></div>
-    <div class="small-link-row" id="startHereRow"><span id="startHereLbl"></span><span>→</span></div>
-    <button class="ghost-btn" id="logoutBtn" style="align-self:center"></button>
+    <div class="small-link-row" id="startHereRow"><span id="startHereLbl"></span><svg class="row-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+
+    <div class="card" id="leaderboardCard">
+      <div class="leaderboard-head">
+        <h2 id="lbHead"></h2>
+      </div>
+      <div class="prize-note" id="lbPrizeNote">
+        <span id="lbPrizeText"></span>
+        <span class="prize-countdown" id="prizeCountdown">⏱ –</span>
+      </div>
+      <div class="lb-list" id="lbList"></div>
+    </div>
   </section>
 
   <!-- DAY / MISSION -->
   <section class="screen" id="screen-day">
-    <button class="back-btn" id="dayBackBtn">←</button>
+    <button class="back-btn" id="dayBackBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
     <div>
       <div class="eyebrow" id="dayEyebrow"></div>
       <h1 id="dayTitle"></h1>
@@ -560,7 +624,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 
   <!-- DAY 4 — BOTTLENECK -->
   <section class="screen" id="screen-bottleneck">
-    <button class="back-btn" id="bnBackBtn">←</button>
+    <button class="back-btn" id="bnBackBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
     <div>
       <div class="eyebrow" id="bnEyebrow"></div>
       <h1 id="bnTitle"></h1>
@@ -572,7 +636,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 
   <!-- DAY 7 — FINAL -->
   <section class="screen" id="screen-final">
-    <button class="back-btn" id="finalBackBtn">←</button>
+    <button class="back-btn" id="finalBackBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
     <div>
       <div class="eyebrow" id="finalEyebrow"></div>
       <h1 id="finalTitle"></h1>
@@ -590,7 +654,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 
   <!-- PLANS -->
   <section class="screen" id="screen-plans">
-    <button class="back-btn" id="plansBackBtn">←</button>
+    <button class="back-btn" id="plansBackBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
     <div>
       <div class="eyebrow" id="plansEyebrow"></div>
       <h1 id="plansTitle"></h1>
@@ -614,7 +678,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 
   <!-- SETTINGS -->
   <section class="screen settings" id="screen-settings">
-    <button class="back-btn" id="settingsBackBtn">←</button>
+    <button class="back-btn" id="settingsBackBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
     <h1 id="settingsTitle"></h1>
     <label class="field-label" id="lblLang"></label>
     <div class="seg2">
@@ -628,6 +692,16 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
     <div class="err" id="pwError"></div>
     <div class="ok" id="pwSuccess"></div>
     <button class="cta secondary" id="pwSaveBtn"></button>
+
+    <button class="ghost-btn" id="logoutBtn" style="align-self:center;margin-top:8px"></button>
+
+    <div class="danger-zone">
+      <label class="field-label" id="lblDelete"></label>
+      <p class="sub" id="deleteWarning" style="text-align:left"></p>
+      <input class="field" id="deleteConfirmInput" type="text" autocomplete="off" autocapitalize="off">
+      <div class="err" id="deleteError"></div>
+      <button class="cta danger" id="deleteAccountBtn"></button>
+    </div>
   </section>
 
   <div class="footer-note" id="footerNote">Modern Athlete LAB™ · The 7-Day Reset</div>
@@ -638,11 +712,11 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/fireba
 import {
   getAuth, onAuthStateChanged, signInWithEmailAndPassword,
   createUserWithEmailAndPassword, signOut, sendPasswordResetEmail, sendEmailVerification,
-  EmailAuthProvider, reauthenticateWithCredential, updatePassword,
+  EmailAuthProvider, reauthenticateWithCredential, updatePassword, deleteUser,
   setPersistence, browserLocalPersistence, browserSessionPersistence
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 import {
-  getFirestore, doc, setDoc, getDoc, collection, query, where,
+  getFirestore, doc, setDoc, getDoc, deleteDoc, collection, query, where,
   getDocs, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 import {
@@ -868,17 +942,19 @@ en:{
   errFallback:"Something went wrong. Please try again.",
   errors:{ "auth/invalid-email":"Invalid email address.","auth/missing-password":"Please enter a password.","auth/weak-password":"Password needs at least 6 characters.","auth/email-already-in-use":"An account already exists for this email.","auth/invalid-credential":"Email or password is incorrect.","auth/user-not-found":"No account found for this email.","auth/wrong-password":"Incorrect password." },
   day0Eyebrow:"Day 0 · Start Here", day0Title:"Welcome to the Reset.",
-  day0Text:"Welcome to the 7-Day Modern Athlete Reset. This is not about perfection, fat loss or pushing harder. For the next seven days, we keep it simple: movement, fuel, recovery and reflection. The goal is to help you feel more energy, more structure and more control again. Complete the daily check-ins honestly — I'll personally review them inside my coaching dashboard. — René",
+  day0Text:"Welcome to the 7-Day Modern Athlete Reset. This is not about perfection, fat loss or pushing harder. For the next seven days, we keep it simple: movement, fuel, recovery and reflection. The goal is to help you feel more energy, more structure and more control again. Complete the daily check-ins honestly. I'll personally review every one of them inside my coaching dashboard.",
+  day0Sign:"René",
   day0Cta:"Start Baseline Check-In", day0CtaDone:"Back to dashboard",
   videoSoon:"Video from René — coming soon", welcomeVideo:"Welcome video",
   baseEyebrow:"Baseline Check-In", baseTitle:"Where are you starting from?",
   lblName:"Name", lblPhone:"WhatsApp / LINE (optional, recommended)", lblSource:"Who invited you?",
-  lblFriend:"Name of the friend", lblGoal:"Main goal", lblStruggle:"Biggest current struggle",
+  lblFriend:"Name of the friend", lblGoal:"3 biggest goals", lblStruggle:"3 biggest struggles",
   sources:[["instagram","Instagram"],["rene","René personally"],["friend","A friend"],["other","Other"]],
   goals:[["energy","More energy"],["nutrition","Better nutrition"],["training","Better training routine"],["sleep","Better sleep"],["stiffness","Less stiffness"],["consistency","More consistency"],["fat","Lose fat"],["strength","Build strength"],["healthy","Feel healthy again"]],
   struggles:[["nutrition","Nutrition"],["training","Training"],["sleep","Sleep"],["stress","Stress"],["energy","Low energy"],["structure","No structure"],["not_sure","Not sure"]],
   baseSliders:[["energy","Energy today"],["sleep","Sleep quality"],["stress","Stress level"],["movement","Movement consistency"],["nutrition","Nutrition structure"]],
   baseSubmit:"Enter the Reset", baseNameReq:"Please enter your name.",
+  baseGoalReq:"Please choose 3 goals.", baseStruggleReq:"Please choose 3 struggles.",
   dashHello:(n)=> n ? "Welcome back, "+n : "Welcome back",
   dashHead:"The 7-Day Reset", missionCta:"Start Today's Mission",
   missionDoneTitle:"Day completed ✅", missionDoneDesc:"Strong. Come back tomorrow for the next day.",
@@ -931,6 +1007,9 @@ en:{
   settingsTitle:"Settings", lblLang:"Language / Sprache", lblPw:"Change password (current, then new)",
   pwSave:"Update password", pwFill:"Please fill in both fields.", pwShort:"New password needs at least 6 characters.",
   pwSaved:"Password changed.", pwWrong:"Current password is incorrect.",
+  lblDelete:"Delete account", deleteWarning:"This permanently deletes your account and all your data. This cannot be undone. Type DELETE below to confirm.",
+  deleteWord:"delete", deleteBtn:"Permanently delete my account", deleteMismatch:"Please type DELETE to confirm.",
+  deleteNeedsPw:"Please enter your current password above, then press delete again.", deleteWrongPw:"Current password is incorrect.",
   verifyNote:"Please verify your email — check your inbox.", verifyResend:"Resend email", verifySent:"Email sent.",
   lbHead:"🏆 Leaderboard", lbPrizeText:"🎁 Top 3 win a gift!", lbYou:"(you)",
   plansRowLbl:"📄 My Plans — request nutrition & training plans",
@@ -955,17 +1034,19 @@ de:{
   errFallback:"Etwas ist schiefgelaufen. Bitte erneut versuchen.",
   errors:{ "auth/invalid-email":"Ungültige E-Mail-Adresse.","auth/missing-password":"Bitte ein Passwort eingeben.","auth/weak-password":"Passwort braucht mindestens 6 Zeichen.","auth/email-already-in-use":"Für diese E-Mail existiert bereits ein Konto.","auth/invalid-credential":"E-Mail oder Passwort ist falsch.","auth/user-not-found":"Kein Konto mit dieser E-Mail gefunden.","auth/wrong-password":"Falsches Passwort." },
   day0Eyebrow:"Tag 0 · Start Here", day0Title:"Willkommen im Reset.",
-  day0Text:"Willkommen beim 7-Day Modern Athlete Reset. Es geht hier nicht um Perfektion, extremes Abnehmen oder darum, dich komplett zu zerstören. Für die nächsten sieben Tage halten wir es simpel: Bewegung, Ernährung, Regeneration und Reflexion. Das Ziel ist, dass du wieder mehr Energie, Struktur und Kontrolle in deinen Alltag bringst. Füll die täglichen Check-ins ehrlich aus — ich sehe sie in meinem Coaching-Dashboard und schaue sie mir persönlich an. — René",
+  day0Text:"Willkommen beim 7-Day Modern Athlete Reset. Es geht hier nicht um Perfektion, extremes Abnehmen oder darum, dich komplett zu zerstören. Für die nächsten sieben Tage halten wir es simpel: Bewegung, Ernährung, Regeneration und Reflexion. Das Ziel ist, dass du wieder mehr Energie, Struktur und Kontrolle in deinen Alltag bringst. Füll die täglichen Check-ins ehrlich aus. Ich sehe sie in meinem Coaching-Dashboard und schaue sie mir persönlich an.",
+  day0Sign:"René",
   day0Cta:"Zur Challenge", day0CtaDone:"Zurück zum Dashboard",
   videoSoon:"Video von René — folgt in Kürze", welcomeVideo:"Willkommens-Video",
   baseEyebrow:"Baseline-Check-in", baseTitle:"Wo startest du gerade?",
   lblName:"Name", lblPhone:"WhatsApp / LINE (optional, empfohlen)", lblSource:"Wer hat dich eingeladen?",
-  lblFriend:"Name des Freundes", lblGoal:"Hauptziel", lblStruggle:"Größte aktuelle Herausforderung",
+  lblFriend:"Name des Freundes", lblGoal:"3 größte Ziele", lblStruggle:"3 größte Herausforderungen",
   sources:[["instagram","Instagram"],["rene","René persönlich"],["friend","Ein Freund"],["other","Sonstiges"]],
   goals:[["energy","Mehr Energie"],["nutrition","Bessere Ernährung"],["training","Bessere Trainingsroutine"],["sleep","Besserer Schlaf"],["stiffness","Weniger Steifheit"],["consistency","Mehr Konstanz"],["fat","Fett verlieren"],["strength","Kraft aufbauen"],["healthy","Mich wieder gesund fühlen"]],
   struggles:[["nutrition","Ernährung"],["training","Training"],["sleep","Schlaf"],["stress","Stress"],["energy","Wenig Energie"],["structure","Keine Struktur"],["not_sure","Nicht sicher"]],
   baseSliders:[["energy","Energie heute"],["sleep","Schlafqualität"],["stress","Stresslevel"],["movement","Bewegungs-Konstanz"],["nutrition","Ernährungs-Struktur"]],
   baseSubmit:"Reset betreten", baseNameReq:"Bitte gib deinen Namen ein.",
+  baseGoalReq:"Bitte wähle 3 Ziele aus.", baseStruggleReq:"Bitte wähle 3 Herausforderungen aus.",
   dashHello:(n)=> n ? "Willkommen zurück, "+n : "Willkommen zurück",
   dashHead:"Der 7-Day Reset", missionCta:"Heutige Mission starten",
   missionDoneTitle:"Tag abgeschlossen ✅", missionDoneDesc:"Stark. Komm morgen für den nächsten Tag zurück.",
@@ -1018,6 +1099,9 @@ de:{
   settingsTitle:"Einstellungen", lblLang:"Sprache / Language", lblPw:"Passwort ändern (aktuell, dann neu)",
   pwSave:"Passwort aktualisieren", pwFill:"Bitte beide Felder ausfüllen.", pwShort:"Neues Passwort braucht mindestens 6 Zeichen.",
   pwSaved:"Passwort geändert.", pwWrong:"Aktuelles Passwort ist falsch.",
+  lblDelete:"Konto löschen", deleteWarning:"Dies löscht dein Konto und alle deine Daten dauerhaft. Das kann nicht rückgängig gemacht werden. Gib unten LÖSCHEN ein, um zu bestätigen.",
+  deleteWord:"löschen", deleteBtn:"Konto endgültig löschen", deleteMismatch:"Bitte gib LÖSCHEN ein, um zu bestätigen.",
+  deleteNeedsPw:"Bitte gib oben dein aktuelles Passwort ein und drücke erneut auf Löschen.", deleteWrongPw:"Aktuelles Passwort ist falsch.",
   verifyNote:"Bitte bestätige deine E-Mail — check dein Postfach.", verifyResend:"Erneut senden", verifySent:"E-Mail verschickt.",
   lbHead:"🏆 Bestenliste", lbPrizeText:"🎁 Platz 1–3 kriegen ein Geschenk!", lbYou:"(du)",
   plansRowLbl:"📄 Meine Pläne — Ernährungs- & Trainingsplan anfordern",
@@ -1042,17 +1126,19 @@ zh:{
   errFallback:"發生錯誤，請再試一次。",
   errors:{ "auth/invalid-email":"電子郵件格式無效。","auth/missing-password":"請輸入密碼。","auth/weak-password":"密碼至少需要6個字元。","auth/email-already-in-use":"這個電子郵件已經有帳號了。","auth/invalid-credential":"電子郵件或密碼錯誤。","auth/user-not-found":"找不到這個電子郵件的帳號。","auth/wrong-password":"密碼錯誤。" },
   day0Eyebrow:"Day 0 · 開始這裡", day0Title:"歡迎來到 Reset。",
-  day0Text:"歡迎參加 7-Day Modern Athlete Reset。這不是關於完美、減脂或逼自己更狠。接下來的七天，我們保持簡單：活動、飲食、恢復與反思。目標是幫助你重新找回能量、結構與掌控感。請誠實完成每天的check-in——我會在教練後台親自查看。— René",
+  day0Text:"歡迎參加 7-Day Modern Athlete Reset。這不是關於完美、減脂或逼自己更狠。接下來的七天，我們保持簡單：活動、飲食、恢復與反思。目標是幫助你重新找回能量、結構與掌控感。請誠實完成每天的 check-in，我會在教練後台親自查看。",
+  day0Sign:"René",
   day0Cta:"開始基準 Check-In", day0CtaDone:"回到儀表板",
   videoSoon:"René 的影片——即將推出", welcomeVideo:"歡迎影片",
   baseEyebrow:"基準 Check-In", baseTitle:"你現在的起點在哪裡？",
   lblName:"姓名", lblPhone:"WhatsApp / LINE（選填，建議填寫）", lblSource:"是誰邀請你的？",
-  lblFriend:"朋友的名字", lblGoal:"主要目標", lblStruggle:"目前最大的困難",
+  lblFriend:"朋友的名字", lblGoal:"3個最重要的目標", lblStruggle:"3個最大的困難",
   sources:[["instagram","Instagram"],["rene","René 本人"],["friend","朋友"],["other","其他"]],
   goals:[["energy","更多能量"],["nutrition","更好的飲食"],["training","更好的訓練習慣"],["sleep","更好的睡眠"],["stiffness","減少僵硬"],["consistency","更有恆心"],["fat","減脂"],["strength","增肌力"],["healthy","重新感覺健康"]],
   struggles:[["nutrition","飲食"],["training","訓練"],["sleep","睡眠"],["stress","壓力"],["energy","能量不足"],["structure","缺乏結構"],["not_sure","不確定"]],
   baseSliders:[["energy","今天的能量"],["sleep","睡眠品質"],["stress","壓力程度"],["movement","活動穩定度"],["nutrition","飲食結構"]],
   baseSubmit:"進入 Reset", baseNameReq:"請輸入你的姓名。",
+  baseGoalReq:"請選擇3個目標。", baseStruggleReq:"請選擇3個困難。",
   dashHello:(n)=> n ? "歡迎回來，"+n : "歡迎回來",
   dashHead:"7-Day Reset", missionCta:"開始今日任務",
   missionDoneTitle:"今日完成 ✅", missionDoneDesc:"很棒。明天再回來完成下一天。",
@@ -1105,6 +1191,9 @@ zh:{
   settingsTitle:"設定", lblLang:"語言 / Language", lblPw:"變更密碼（先輸入目前密碼，再輸入新密碼）",
   pwSave:"更新密碼", pwFill:"請填寫兩個欄位。", pwShort:"新密碼至少需要6個字元。",
   pwSaved:"密碼已變更。", pwWrong:"目前的密碼不正確。",
+  lblDelete:"刪除帳號", deleteWarning:"此操作將永久刪除你的帳號與所有資料，且無法復原。請在下方輸入「刪除」以確認。",
+  deleteWord:"刪除", deleteBtn:"永久刪除我的帳號", deleteMismatch:"請輸入「刪除」以確認。",
+  deleteNeedsPw:"請在上方輸入目前的密碼，然後再次按下刪除。", deleteWrongPw:"目前的密碼不正確。",
   verifyNote:"請驗證你的電子郵件——check你的信箱。", verifyResend:"重新寄送", verifySent:"郵件已寄出。",
   lbHead:"🏆 排行榜", lbPrizeText:"🎁 前3名可獲得禮物！", lbYou:"（你）",
   plansRowLbl:"📄 我的計畫 — 申請飲食與訓練計畫",
@@ -1138,8 +1227,6 @@ let currentScreen = null;
 function applyTheme(theme){
   document.documentElement.setAttribute('data-theme', theme);
   localStorage.setItem('marTheme', theme);
-  $('#themeIconSun').classList.toggle('hidden', theme==='dark');
-  $('#themeIconMoon').classList.toggle('hidden', theme!=='dark');
 }
 applyTheme(localStorage.getItem('marTheme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
 $('#themeToggleBtn').addEventListener('click', ()=>{
@@ -1185,12 +1272,77 @@ function waLink(msg){
   return COACH_WHATSAPP ? 'https://wa.me/'+COACH_WHATSAPP+'?text='+enc : 'https://wa.me/?text='+enc;
 }
 
+function fmtVideoTime(sec){
+  if(!isFinite(sec)||sec<0) sec=0;
+  const m=Math.floor(sec/60), s=Math.floor(sec%60);
+  return m+':'+String(s).padStart(2,'0');
+}
+
+const VICON_PLAY='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+const VICON_PAUSE='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>';
+const VICON_VOL='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 5V4L8 9H4z"/></svg>';
+const VICON_MUTE='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 5V4L8 9H4zm14.6 1.6L17.2 9l-2.4 2.4L12.4 9 11 10.4l2.4 2.4L11 15.2l1.4 1.4 2.4-2.4 2.4 2.4 1.4-1.4-2.4-2.4z"/></svg>';
+const VICON_FULL='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9V4h5v2H6v3H4zm0 6h2v3h3v2H4v-5zm16-6h-2V6h-3V4h5v5zm0 6v5h-5v-2h3v-3h2z"/></svg>';
+
 function renderVideo(el, url, label){
   el.innerHTML='';
   if(url){
-    const v=document.createElement('video');
-    v.src=url; v.controls=true; v.playsInline=true;
-    el.appendChild(v);
+    const SPEEDS=[1,1.25,1.5,2,0.75];
+    let speedIdx=0, seeking=false;
+
+    const wrap=document.createElement('div'); wrap.className='vplayer';
+    wrap.innerHTML=
+      '<video playsinline preload="metadata" src="'+url+'"></video>'+
+      '<button type="button" class="vplay-big" aria-label="Play">'+VICON_PLAY+'</button>'+
+      '<div class="vbar">'+
+        '<button type="button" class="vbtn vplaypause" aria-label="Play">'+VICON_PLAY+'</button>'+
+        '<span class="vtime"><span class="vcur">0:00</span>&nbsp;/&nbsp;<span class="vdur">0:00</span></span>'+
+        '<input type="range" class="vseek" min="0" max="1000" value="0" step="1" aria-label="Seek">'+
+        '<button type="button" class="vbtn vspeed">1x</button>'+
+        '<button type="button" class="vbtn vmute" aria-label="Mute">'+VICON_VOL+'</button>'+
+        '<button type="button" class="vbtn vfull" aria-label="Fullscreen">'+VICON_FULL+'</button>'+
+      '</div>';
+    el.appendChild(wrap);
+
+    const v=wrap.querySelector('video');
+    const bigPlay=wrap.querySelector('.vplay-big');
+    const playBtn=wrap.querySelector('.vplaypause');
+    const seek=wrap.querySelector('.vseek');
+    const curEl=wrap.querySelector('.vcur');
+    const durEl=wrap.querySelector('.vdur');
+    const speedBtn=wrap.querySelector('.vspeed');
+    const muteBtn=wrap.querySelector('.vmute');
+    const fullBtn=wrap.querySelector('.vfull');
+
+    function togglePlay(){ v.paused ? v.play() : v.pause(); }
+    bigPlay.addEventListener('click', togglePlay);
+    playBtn.addEventListener('click', togglePlay);
+    v.addEventListener('click', togglePlay);
+    v.addEventListener('play', ()=>{ wrap.classList.add('playing'); playBtn.innerHTML=VICON_PAUSE; });
+    v.addEventListener('pause', ()=>{ wrap.classList.remove('playing'); playBtn.innerHTML=VICON_PLAY; });
+    v.addEventListener('loadedmetadata', ()=>{ durEl.textContent=fmtVideoTime(v.duration); });
+    v.addEventListener('timeupdate', ()=>{
+      if(!seeking && v.duration) seek.value=String((v.currentTime/v.duration)*1000);
+      curEl.textContent=fmtVideoTime(v.currentTime);
+    });
+    seek.addEventListener('input', ()=>{
+      seeking=true;
+      if(v.duration) v.currentTime=(Number(seek.value)/1000)*v.duration;
+    });
+    seek.addEventListener('change', ()=>{ seeking=false; });
+    speedBtn.addEventListener('click', ()=>{
+      speedIdx=(speedIdx+1)%SPEEDS.length;
+      v.playbackRate=SPEEDS[speedIdx];
+      speedBtn.textContent=SPEEDS[speedIdx]+'x';
+    });
+    muteBtn.addEventListener('click', ()=>{
+      v.muted=!v.muted;
+      muteBtn.innerHTML=v.muted?VICON_MUTE:VICON_VOL;
+    });
+    fullBtn.addEventListener('click', ()=>{
+      if(v.requestFullscreen) v.requestFullscreen();
+      else if(v.webkitEnterFullscreen) v.webkitEnterFullscreen();
+    });
   } else {
     el.innerHTML = '<div class="video-ph"><div class="play">▶</div><div class="vtitle">'+label+'</div><div class="vsub">'+t().videoSoon+'</div></div>';
   }
@@ -1320,6 +1472,7 @@ function renderDay0(fromDash){
   $('#day0Eyebrow').textContent=s.day0Eyebrow;
   $('#day0Title').textContent=s.day0Title;
   $('#day0Text').textContent=s.day0Text;
+  $('#day0Sign').textContent=s.day0Sign;
   renderVideo($('#day0Video'), VIDEOS.day0[state.lang], s.welcomeVideo);
   const done = state.profile && state.profile.baselineAt;
   $('#day0Cta').textContent = done ? s.day0CtaDone : s.day0Cta;
@@ -1337,6 +1490,45 @@ function fillSelect(el, options){
     const o=document.createElement('option'); o.value=val; o.textContent=label; el.appendChild(o);
   });
 }
+function renderChoiceGrid(el, options, max){
+  el.innerHTML='';
+  const selected=new Set();
+  function paint(){
+    el.querySelectorAll('button').forEach(b=>{
+      const on=selected.has(b.dataset.key);
+      b.classList.toggle('sel', on);
+      b.classList.toggle('disabled', !on && selected.size>=max);
+    });
+  }
+  options.forEach(([key,label])=>{
+    const b=document.createElement('button');
+    b.type='button'; b.dataset.key=key; b.textContent=label;
+    b.addEventListener('click',()=>{
+      if(selected.has(key)) selected.delete(key);
+      else{ if(selected.size>=max) return; selected.add(key); }
+      paint();
+    });
+    el.appendChild(b);
+  });
+  paint();
+  return { getSelected:()=>Array.from(selected) };
+}
+function renderNumPicker(el, value){
+  el.innerHTML=''; el.classList.add('seg-num');
+  let current=value;
+  function paint(){
+    el.querySelectorAll('button').forEach(b=>b.classList.toggle('sel', Number(b.dataset.n)===current));
+  }
+  for(let n=1;n<=10;n++){
+    const b=document.createElement('button');
+    b.type='button'; b.textContent=String(n); b.dataset.n=String(n);
+    b.addEventListener('click',()=>{ current=n; paint(); });
+    el.appendChild(b);
+  }
+  paint();
+  return { getValue:()=>current };
+}
+let baseGoalGrid=null, baseStruggleGrid=null, baseNumPickers={};
 function renderBaseline(){
   const s=t();
   $('#baseEyebrow').textContent=s.baseEyebrow;
@@ -1349,32 +1541,37 @@ function renderBaseline(){
   $('#lblStruggle').textContent=s.lblStruggle;
   $('#baseSubmit').textContent=s.baseSubmit;
   fillSelect($('#baseSource'), s.sources);
-  fillSelect($('#baseGoal'), s.goals);
-  fillSelect($('#baseStruggle'), s.struggles);
+  baseGoalGrid=renderChoiceGrid($('#baseGoal'), s.goals, 3);
+  baseStruggleGrid=renderChoiceGrid($('#baseStruggle'), s.struggles, 3);
   $('#baseSource').onchange=()=>{ $('#friendNameWrap').classList.toggle('hidden', $('#baseSource').value!=='friend'); };
   const box=$('#baseSliders'); box.innerHTML='';
-  box.style.cssText='display:flex;flex-direction:column;gap:10px;margin-top:4px';
+  box.style.cssText='display:flex;flex-direction:column;gap:14px;margin-top:4px';
+  baseNumPickers={};
   s.baseSliders.forEach(([key,label])=>{
     const w=document.createElement('div'); w.className='slider-block';
-    w.innerHTML='<div class="slider-head"><span class="sl">'+label+'</span><span class="sv" id="bv_'+key+'">5</span></div>'+
-      '<input type="range" min="1" max="10" value="5" id="br_'+key+'">';
+    w.innerHTML='<div class="slider-head"><span class="sl">'+label+'</span></div>';
+    const grid=document.createElement('div'); grid.className='seg';
+    w.appendChild(grid);
     box.appendChild(w);
-    w.querySelector('input').addEventListener('input',e=>{ $('#bv_'+key).textContent=e.target.value; });
+    baseNumPickers[key]=renderNumPicker(grid, 5);
   });
 }
 $('#baseSubmit').addEventListener('click', async ()=>{
   const s=t(); const err=$('#baseError'); err.textContent='';
   const name=$('#baseName').value.trim();
   if(!name){ err.textContent=s.baseNameReq; return; }
+  const mainGoals=baseGoalGrid.getSelected();
+  const biggestStruggles=baseStruggleGrid.getSelected();
+  if(mainGoals.length!==3){ err.textContent=s.baseGoalReq; return; }
+  if(biggestStruggles.length!==3){ err.textContent=s.baseStruggleReq; return; }
   const baseline={};
-  s.baseSliders.forEach(([key])=>{ baseline[key]=parseInt($('#br_'+key).value,10); });
+  s.baseSliders.forEach(([key])=>{ baseline[key]=baseNumPickers[key].getValue(); });
   const data={
     name,
     phone: $('#basePhone').value.trim(),
     source: $('#baseSource').value,
     invitedBy: $('#baseSource').value==='friend' ? $('#baseFriend').value.trim() : '',
-    mainGoal: $('#baseGoal').value,
-    biggestStruggle: $('#baseStruggle').value,
+    mainGoals, biggestStruggles,
     baseline, baselineAt: serverTimestamp(),
     preferredLanguage: state.lang, email: auth.currentUser?.email || ''
   };
@@ -1462,7 +1659,6 @@ function renderDash(){
   }
   $('#startHereLbl').textContent=s.startHereLbl;
   $('#startHereRow').onclick=()=>{ renderDay0(true); show('day0'); };
-  $('#logoutBtn').textContent=s.logout;
 
   renderCollageStrip();
   $('#plansRowLbl').textContent=s.plansRowLbl;
@@ -1818,6 +2014,12 @@ function renderSettings(){
   $('#curPw').value=''; $('#newPw').value='';
   $('#curPw').placeholder = state.lang==='de'?'Aktuelles Passwort':(state.lang==='zh'?'目前的密碼':'Current password');
   $('#newPw').placeholder = state.lang==='de'?'Neues Passwort':(state.lang==='zh'?'新密碼':'New password');
+  $('#logoutBtn').textContent=s.logout;
+  $('#lblDelete').textContent=s.lblDelete;
+  $('#deleteWarning').textContent=s.deleteWarning;
+  $('#deleteAccountBtn').textContent=s.deleteBtn;
+  $('#deleteConfirmInput').placeholder=s.deleteWord.toUpperCase();
+  $('#deleteConfirmInput').value=''; $('#deleteError').textContent='';
 }
 $('#settingsBtn').addEventListener('click',()=>{
   if(currentScreen==='settings'){ route(); return; }
@@ -1849,6 +2051,25 @@ $('#pwSaveBtn').addEventListener('click', async ()=>{
     ok.textContent=s.pwSaved;
   }catch(e){
     err.textContent=(e.code==='auth/invalid-credential'||e.code==='auth/wrong-password')?s.pwWrong:s.errFallback;
+  }
+});
+$('#deleteAccountBtn').addEventListener('click', async ()=>{
+  const s=t();
+  const err=$('#deleteError'); err.textContent='';
+  const typed=$('#deleteConfirmInput').value.trim().toLowerCase();
+  if(typed!==s.deleteWord.toLowerCase()){ err.textContent=s.deleteMismatch; return; }
+  const cur=$('#curPw').value;
+  try{
+    if(cur){
+      const cred=EmailAuthProvider.credential(auth.currentUser.email, cur);
+      await reauthenticateWithCredential(auth.currentUser, cred);
+    }
+    try{ await deleteDoc(doc(db,'users',state.uid)); }catch(e){}
+    await deleteUser(auth.currentUser);
+  }catch(e){
+    if(e.code==='auth/requires-recent-login'){ err.textContent=s.deleteNeedsPw; }
+    else if(e.code==='auth/invalid-credential'||e.code==='auth/wrong-password'){ err.textContent=s.deleteWrongPw; }
+    else{ err.textContent=s.errFallback; }
   }
 });
 </script>

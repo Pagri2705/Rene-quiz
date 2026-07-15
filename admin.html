@@ -327,8 +327,8 @@ function renderList(){
       ['E-Mail', esc(p.email||'—')],
       ['WhatsApp/LINE', esc(p.phone||'—')],
       ['Quelle', (SOURCE_LBL[p.source]||'—')+(p.invitedBy?' · von '+esc(p.invitedBy):'')],
-      ['Hauptziel', GOAL_LBL[p.mainGoal]||'—'],
-      ['Größte Baustelle', STRUGGLE_LBL[p.biggestStruggle]||'—'],
+      ['3 größte Ziele', (p.mainGoals&&p.mainGoals.length?p.mainGoals.map(g=>GOAL_LBL[g]||g).join(', '):(GOAL_LBL[p.mainGoal]||'—'))],
+      ['3 größte Baustellen', (p.biggestStruggles&&p.biggestStruggles.length?p.biggestStruggles.map(g=>STRUGGLE_LBL[g]||g).join(', '):(STRUGGLE_LBL[p.biggestStruggle]||'—'))],
       ['Guidance-Interesse', p.guidanceInterest?(GUIDE_LBL[p.guidanceInterest]||p.guidanceInterest):'—'],
       ['Zuletzt online', esc(p.lastSeenStr||'nie')],
       ['Baseline', b.energy?('Energie '+b.energy+' · Schlaf '+b.sleep+' · Stress '+b.stress+' · Bewegung '+b.movement+' · Ernährung '+b.nutrition):'—']
@@ -464,10 +464,12 @@ async function loadPlanFiles(uid, type){
 /* ---------- CSV ---------- */
 function csvEsc(v){ const s=String(v??''); return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; }
 $('#exportCsvBtn').addEventListener('click',()=>{
-  const headers=['Name','E-Mail','Telefon','Sprache','Quelle','Eingeladen von','Tag','Punkte','Streak','Ø Energie','Hauptziel','Baustelle','Guidance','Ernährungsplan angefragt','Trainingsplan angefragt','Hot Lead','Kontaktiert','Zuletzt online','Notizen'];
+  const headers=['Name','E-Mail','Telefon','Sprache','Quelle','Eingeladen von','Tag','Punkte','Streak','Ø Energie','3 größte Ziele','3 größte Baustellen','Guidance','Ernährungsplan angefragt','Trainingsplan angefragt','Hot Lead','Kontaktiert','Zuletzt online','Notizen'];
   const rows=participants.map(p=>[
     p.name||'', p.email||'', p.phone||'', p.preferredLanguage||'', SOURCE_LBL[p.source]||'', p.invitedBy||'',
-    (p.doneCount||0)+'/7', p.points||0, p.streak||0, p.avgEnergy||'', GOAL_LBL[p.mainGoal]||'', STRUGGLE_LBL[p.biggestStruggle]||'',
+    (p.doneCount||0)+'/7', p.points||0, p.streak||0, p.avgEnergy||'',
+    (p.mainGoals&&p.mainGoals.length?p.mainGoals.map(g=>GOAL_LBL[g]||g).join(' / '):(GOAL_LBL[p.mainGoal]||'')),
+    (p.biggestStruggles&&p.biggestStruggles.length?p.biggestStruggles.map(g=>STRUGGLE_LBL[g]||g).join(' / '):(STRUGGLE_LBL[p.biggestStruggle]||'')),
     p.guidanceInterest||'', p.nutritionPlanRequestedAt?'Ja':'Nein', p.trainingPlanRequestedAt?'Ja':'Nein',
     p.hot?'Ja':'Nein', p.contacted?'Ja':'Nein', p.lastSeenStr||'', p.coachNotes||''
   ]);
