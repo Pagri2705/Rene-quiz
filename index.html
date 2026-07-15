@@ -128,6 +128,20 @@ em{font-style:normal;color:var(--accent)}
 .cta[disabled]{opacity:.4;cursor:not-allowed}
 .cta.secondary{background:var(--card);color:var(--ink);border:1px solid var(--line)}
 .cta.accent{background:var(--accent)}
+.cta.wave{position:relative;isolation:isolate}
+.cta.wave::before{
+  content:"";position:absolute;inset:0;z-index:-1;
+  border-radius:inherit;background:var(--accent);
+  animation:cta-wave 3s ease-out infinite;
+}
+@keyframes cta-wave{
+  0%{transform:scale(1);opacity:.55}
+  70%{opacity:0}
+  100%{transform:scale(1.9);opacity:0}
+}
+@media (prefers-reduced-motion: reduce){
+  .cta.wave::before{animation:none}
+}
 .ghost-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;font-weight:600;font-family:'Inter';padding:8px}
 .ghost-btn:hover{color:var(--ink)}
 
@@ -388,7 +402,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
     </div>
     <div class="video-card" id="day0Video"></div>
     <p class="sub" id="day0Text"></p>
-    <button class="cta" id="day0Cta">Start Baseline Check-In</button>
+    <button class="cta wave" id="day0Cta">Start Baseline Check-In</button>
   </section>
 
   <!-- BASELINE -->
@@ -942,7 +956,7 @@ de:{
   errors:{ "auth/invalid-email":"Ungültige E-Mail-Adresse.","auth/missing-password":"Bitte ein Passwort eingeben.","auth/weak-password":"Passwort braucht mindestens 6 Zeichen.","auth/email-already-in-use":"Für diese E-Mail existiert bereits ein Konto.","auth/invalid-credential":"E-Mail oder Passwort ist falsch.","auth/user-not-found":"Kein Konto mit dieser E-Mail gefunden.","auth/wrong-password":"Falsches Passwort." },
   day0Eyebrow:"Tag 0 · Start Here", day0Title:"Willkommen im Reset.",
   day0Text:"Willkommen beim 7-Day Modern Athlete Reset. Es geht hier nicht um Perfektion, extremes Abnehmen oder darum, dich komplett zu zerstören. Für die nächsten sieben Tage halten wir es simpel: Bewegung, Ernährung, Regeneration und Reflexion. Das Ziel ist, dass du wieder mehr Energie, Struktur und Kontrolle in deinen Alltag bringst. Füll die täglichen Check-ins ehrlich aus — ich sehe sie in meinem Coaching-Dashboard und schaue sie mir persönlich an. — René",
-  day0Cta:"Baseline-Check-in starten", day0CtaDone:"Zurück zum Dashboard",
+  day0Cta:"Zur Challenge", day0CtaDone:"Zurück zum Dashboard",
   videoSoon:"Video von René — folgt in Kürze", welcomeVideo:"Willkommens-Video",
   baseEyebrow:"Baseline-Check-in", baseTitle:"Wo startest du gerade?",
   lblName:"Name", lblPhone:"WhatsApp / LINE (optional, empfohlen)", lblSource:"Wer hat dich eingeladen?",
