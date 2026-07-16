@@ -1216,7 +1216,7 @@ const $ = s=>document.querySelector(s);
 const state = {
   uid:null, lang: localStorage.getItem('mal_lang') || null,
   profile:null, checkins:{}, // day -> data
-  currentTasks:new Set(), missionAnswer:null, lastReward:null, viewDay:null
+  currentTasks:new Set(), missionAnswer:null, lastReward:null, viewDay:null, previewActive:false
 };
 const t = ()=> T[state.lang || 'en'];
 const dc = (day)=> DAYS[day][state.lang || 'en'];
@@ -1439,6 +1439,7 @@ onAuthStateChanged(auth, async (user)=>{
     }
     try{ await setDoc(doc(db,'users',state.uid),{ lastSeen: serverTimestamp() },{ merge:true }); }catch(e){}
     await loadCheckins();
+    await loadPreviewMode();
     $('#settingsBtn').classList.remove('hidden');
   } else {
     state.uid=null; state.profile=null; state.checkins={};
@@ -1454,6 +1455,15 @@ async function loadCheckins(){
     const snap=await getDocs(q);
     snap.docs.forEach(d=>{ const data=d.data(); state.checkins[data.day]=data; });
   }catch(e){}
+}
+
+async function loadPreviewMode(){
+  try{
+    const snap=await getDoc(doc(db,'settings','previewMode'));
+    const data=snap.exists() ? snap.data() : null;
+    const expiresAtMs=data?.expiresAt?.toMillis?.() ?? 0;
+    state.previewActive = !!data?.enabled && expiresAtMs > Date.now();
+  }catch(e){ state.previewActive=false; }
 }
 
 function route(){
@@ -1649,7 +1659,7 @@ function renderDash(){
   for(let d=1; d<=7; d++){
     const row=document.createElement('div');
     const isDone=!!state.checkins[d];
-    const isCurrent=!isDone && d===day && !completedToday();
+    const isCurrent=!isDone && (state.previewActive || (d===day && !completedToday()));
     row.className='archive-row'+(isDone||isCurrent?' clickable':' locked');
     row.innerHTML='<span class="a-day">'+s.dayWord+' '+d+'</span><span class="a-name">'+dc(d).name+'</span>'+
       '<span class="a-state">'+(isDone?'✅':(isCurrent?'🔓':'🔒'))+'</span>';
