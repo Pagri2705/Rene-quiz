@@ -106,17 +106,11 @@ h2{font-family:'Sora';font-weight:700;font-size:18px;text-align:center}
 .day0-sign{margin-top:2px;text-align:center;font-family:'Sora';font-weight:700;font-size:13px;letter-spacing:.03em;color:var(--accent)}
 em{font-style:normal;color:var(--accent)}
 
-/* ---------- Side background (one full-page image, only visible left/right of the app) ---------- */
-.side-carousel{
-  position:fixed;top:0;bottom:0;width:0;overflow:hidden;
-  z-index:-1;pointer-events:none;background-color:var(--bg);
-  background-image:url('assets/bg-fengshui.jpg');
-  background-size:cover;background-position:center;background-attachment:fixed;
-}
-.side-carousel.left{left:0}
-.side-carousel.right{right:0}
-@media(min-width:900px){
-  .side-carousel{width:calc((100vw - 760px)/2);}
+/* ---------- Page background (one full-viewport image; the app's own
+   opaque background covers the center, so it only shows left/right) ---------- */
+#pageBackground{
+  position:fixed;inset:0;width:100vw;height:100vh;
+  object-fit:cover;z-index:-1;pointer-events:none;
 }
 
 /* ---------- Cards / Buttons ---------- */
@@ -387,8 +381,7 @@ select.field{appearance:auto}
 </style>
 </head>
 <body>
-<div class="side-carousel left" aria-hidden="true"></div>
-<div class="side-carousel right" aria-hidden="true"></div>
+<img id="pageBackground" src="assets/bg-fengshui.jpg" alt="" aria-hidden="true">
 <div class="app">
 
   <header>
