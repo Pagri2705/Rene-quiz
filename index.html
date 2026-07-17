@@ -105,7 +105,7 @@ h1{font-family:'Sora';font-weight:800;font-size:28px;line-height:1.18;letter-spa
 h2{font-family:'Sora';font-weight:700;font-size:18px;text-align:center}
 .eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);text-align:center}
 .sub{color:var(--muted);font-size:14.5px;text-align:center}
-.day0-copy{text-align:justify;text-align-last:left;hyphens:auto;-webkit-hyphens:auto}
+.day0-copy{text-align:justify;text-align-last:left;hyphens:auto;-webkit-hyphens:auto;white-space:pre-line}
 .day0-sign{margin-top:2px;text-align:center;font-family:'Sora';font-weight:700;font-size:13px;letter-spacing:.03em;color:var(--accent)}
 em{font-style:normal;color:var(--accent)}
 
@@ -298,11 +298,7 @@ select.field{appearance:auto}
 .task.done .box{background:var(--success);border-color:var(--success)}
 .slider-block{display:flex;flex-direction:column;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px}
 .slider-head{display:flex;justify-content:space-between;align-items:baseline}
-.slider-head .sv{font-family:'Sora';font-weight:800;font-size:22px;color:var(--accent)}
 .slider-head .sl{font-size:13.5px;font-weight:600}
-input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:99px;background:var(--line);outline:none}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:var(--accent);border:4px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2);cursor:pointer}
-input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--accent);border:4px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2);cursor:pointer}
 .seg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .seg button{
   background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);
@@ -313,11 +309,21 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 .seg-wrap{grid-template-columns:1fr 1fr;margin-top:4px}
 .seg-num{grid-template-columns:repeat(5,1fr);margin-top:8px}
 .seg-num button{padding:10px 0;font-family:'Sora';font-weight:700}
+.seg-emoji{grid-template-columns:repeat(5,1fr);margin-top:8px}
+.seg-emoji button{padding:10px 0 6px;font-size:22px;line-height:1.2}
 .choice-count{font-size:12px;color:var(--muted);margin-top:-6px}
 .coach-note{
   background:var(--accent-soft);border:1px solid #D7E1FA;border-radius:var(--radius-sm);
   padding:12px 14px;font-size:13px;color:var(--accent);text-align:center;
 }
+.task-hint{font-size:12px;color:var(--muted);margin:-4px 0 2px 34px}
+.chip-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:-4px}
+.chip{
+  background:var(--card);border:1px solid var(--line);border-radius:999px;
+  padding:7px 13px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;font-family:'Inter';
+}
+.chip:hover{border-color:#C9C9C2;color:var(--ink)}
+.speed-hint{font-size:12px;color:var(--muted);text-align:center;margin-top:-6px}
 .quote-box{background:var(--card);border-left:3px solid var(--ink);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:14px 16px;font-size:15px;font-style:italic}
 .tip-box{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px 16px;font-size:13.5px}
 .tip-box b{font-family:'Sora';font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px}
@@ -550,10 +556,12 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
       <div class="leaderboard-head">
         <h2 id="lbHead"></h2>
       </div>
+      <div class="prize-note" id="groupScoreNote" style="justify-content:center"></div>
       <div class="prize-note" id="lbPrizeNote">
         <span id="lbPrizeText"></span>
         <span class="prize-countdown" id="prizeCountdown">⏱ –</span>
       </div>
+      <div class="prize-note" id="lbDrawNote" style="justify-content:center"></div>
       <div class="lb-list" id="lbList"></div>
     </div>
   </section>
@@ -571,26 +579,22 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
     <h2 id="tasksHead"></h2>
     <div class="tasks" id="taskList"></div>
     <div id="checkinBlock">
-      <h2 id="checkinHead" style="margin:10px 0 8px"></h2>
+      <h2 id="checkinHead" style="margin:10px 0 2px"></h2>
+      <p class="speed-hint" id="checkinSpeedHint" style="margin-bottom:8px"></p>
       <div style="display:flex;flex-direction:column;gap:10px">
         <div class="slider-block">
-          <div class="slider-head"><span class="sl" id="lblEnergy"></span><span class="sv" id="valEnergy">5</span></div>
-          <input type="range" id="rngEnergy" min="1" max="10" value="5">
+          <div class="slider-head"><span class="sl" id="lblEnergy"></span></div>
+          <div class="seg seg-emoji" id="pickEnergy"></div>
         </div>
         <div class="slider-block">
-          <div class="slider-head"><span class="sl" id="lblSleep"></span><span class="sv" id="valSleep">5</span></div>
-          <input type="range" id="rngSleep" min="1" max="10" value="5">
+          <div class="slider-head"><span class="sl" id="lblSleep"></span></div>
+          <div class="seg seg-emoji" id="pickSleep"></div>
         </div>
         <label class="field-label" id="lblMission"></label>
         <div class="seg" id="segMission"></div>
         <label class="field-label" id="lblReflection"></label>
-        <textarea class="field" id="txtReflection"></textarea>
-        <label class="field-label" id="lblWin"></label>
-        <input class="field" id="txtWin" type="text">
-        <label class="field-label" id="lblHard"></label>
-        <input class="field" id="txtHard" type="text">
-        <label class="field-label" id="lblFeedback"></label>
-        <input class="field" id="txtFeedback" type="text">
+        <textarea class="field" id="txtNote"></textarea>
+        <div class="chip-row" id="noteChips"></div>
         <div class="coach-note" id="coachNote"></div>
         <div class="err" id="dayError"></div>
         <button class="cta accent" id="daySubmit"></button>
@@ -612,6 +616,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
     </div>
     <div class="reward-badge" id="rewardBadge"></div>
     <div class="reward-streak" id="rewardStreak"></div>
+    <div class="prize-note" id="rewardSocialProof" style="justify-content:center"></div>
     <div class="quote-box" id="rewardQuote" style="text-align:left"></div>
     <div class="tip-box" style="text-align:left"><b id="rewardTipLbl"></b><span id="rewardTip"></span></div>
     <div class="card" id="teaserCard" style="text-align:left">
@@ -717,7 +722,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 import {
   getFirestore, doc, setDoc, getDoc, deleteDoc, collection, query, where,
-  getDocs, serverTimestamp
+  getDocs, serverTimestamp, runTransaction
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 import {
   getStorage, ref, listAll, getDownloadURL
@@ -748,6 +753,25 @@ const FAKE_LEADERBOARD = [
   { uid:'fake4', name:'Jonas T.', streak:8 },
   { uid:'fake5', name:'Aylin D.', streak:6 }
 ];
+
+/* Group score: real numbers get a small "phantom crew" baked in so it feels
+   alive from day one (same idea as FAKE_LEADERBOARD above). */
+const EMOJI_SCALE = ['😴','😐','🙂','💪','🔥'];
+const FAKE_GROUP_PARTICIPANTS = 5;
+const FAKE_GROUP_PER_PERSON = 4;
+const FAKE_GROUP_CHECKED_IN = 3;
+const PER_PERSON_DAILY_MAX = 6;
+
+/* Short example hints shown under a task, keyed "day-taskIndex". */
+const TASK_HINTS = {
+  '3-0':{ en:"a palm-sized portion", de:"eine Handfläche groß", zh:"約一個手掌大小" },
+  '3-1':{ en:"2–3 litres", de:"2–3 Liter", zh:"2–3公升" },
+  '4-0':{ en:"aim for 5 min less than yesterday", de:"5 Min weniger als gestern", zh:"比昨天少5分鐘" },
+  '4-2':{ en:"5 minutes", de:"5 Minuten", zh:"5分鐘" },
+  '4-3':{ en:"7–8h, same time daily", de:"7–8 Std, jeden Tag gleiche Zeit", zh:"7–8小時，每天同一時間" },
+  '5-0':{ en:"morning water · 10-min walk · lights out by 22:30", de:"z.B. Wasser am Morgen · 10-Min-Walk · Licht aus um 22:30", zh:"例如：早晨喝水・10分鐘散步・22:30關燈" },
+  '5-2':{ en:"pick the time, not the workout", de:"Zeit festlegen, nicht die Trainingsart", zh:"先定時間，而非訓練內容" }
+};
 
 /* René's WhatsApp number in international format without +, e.g. "886912345678".
    Leave empty to let WhatsApp open with the message and free contact choice. */
@@ -942,7 +966,7 @@ en:{
   errFallback:"Something went wrong. Please try again.",
   errors:{ "auth/invalid-email":"Invalid email address.","auth/missing-password":"Please enter a password.","auth/weak-password":"Password needs at least 6 characters.","auth/email-already-in-use":"An account already exists for this email.","auth/invalid-credential":"Email or password is incorrect.","auth/user-not-found":"No account found for this email.","auth/wrong-password":"Incorrect password." },
   day0Eyebrow:"Day 0 · Start Here", day0Title:"Welcome to the Reset.",
-  day0Text:"Welcome to the 7-Day Modern Athlete Reset. This is not about perfection, fat loss or pushing harder. For the next seven days, we keep it simple: movement, fuel, recovery and reflection. The goal is to help you feel more energy, more structure and more control again. Complete the daily check-ins honestly. I'll personally review every one of them inside my coaching dashboard.",
+  day0Text:"Good to have you here. 👊\n\nWelcome to the 7-Day Modern Athlete Reset. This is not about perfection, fat loss or pushing harder. For the next seven days, we keep it simple: movement, fuel, recovery and reflection. The goal is to help you feel more energy, more structure and more control again.\n\nThe goal is not to become perfect. The goal is to become less chaotic.\n\nFifteen seconds a day, that's it. Check in, watch the crew score climb, and see where you land.\n\nTop 3 at the end take a prize — and everyone who finishes all 7 days goes into the draw.\n\nI'm doing it with you. Let's goooo. 🔥\n\nMost people find out something about themselves around day 3. Let's see what yours is.",
   day0Sign:"René",
   day0Cta:"Start Baseline Check-In", day0CtaDone:"Back to dashboard",
   videoSoon:"Video from René — coming soon", welcomeVideo:"Welcome video",
@@ -956,7 +980,7 @@ en:{
   baseSubmit:"Enter the Reset", baseNameReq:"Please enter your name.",
   baseGoalReq:"Please choose 3 goals.", baseStruggleReq:"Please choose 3 struggles.",
   dashHello:(n)=> n ? "Welcome back, "+n : "Welcome back",
-  dashHead:"The 7-Day Reset", missionCta:"Start Today's Mission",
+  dashHead:"The 7-Day Reset", missionCta:"Start Today's Move",
   missionDoneTitle:"Day completed ✅", missionDoneDesc:"Strong. Come back tomorrow for the next day.",
   missionAllDoneTitle:"Reset completed", missionAllDoneDesc:"All 7 days done. Your next step is ready below.",
   missionCtaDone:"View today's summary", missionCtaFinal:"See your next step",
@@ -965,22 +989,26 @@ en:{
   locked:"Locked", today:"Today",
   bnCardTitle:"Your Bottleneck Snapshot™ 🔓", bnCardSub:"Unlocked after Day 4 — see what's actually blocking you.",
   mapCardTitle:"Your Personal MAP™", mapCardSub:"You completed the Reset. See your next step.",
-  tasksHead:"Today's mission", tasksHeadChoose:"Choose at least one",
-  checkinHead:"Daily check-in",
+  tasksHead:"Today's move", tasksHeadChoose:"Choose at least one",
+  checkinHead:"Quick check-in", checkinSpeedHint:"15 seconds, then you're out",
   lblEnergy:"Energy today", lblSleep:"Sleep last night",
-  lblMission:"Did you complete today's mission?",
-  segMission:[["yes","Yes"],["partly","Partly"],["no","No"]],
-  lblReflection:"Reflection", lblWin:"Biggest win today", lblHard:"What was hard today?",
-  lblFeedback:"Anything René should look at? (optional)",
-  coachNote:"Be honest here. René reviews the challenge check-ins personally — this is where the coaching begins.",
-  daySubmit:"Submit check-in", missionReq:"Please answer whether you completed today's mission.",
+  lblMission:"How did it go?",
+  segMission:[["yes","Yes"],["partly","Half"],["no","Nope"]],
+  lblReflection:"Reflection",
+  notePlaceholder:"Anything you want to get off your chest? (optional)",
+  chipWin:"Biggest win", chipHard:"What was hard", chipGrateful:"Grateful for",
+  coachNote:"Write it however it comes out. I read every check-in myself — and I'm in this with you. If something's off, tell me. That's what we're all here for.",
+  daySubmit:"Submit check-in", missionReq:"Please let us know how it went.",
   chooseOneReq:"Choose at least one challenge for today.",
   rewardEyebrow:"Standard Completed ✅", pointsSuffix:"Reset Points",
   badgeUnlocked:"Badge unlocked", streakWord:(n)=> "Current streak: "+n+(n===1?" day":" days"),
   tipLbl:"Tip of the day", teaserLbl:"Tomorrow",
   rewardWhatsapp:"Send René a personal note", rewardContinue:"Continue",
   checkinSaved:"Check-in submitted ✅ — René can now see your progress.",
-  waCheckin:(d,e,s,w,h)=>"Hey René, I completed Day "+d+" of the Modern Athlete Reset.\n\nEnergy: "+e+"/10\nSleep: "+s+"/10\nBiggest win: "+(w||"—")+"\nBiggest struggle: "+(h||"—"),
+  waCheckin:(d,e,s,note)=>"Hey René, I completed Day "+d+" of the Modern Athlete Reset.\n\nEnergy: "+e+"/5\nSleep: "+s+"/5"+(note?"\nNote: "+note:""),
+  groupScoreText:(a,b)=>"Together: "+a+" of "+b+" today",
+  lbDrawText:"🎁 Finish all 7 days → entered into the draw",
+  socialProofText:(a,b)=>a+" of "+b+" already checked in today 🔥",
   bnEyebrow:"Unlocked · Your Bottleneck Snapshot™", bnTitle:"Now the pattern is becoming visible.",
   bnIntro:"You've completed 4 days. Most people don't need more motivation — they need to know what is actually blocking their energy, consistency and progress. For some it's nutrition. For others it's training structure. For many it's recovery and lifestyle. Choose where you want personal guidance:",
   bnOptions:[
@@ -1034,7 +1062,7 @@ de:{
   errFallback:"Etwas ist schiefgelaufen. Bitte erneut versuchen.",
   errors:{ "auth/invalid-email":"Ungültige E-Mail-Adresse.","auth/missing-password":"Bitte ein Passwort eingeben.","auth/weak-password":"Passwort braucht mindestens 6 Zeichen.","auth/email-already-in-use":"Für diese E-Mail existiert bereits ein Konto.","auth/invalid-credential":"E-Mail oder Passwort ist falsch.","auth/user-not-found":"Kein Konto mit dieser E-Mail gefunden.","auth/wrong-password":"Falsches Passwort." },
   day0Eyebrow:"Tag 0 · Start Here", day0Title:"Willkommen im Reset.",
-  day0Text:"Willkommen beim 7-Day Modern Athlete Reset. Es geht hier nicht um Perfektion, extremes Abnehmen oder darum, dich komplett zu zerstören. Für die nächsten sieben Tage halten wir es simpel: Bewegung, Ernährung, Regeneration und Reflexion. Das Ziel ist, dass du wieder mehr Energie, Struktur und Kontrolle in deinen Alltag bringst. Füll die täglichen Check-ins ehrlich aus. Ich sehe sie in meinem Coaching-Dashboard und schaue sie mir persönlich an.",
+  day0Text:"Schön, dass du da bist. 👊\n\nWillkommen beim 7-Day Modern Athlete Reset. Es geht hier nicht um Perfektion, extremes Abnehmen oder darum, dich komplett zu zerstören. Für die nächsten sieben Tage halten wir es simpel: Bewegung, Ernährung, Regeneration und Reflexion. Das Ziel ist, dass du wieder mehr Energie, Struktur und Kontrolle in deinen Alltag bringst.\n\nDas Ziel ist nicht, perfekt zu werden. Das Ziel ist, weniger chaotisch zu werden.\n\nFünfzehn Sekunden am Tag, mehr nicht. Check-in machen, zusehen wie der Crew-Score steigt, und schauen wo du stehst.\n\nDie Top 3 am Ende kriegen einen Preis — und alle, die alle 7 Tage schaffen, kommen in die Verlosung.\n\nIch mach's mit dir zusammen. Auf geht's. 🔥\n\nDie meisten merken so um Tag 3 rum was über sich selbst. Mal sehen, was es bei dir ist.",
   day0Sign:"René",
   day0Cta:"Zur Challenge", day0CtaDone:"Zurück zum Dashboard",
   videoSoon:"Video von René — folgt in Kürze", welcomeVideo:"Willkommens-Video",
@@ -1048,7 +1076,7 @@ de:{
   baseSubmit:"Reset betreten", baseNameReq:"Bitte gib deinen Namen ein.",
   baseGoalReq:"Bitte wähle 3 Ziele aus.", baseStruggleReq:"Bitte wähle 3 Herausforderungen aus.",
   dashHello:(n)=> n ? "Willkommen zurück, "+n : "Willkommen zurück",
-  dashHead:"Der 7-Day Reset", missionCta:"Heutige Mission starten",
+  dashHead:"Der 7-Day Reset", missionCta:"Heutigen Move starten",
   missionDoneTitle:"Tag abgeschlossen ✅", missionDoneDesc:"Stark. Komm morgen für den nächsten Tag zurück.",
   missionAllDoneTitle:"Reset abgeschlossen", missionAllDoneDesc:"Alle 7 Tage geschafft. Dein nächster Schritt wartet unten.",
   missionCtaDone:"Heutige Zusammenfassung ansehen", missionCtaFinal:"Deinen nächsten Schritt ansehen",
@@ -1057,22 +1085,26 @@ de:{
   locked:"Gesperrt", today:"Heute",
   bnCardTitle:"Dein Bottleneck Snapshot™ 🔓", bnCardSub:"Nach Tag 4 freigeschaltet — sieh, was dich wirklich blockiert.",
   mapCardTitle:"Deine Personal MAP™", mapCardSub:"Du hast den Reset abgeschlossen. Sieh dir deinen nächsten Schritt an.",
-  tasksHead:"Heutige Mission", tasksHeadChoose:"Wähle mindestens eine",
-  checkinHead:"Täglicher Check-in",
+  tasksHead:"Dein heutiger Move", tasksHeadChoose:"Wähle mindestens eine",
+  checkinHead:"Quick-Check-in", checkinSpeedHint:"15 Sekunden, dann bist du raus",
   lblEnergy:"Energie heute", lblSleep:"Schlaf letzte Nacht",
-  lblMission:"Hast du die heutige Mission abgeschlossen?",
-  segMission:[["yes","Ja"],["partly","Teilweise"],["no","Nein"]],
-  lblReflection:"Reflexion", lblWin:"Größter Win heute", lblHard:"Was war heute schwer?",
-  lblFeedback:"Soll René sich etwas Bestimmtes anschauen? (optional)",
-  coachNote:"Sei hier ehrlich. Hier schauen wir uns die Check-in Challenge gemeinsam an und leiten deinen Weg ein.",
-  daySubmit:"Check-in absenden", missionReq:"Bitte beantworte, ob du die heutige Mission abgeschlossen hast.",
+  lblMission:"Wie lief's?",
+  segMission:[["yes","Ja"],["partly","Halb"],["no","Nö"]],
+  lblReflection:"Reflexion",
+  notePlaceholder:"Willst du dir was von der Seele schreiben? (optional)",
+  chipWin:"Größter Win", chipHard:"Was war schwer", chipGrateful:"Dankbar für",
+  coachNote:"Schreib's einfach so wie's kommt. Ich lese jeden Check-in selbst — und ich bin mit dabei. Wenn was nicht passt, sag's mir. Dafür sind wir alle hier.",
+  daySubmit:"Check-in absenden", missionReq:"Sag uns kurz, wie's gelaufen ist.",
   chooseOneReq:"Wähle mindestens eine Challenge für heute.",
   rewardEyebrow:"Standard gehalten ✅", pointsSuffix:"Reset Points",
   badgeUnlocked:"Badge freigeschaltet", streakWord:(n)=> "Aktueller Streak: "+n+(n===1?" Tag":" Tage"),
   tipLbl:"Tipp des Tages", teaserLbl:"Morgen",
   rewardWhatsapp:"René eine persönliche Nachricht senden", rewardContinue:"Weiter",
   checkinSaved:"Check-in gespeichert ✅ — René kann deinen Fortschritt jetzt sehen.",
-  waCheckin:(d,e,s,w,h)=>"Hey René, ich habe Tag "+d+" vom Modern Athlete Reset abgeschlossen.\n\nEnergie: "+e+"/10\nSchlaf: "+s+"/10\nGrößter Win: "+(w||"—")+"\nGrößte Herausforderung: "+(h||"—"),
+  waCheckin:(d,e,s,note)=>"Hey René, ich habe Tag "+d+" vom Modern Athlete Reset abgeschlossen.\n\nEnergie: "+e+"/5\nSchlaf: "+s+"/5"+(note?"\nNotiz: "+note:""),
+  groupScoreText:(a,b)=>"Zusammen: "+a+" von "+b+" heute",
+  lbDrawText:"🎁 Alle 7 Tage schaffen → in der Verlosung",
+  socialProofText:(a,b)=>a+" von "+b+" haben heute schon eingecheckt 🔥",
   bnEyebrow:"Freigeschaltet · Dein Bottleneck Snapshot™", bnTitle:"Jetzt wird das Muster sichtbar.",
   bnIntro:"Du hast 4 Tage abgeschlossen. Die meisten Menschen brauchen nicht mehr Motivation — sie müssen wissen, was ihre Energie, Konstanz und ihren Fortschritt wirklich blockiert. Bei manchen ist es die Ernährung. Bei anderen die Trainingsstruktur. Bei vielen sind es Regeneration und Lifestyle. Wähle, wo du persönliche Begleitung willst:",
   bnOptions:[
@@ -1126,7 +1158,7 @@ zh:{
   errFallback:"發生錯誤，請再試一次。",
   errors:{ "auth/invalid-email":"電子郵件格式無效。","auth/missing-password":"請輸入密碼。","auth/weak-password":"密碼至少需要6個字元。","auth/email-already-in-use":"這個電子郵件已經有帳號了。","auth/invalid-credential":"電子郵件或密碼錯誤。","auth/user-not-found":"找不到這個電子郵件的帳號。","auth/wrong-password":"密碼錯誤。" },
   day0Eyebrow:"Day 0 · 開始這裡", day0Title:"歡迎來到 Reset。",
-  day0Text:"歡迎參加 7-Day Modern Athlete Reset。這不是關於完美、減脂或逼自己更狠。接下來的七天，我們保持簡單：活動、飲食、恢復與反思。目標是幫助你重新找回能量、結構與掌控感。請誠實完成每天的 check-in，我會在教練後台親自查看。",
+  day0Text:"很高興你在這裡。👊\n\n歡迎參加 7-Day Modern Athlete Reset。這不是關於完美、減脂或逼自己更狠。接下來的七天，我們保持簡單：活動、飲食、恢復與反思。目標是幫助你重新找回能量、結構與掌控感。\n\n目標不是變得完美，而是變得不再那麼混亂。\n\n每天只要15秒。Check-in、看著大家的分數往上爬，看看你排在哪裡。\n\n最後前3名會得到獎品——而完成全部7天的人，都會參加抽獎。\n\n我會陪你一起做。衝吧。🔥\n\n大多數人大概在第3天左右會發現一些關於自己的事。來看看你的是什麼。",
   day0Sign:"René",
   day0Cta:"開始基準 Check-In", day0CtaDone:"回到儀表板",
   videoSoon:"René 的影片——即將推出", welcomeVideo:"歡迎影片",
@@ -1140,7 +1172,7 @@ zh:{
   baseSubmit:"進入 Reset", baseNameReq:"請輸入你的姓名。",
   baseGoalReq:"請選擇3個目標。", baseStruggleReq:"請選擇3個困難。",
   dashHello:(n)=> n ? "歡迎回來，"+n : "歡迎回來",
-  dashHead:"7-Day Reset", missionCta:"開始今日任務",
+  dashHead:"7-Day Reset", missionCta:"開始今天的行動",
   missionDoneTitle:"今日完成 ✅", missionDoneDesc:"很棒。明天再回來完成下一天。",
   missionAllDoneTitle:"Reset 已完成", missionAllDoneDesc:"7天都完成了。你的下一步已經準備好了。",
   missionCtaDone:"查看今日總結", missionCtaFinal:"查看你的下一步",
@@ -1149,22 +1181,26 @@ zh:{
   locked:"未解鎖", today:"今天",
   bnCardTitle:"你的 Bottleneck Snapshot™ 🔓", bnCardSub:"第4天後解鎖——看看真正卡住你的是什麼。",
   mapCardTitle:"你的 Personal MAP™", mapCardSub:"你已完成 Reset。查看你的下一步。",
-  tasksHead:"今日任務", tasksHeadChoose:"至少選擇一項",
-  checkinHead:"每日 Check-in",
+  tasksHead:"今天的行動", tasksHeadChoose:"至少選擇一項",
+  checkinHead:"快速 Check-in", checkinSpeedHint:"15秒，馬上搞定",
   lblEnergy:"今天的能量", lblSleep:"昨晚的睡眠",
-  lblMission:"你完成今天的任務了嗎？",
-  segMission:[["yes","是"],["partly","部分完成"],["no","否"]],
-  lblReflection:"反思", lblWin:"今天最大的收穫", lblHard:"今天什麼最難？",
-  lblFeedback:"有什麼想讓 René 特別留意的嗎？（選填）",
-  coachNote:"在這裡誠實面對自己。我們會一起檢視這個 Check-in Challenge，並開啟你的旅程。",
-  daySubmit:"送出 Check-in", missionReq:"請回答你是否完成了今天的任務。",
+  lblMission:"今天做得如何？",
+  segMission:[["yes","是"],["partly","一半"],["no","沒有"]],
+  lblReflection:"反思",
+  notePlaceholder:"有什麼想說的嗎？（選填）",
+  chipWin:"最大的收穫", chipHard:"最難的部分", chipGrateful:"感謝的事",
+  coachNote:"想到什麼就寫什麼。我會親自看每一則 Check-in——我跟你一起在這裡。如果有什麼不對勁，跟我說。這就是我們都在這裡的原因。",
+  daySubmit:"送出 Check-in", missionReq:"跟我們說一下今天做得如何。",
   chooseOneReq:"請至少選擇一項今天的挑戰。",
   rewardEyebrow:"標準達成 ✅", pointsSuffix:"Reset 積分",
   badgeUnlocked:"徽章已解鎖", streakWord:(n)=> "目前連續天數："+n+" 天",
   tipLbl:"今日提示", teaserLbl:"明天",
   rewardWhatsapp:"傳一則訊息給 René", rewardContinue:"繼續",
   checkinSaved:"Check-in 已送出 ✅ — René 現在可以看到你的進度。",
-  waCheckin:(d,e,s,w,h)=>"嗨 René，我完成了 Modern Athlete Reset 第"+d+"天。\n\n能量："+e+"/10\n睡眠："+s+"/10\n最大的收穫："+(w||"—")+"\n最大的困難："+(h||"—"),
+  waCheckin:(d,e,s,note)=>"嗨 René，我完成了 Modern Athlete Reset 第"+d+"天。\n\n能量："+e+"/5\n睡眠："+s+"/5"+(note?"\n備註："+note:""),
+  groupScoreText:(a,b)=>"大家一起："+a+" / "+b+"（今天）",
+  lbDrawText:"🎁 完成全部7天 → 進入抽獎",
+  socialProofText:(a,b)=>"今天已經有 "+a+" / "+b+" 人 check-in 了 🔥",
   bnEyebrow:"已解鎖 · 你的 Bottleneck Snapshot™", bnTitle:"現在模式開始變得清晰。",
   bnIntro:"你已經完成4天了。大多數人不需要更多動力——他們需要知道究竟是什麼在阻礙他們的能量、恆心與進步。對某些人來說是飲食，對某些人是訓練結構，對很多人來說是恢復與生活型態。選擇你想要獲得個人指導的方向：",
   bnOptions:[
@@ -1523,20 +1559,21 @@ function renderChoiceGrid(el, options, max){
   paint();
   return { getSelected:()=>Array.from(selected) };
 }
-function renderNumPicker(el, value){
-  el.innerHTML=''; el.classList.add('seg-num');
+function renderEmojiPicker(el, value){
+  el.innerHTML=''; el.classList.add('seg-emoji');
   let current=value;
   function paint(){
     el.querySelectorAll('button').forEach(b=>b.classList.toggle('sel', Number(b.dataset.n)===current));
   }
-  for(let n=1;n<=10;n++){
+  EMOJI_SCALE.forEach((emoji,i)=>{
+    const n=i+1;
     const b=document.createElement('button');
-    b.type='button'; b.textContent=String(n); b.dataset.n=String(n);
+    b.type='button'; b.textContent=emoji; b.dataset.n=String(n);
     b.addEventListener('click',()=>{ current=n; paint(); });
     el.appendChild(b);
-  }
+  });
   paint();
-  return { getValue:()=>current };
+  return { getValue:()=>current, setValue:(n)=>{ current=n; paint(); } };
 }
 let baseGoalGrid=null, baseStruggleGrid=null, baseNumPickers={};
 function renderBaseline(){
@@ -1563,7 +1600,7 @@ function renderBaseline(){
     const grid=document.createElement('div'); grid.className='seg';
     w.appendChild(grid);
     box.appendChild(w);
-    baseNumPickers[key]=renderNumPicker(grid, 5);
+    baseNumPickers[key]=renderEmojiPicker(grid, 3);
   });
 }
 $('#baseSubmit').addEventListener('click', async ()=>{
@@ -1585,9 +1622,11 @@ $('#baseSubmit').addEventListener('click', async ()=>{
     baseline, baselineAt: serverTimestamp(),
     preferredLanguage: state.lang, email: auth.currentUser?.email || ''
   };
+  const isFirstTime = !state.profile?.baselineAt;
   try{
     await setDoc(doc(db,'users',state.uid), data, { merge:true });
     Object.assign(state.profile, data, { baselineAt:{ seconds: Date.now()/1000 } });
+    if(isFirstTime) recordNewParticipant().catch(()=>{});
     renderDash(); show('dash');
   }catch(e){ err.textContent=t().errFallback; }
 });
@@ -1674,6 +1713,10 @@ function renderDash(){
   $('#plansRowLbl').textContent=s.plansRowLbl;
   $('#plansRow').classList.toggle('hidden', completedDays().length < 4);
   $('#plansRow').onclick=()=>{ renderPlans(); show('plans'); };
+  $('#lbDrawNote').textContent=s.lbDrawText;
+  loadGroupScore().then(({groupSum,groupMax})=>{
+    $('#groupScoreNote').textContent = s.groupScoreText(groupSum, groupMax);
+  }).catch(()=>{});
   renderLeaderboard();
 }
 
@@ -1696,6 +1739,43 @@ function renderSideCarousels(){
   $('#sideCarouselRight .side-carousel-track').innerHTML = html;
 }
 renderSideCarousels();
+
+/* =========================================================
+   GROUP SCORE — aggregate-only counters (dailyStats/stats), no
+   personal data, same collections the coach dashboard already uses.
+========================================================= */
+async function recordGroupProgress(standardsToday){
+  await runTransaction(db, async (tx)=>{
+    const ref=doc(db,'dailyStats',todayStr());
+    const snap=await tx.get(ref);
+    const cur=snap.exists()?snap.data():{};
+    tx.set(ref,{ sum:(cur.sum||0)+standardsToday, count:(cur.count||0)+1 },{merge:true});
+  });
+}
+async function recordNewParticipant(){
+  await runTransaction(db, async (tx)=>{
+    const ref=doc(db,'stats','participantCount');
+    const snap=await tx.get(ref);
+    const cur=snap.exists()?(snap.data().count||0):0;
+    tx.set(ref,{ count: cur+1 });
+  });
+}
+async function loadGroupScore(){
+  let sum=0, count=0, participants=0;
+  try{
+    const snap=await getDoc(doc(db,'dailyStats',todayStr()));
+    if(snap.exists()){ sum=snap.data().sum||0; count=snap.data().count||0; }
+  }catch(e){}
+  try{
+    const pSnap=await getDoc(doc(db,'stats','participantCount'));
+    if(pSnap.exists()) participants=pSnap.data().count||0;
+  }catch(e){}
+  const totalCrew = participants + FAKE_GROUP_PARTICIPANTS;
+  const groupMax = totalCrew * PER_PERSON_DAILY_MAX;
+  const groupSum = Math.min(groupMax, sum + FAKE_GROUP_PARTICIPANTS*FAKE_GROUP_PER_PERSON);
+  const checkedIn = Math.min(totalCrew, count + FAKE_GROUP_CHECKED_IN);
+  return { groupSum, groupMax, checkedIn, totalCrew };
+}
 
 /* =========================================================
    LEADERBOARD
@@ -1807,6 +1887,7 @@ $('#brandLogo').addEventListener('click',()=>{ if(state.uid && state.profile?.ba
 /* =========================================================
    DAY SCREEN
 ========================================================= */
+let energyPicker=null, sleepPicker=null;
 function openDay(day, archived){
   const s=t(); const c=dc(day);
   state.viewDay=day;
@@ -1832,6 +1913,13 @@ function openDay(day, archived){
       });
     }
     list.appendChild(el);
+    const hint=TASK_HINTS[day+'-'+i];
+    if(hint){
+      const hintEl=document.createElement('div');
+      hintEl.className='task-hint';
+      hintEl.textContent=hint[state.lang]||hint.en;
+      list.appendChild(hintEl);
+    }
   });
 
   $('#checkinBlock').classList.toggle('hidden', !!archived);
@@ -1842,25 +1930,35 @@ function openDay(day, archived){
     $('#arcTipLbl').textContent=s.tipLbl;
     $('#arcTip').textContent=c.tip;
     const e=existing;
+    const noteText = e.note || [e.biggestWin, e.biggestStruggle, e.reflection].filter(Boolean).join(' · ');
     $('#arcStats').innerHTML =
-      '<b>'+s.lblEnergy+':</b> '+e.energy+'/10 · <b>'+s.lblSleep+':</b> '+e.sleep+'/10 · <b>+'+(e.points||0)+' '+s.pointsSuffix+'</b>'+
-      (e.biggestWin?'<br><b>'+s.lblWin+':</b> '+e.biggestWin:'')+
-      (e.reflection?'<br><b>'+s.lblReflection+':</b> '+e.reflection:'');
+      '<b>'+s.lblEnergy+':</b> '+e.energy+'/5 · <b>'+s.lblSleep+':</b> '+e.sleep+'/5 · <b>+'+(e.points||0)+' '+s.pointsSuffix+'</b>'+
+      (noteText?'<br><b>'+s.lblReflection+':</b> '+noteText:'');
   } else {
     $('#checkinHead').textContent=s.checkinHead;
+    $('#checkinSpeedHint').textContent=s.checkinSpeedHint;
     $('#lblEnergy').textContent=s.lblEnergy;
     $('#lblSleep').textContent=s.lblSleep;
     $('#lblMission').textContent=s.lblMission;
-    $('#lblReflection').textContent=s.lblReflection+' — '+c.reflection;
-    $('#lblWin').textContent=s.lblWin;
-    $('#lblHard').textContent=s.lblHard;
-    $('#lblFeedback').textContent=s.lblFeedback;
+    $('#lblReflection').textContent=c.reflection;
     $('#coachNote').textContent=s.coachNote;
     $('#daySubmit').textContent=s.daySubmit;
     $('#dayError').textContent='';
-    $('#rngEnergy').value=5; $('#valEnergy').textContent='5';
-    $('#rngSleep').value=5; $('#valSleep').textContent='5';
-    $('#txtReflection').value=''; $('#txtWin').value=''; $('#txtHard').value=''; $('#txtFeedback').value='';
+    const prev=state.checkins[day-1];
+    energyPicker=renderEmojiPicker($('#pickEnergy'), prev?prev.energy:3);
+    sleepPicker=renderEmojiPicker($('#pickSleep'), prev?prev.sleep:3);
+    const noteField=$('#txtNote'); noteField.value=''; noteField.placeholder=s.notePlaceholder;
+    const chipRow=$('#noteChips'); chipRow.innerHTML='';
+    ['chipWin','chipHard','chipGrateful'].forEach(key=>{
+      const b=document.createElement('button');
+      b.type='button'; b.className='chip'; b.textContent=s[key];
+      b.addEventListener('click',()=>{
+        const prefix=s[key]+': ';
+        noteField.value = noteField.value.trim() ? noteField.value.replace(/\s*$/,'')+'\n'+prefix : prefix;
+        noteField.focus(); noteField.selectionStart=noteField.selectionEnd=noteField.value.length;
+      });
+      chipRow.appendChild(b);
+    });
     const seg=$('#segMission'); seg.innerHTML='';
     s.segMission.forEach(([val,label])=>{
       const b=document.createElement('button');
@@ -1871,8 +1969,6 @@ function openDay(day, archived){
   }
   show('day');
 }
-$('#rngEnergy').addEventListener('input',e=>{ $('#valEnergy').textContent=e.target.value; });
-$('#rngSleep').addEventListener('input',e=>{ $('#valSleep').textContent=e.target.value; });
 $('#dayBackBtn').addEventListener('click',()=>{ renderDash(); show('dash'); });
 
 $('#daySubmit').addEventListener('click', async ()=>{
@@ -1881,23 +1977,21 @@ $('#daySubmit').addEventListener('click', async ()=>{
   if(!state.missionAnswer){ err.textContent=s.missionReq; return; }
   if(DAYS[day].chooseOne && state.currentTasks.size===0){ err.textContent=s.chooseOneReq; return; }
 
-  // points: tasks share 70 (chooseOne day: any task = full 70), check-in 10, reflection 20
+  // points: tasks share 70 (chooseOne day: any task = full 70), check-in 10, note 20
   const n=c.tasks.length;
   let taskPts;
   if(DAYS[day].chooseOne) taskPts = state.currentTasks.size>0 ? 70 : 0;
   else taskPts = Math.min(70, Math.round(70/n*state.currentTasks.size));
-  const reflection=$('#txtReflection').value.trim();
-  const points = taskPts + 10 + (reflection?20:0);
+  const note=$('#txtNote').value.trim();
+  const points = taskPts + 10 + (note?20:0);
+  const wasCheckedInToday = completedToday();
 
   const data={
     uid:state.uid, day, dateStr:todayStr(),
-    energy:parseInt($('#rngEnergy').value,10),
-    sleep:parseInt($('#rngSleep').value,10),
+    energy:energyPicker.getValue(),
+    sleep:sleepPicker.getValue(),
     completedMission:state.missionAnswer,
-    reflection,
-    biggestWin:$('#txtWin').value.trim(),
-    biggestStruggle:$('#txtHard').value.trim(),
-    wantsFeedback:$('#txtFeedback').value.trim(),
+    note,
     tasksChecked:[...state.currentTasks].sort((a,b)=>a-b),
     points, createdAt:serverTimestamp()
   };
@@ -1911,8 +2005,12 @@ $('#daySubmit').addEventListener('click', async ()=>{
       lastCompletionDate: todayStr(), lastActive: serverTimestamp(),
       latestBadge: BADGES[day]
     },{ merge:true });
+    if(!wasCheckedInToday){
+      const standardsToday=(DAYS[day].chooseOne ? (state.currentTasks.size>0?1:0) : state.currentTasks.size) + 1;
+      recordGroupProgress(standardsToday).catch(()=>{});
+    }
     state.lastReward={ day, points };
-    renderReward(day, points);
+    await renderReward(day, points);
     show('reward');
   }catch(e){ err.textContent=t().errFallback; }
   finally{ btn.disabled=false; }
@@ -1921,7 +2019,7 @@ $('#daySubmit').addEventListener('click', async ()=>{
 /* =========================================================
    REWARD
 ========================================================= */
-function renderReward(day, points){
+async function renderReward(day, points){
   const s=t(); const c=dc(day);
   $('#rewardEyebrow').textContent=s.rewardEyebrow;
   $('#rewardPoints').textContent='+'+points+' '+s.pointsSuffix;
@@ -1939,7 +2037,10 @@ function renderReward(day, points){
   const wa=$('#rewardWhatsapp');
   wa.textContent=s.rewardWhatsapp;
   const ci=state.checkins[day];
-  wa.onclick=()=>window.open(waLink(s.waCheckin(day, ci.energy, ci.sleep, ci.biggestWin, ci.biggestStruggle)),'_blank');
+  wa.onclick=()=>window.open(waLink(s.waCheckin(day, ci.energy, ci.sleep, ci.note)),'_blank');
+  loadGroupScore().then(({checkedIn,totalCrew})=>{
+    $('#rewardSocialProof').textContent = s.socialProofText(checkedIn, totalCrew);
+  }).catch(()=>{});
   const cont=$('#rewardContinue');
   cont.textContent=s.rewardContinue;
   cont.onclick=()=>{
