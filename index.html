@@ -56,7 +56,7 @@ body{
   width:100%;max-width:560px;min-height:100dvh;
   display:flex;flex-direction:column;
   padding:0 20px calc(28px + env(safe-area-inset-bottom));
-  position:relative;background:var(--bg);
+  position:relative;z-index:1;background:var(--bg);
 }
 @media(min-width:640px){
   .app{border-left:1px solid var(--line);border-right:1px solid var(--line)}
@@ -71,7 +71,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:20p
   display:flex;align-items:center;cursor:pointer;
   position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
 }
-.brand-logo{height:42px;width:auto;display:block}
+.brand-logo{height:60px;width:auto;display:block}
 .header-right{display:flex;align-items:center;gap:8px;margin-left:auto}
 .icon-btn{
   width:38px;height:38px;border-radius:50%;border:1px solid var(--line);
@@ -110,7 +110,7 @@ em{font-style:normal;color:var(--accent)}
    opaque background covers the center, so it only shows left/right) ---------- */
 #pageBackground{
   position:fixed;inset:0;width:100vw;height:100vh;
-  object-fit:cover;z-index:-1;pointer-events:none;
+  object-fit:cover;z-index:0;pointer-events:none;
 }
 
 /* ---------- Cards / Buttons ---------- */
@@ -375,9 +375,18 @@ select.field{appearance:auto}
 .back-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;font-weight:600;font-family:'Inter';padding:6px 8px 6px 0;align-self:flex-start;display:inline-flex;align-items:center;gap:4px}
 .back-btn:hover{color:var(--ink)}
 .back-btn svg{width:16px;height:16px}
-.danger-zone{margin-top:10px;padding-top:16px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
 .cta.danger{background:#C0392B}
 .footer-note{font-size:11.5px;color:var(--muted);text-align:center;padding-top:8px}
+
+/* ---------- Modal ---------- */
+.modal-overlay{
+  position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.5);
+  display:flex;align-items:center;justify-content:center;padding:20px;
+}
+.modal-card{
+  background:var(--card);border-radius:var(--radius);padding:22px;
+  max-width:380px;width:100%;display:flex;flex-direction:column;gap:10px;
+}
 </style>
 </head>
 <body>
@@ -678,17 +687,22 @@ select.field{appearance:auto}
     <div class="err" id="pwError"></div>
     <div class="ok" id="pwSuccess"></div>
     <button class="cta secondary" id="pwSaveBtn"></button>
+    <button class="cta secondary" id="deleteAccountOpenBtn" style="font-size:12.5px;padding:11px 16px"></button>
 
-    <button class="ghost-btn" id="logoutBtn" style="align-self:center;margin-top:8px"></button>
+    <button class="cta danger" id="logoutBtn" style="margin-top:auto"></button>
+  </section>
 
-    <div class="danger-zone">
-      <label class="field-label" id="lblDelete"></label>
+  <!-- DELETE ACCOUNT CONFIRM (modal) -->
+  <div class="modal-overlay hidden" id="deleteModalOverlay">
+    <div class="modal-card">
+      <label class="field-label" id="lblDelete" style="margin-top:0"></label>
       <p class="sub" id="deleteWarning" style="text-align:left"></p>
       <input class="field" id="deleteConfirmInput" type="text" autocomplete="off" autocapitalize="off">
       <div class="err" id="deleteError"></div>
       <button class="cta danger" id="deleteAccountBtn"></button>
+      <button class="ghost-btn" id="deleteModalCancelBtn" style="align-self:center"></button>
     </div>
-  </section>
+  </div>
 
   <div class="footer-note" id="footerNote">Modern Athlete LAB™ · The 7-Day Reset</div>
 </div>
@@ -1019,6 +1033,7 @@ en:{
   lblDelete:"Delete account", deleteWarning:"This permanently deletes your account and all your data. This cannot be undone. Type DELETE below to confirm.",
   deleteWord:"delete", deleteBtn:"Permanently delete my account", deleteMismatch:"Please type DELETE to confirm.",
   deleteNeedsPw:"Please enter your current password above, then press delete again.", deleteWrongPw:"Current password is incorrect.",
+  cancel:"Cancel",
   verifyNote:"Please verify your email — check your inbox.", verifyResend:"Resend email", verifySent:"Email sent.",
   lbHead:"🏆 Leaderboard", lbPrizeText:"🎁 Top 3 win a gift!", lbYou:"(you)",
   plansRowLbl:"📄 My Plans — request nutrition & training plans",
@@ -1115,6 +1130,7 @@ de:{
   lblDelete:"Konto löschen", deleteWarning:"Dies löscht dein Konto und alle deine Daten dauerhaft. Das kann nicht rückgängig gemacht werden. Gib unten LÖSCHEN ein, um zu bestätigen.",
   deleteWord:"löschen", deleteBtn:"Konto endgültig löschen", deleteMismatch:"Bitte gib LÖSCHEN ein, um zu bestätigen.",
   deleteNeedsPw:"Bitte gib oben dein aktuelles Passwort ein und drücke erneut auf Löschen.", deleteWrongPw:"Aktuelles Passwort ist falsch.",
+  cancel:"Abbrechen",
   verifyNote:"Bitte bestätige deine E-Mail — check dein Postfach.", verifyResend:"Erneut senden", verifySent:"E-Mail verschickt.",
   lbHead:"🏆 Bestenliste", lbPrizeText:"🎁 Platz 1–3 kriegen ein Geschenk!", lbYou:"(du)",
   plansRowLbl:"📄 Meine Pläne — Ernährungs- & Trainingsplan anfordern",
@@ -1211,6 +1227,7 @@ zh:{
   lblDelete:"刪除帳號", deleteWarning:"此操作將永久刪除你的帳號與所有資料，且無法復原。請在下方輸入「刪除」以確認。",
   deleteWord:"刪除", deleteBtn:"永久刪除我的帳號", deleteMismatch:"請輸入「刪除」以確認。",
   deleteNeedsPw:"請在上方輸入目前的密碼，然後再次按下刪除。", deleteWrongPw:"目前的密碼不正確。",
+  cancel:"取消",
   verifyNote:"請驗證你的電子郵件——check你的信箱。", verifyResend:"重新寄送", verifySent:"郵件已寄出。",
   lbHead:"🏆 排行榜", lbPrizeText:"🎁 前3名可獲得禮物！", lbYou:"（你）",
   plansRowLbl:"📄 我的計畫 — 申請飲食與訓練計畫",
@@ -2099,12 +2116,24 @@ function renderSettings(){
   $('#curPw').placeholder = state.lang==='de'?'Aktuelles Passwort':(state.lang==='zh'?'目前的密碼':'Current password');
   $('#newPw').placeholder = state.lang==='de'?'Neues Passwort':(state.lang==='zh'?'新密碼':'New password');
   $('#logoutBtn').textContent=s.logout;
+  $('#deleteAccountOpenBtn').textContent=s.lblDelete;
   $('#lblDelete').textContent=s.lblDelete;
   $('#deleteWarning').textContent=s.deleteWarning;
   $('#deleteAccountBtn').textContent=s.deleteBtn;
+  $('#deleteModalCancelBtn').textContent=s.cancel;
   $('#deleteConfirmInput').placeholder=s.deleteWord.toUpperCase();
   $('#deleteConfirmInput').value=''; $('#deleteError').textContent='';
 }
+function openDeleteModal(){
+  $('#deleteConfirmInput').value=''; $('#deleteError').textContent='';
+  $('#deleteModalOverlay').classList.remove('hidden');
+  $('#deleteConfirmInput').focus();
+}
+function closeDeleteModal(){ $('#deleteModalOverlay').classList.add('hidden'); }
+$('#deleteAccountOpenBtn').addEventListener('click', openDeleteModal);
+$('#deleteModalCancelBtn').addEventListener('click', closeDeleteModal);
+$('#deleteModalOverlay').addEventListener('click', (e)=>{ if(e.target.id==='deleteModalOverlay') closeDeleteModal(); });
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && !$('#deleteModalOverlay').classList.contains('hidden')) closeDeleteModal(); });
 $('#settingsBtn').addEventListener('click',()=>{
   if(currentScreen==='settings'){ route(); return; }
   renderSettings(); show('settings');
