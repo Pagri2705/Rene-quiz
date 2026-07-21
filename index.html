@@ -6,7 +6,7 @@
 <title>The 7-Day Modern Athlete Reset™</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;900&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;900&family=Plus+Jakarta+Sans:wght@400;600;700&family=Sora:wght@700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 /* =========================================================
    MODERN ATHLETE LAB — 7-Day Reset
@@ -73,7 +73,7 @@ body{
   width:100%;max-width:560px;min-height:100dvh;
   display:flex;flex-direction:column;
   padding:0 20px calc(28px + env(safe-area-inset-bottom));
-  position:relative;background:var(--bg);
+  position:relative;z-index:1;background:var(--bg);
 }
 @media(min-width:640px){
   .app{border-left:1px solid var(--line);border-right:1px solid var(--line)}
@@ -83,22 +83,29 @@ body{
 }
 
 /* ---------- Header ---------- */
-header{display:flex;align-items:center;justify-content:space-between;padding:20px 0 10px}
-.brand{display:flex;align-items:center;gap:10px;cursor:pointer}
-.brand-mark{
-  width:32px;height:32px;border-radius:10px;background:var(--contrast);
-  display:grid;place-items:center;color:#fff;
-  font-family:'Archivo';font-weight:800;font-size:14px;
+header{display:flex;align-items:center;justify-content:space-between;padding:20px 0 10px;position:relative}
+.brand{
+  display:flex;align-items:center;cursor:pointer;
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
 }
-.brand-name{font-family:'Archivo';font-weight:700;font-size:12px;letter-spacing:.16em;text-transform:uppercase}
-.brand-name span{color:var(--muted);font-weight:600}
-.header-right{display:flex;align-items:center;gap:8px}
+.brand-logo{height:81px;width:auto;display:block}
+.header-right{display:flex;align-items:center;gap:8px;margin-left:auto}
 .icon-btn{
   width:38px;height:38px;border-radius:50%;border:1px solid var(--line);
   background:var(--card);color:var(--muted);cursor:pointer;
-  display:grid;place-items:center;transition:color .15s,border-color .15s;
+  display:grid;place-items:center;
+  transition:color .15s,border-color .15s,transform .18s,box-shadow .18s;
 }
-.icon-btn:hover{color:var(--ink);border-color:#C9C9C2}
+.icon-btn:hover{color:var(--accent);border-color:var(--accent);box-shadow:0 4px 14px rgba(36,86,214,.16);transform:translateY(-1px)}
+.icon-btn:active{transform:translateY(0) scale(.92)}
+.theme-icon-wrap{position:relative;width:18px;height:18px}
+.theme-icon{position:absolute;inset:0;transition:transform .45s cubic-bezier(.34,1.56,.64,1),opacity .25s}
+.theme-icon.sun{opacity:1;transform:rotate(0deg) scale(1)}
+.theme-icon.moon{opacity:0;transform:rotate(-90deg) scale(.4)}
+:root[data-theme="dark"] .theme-icon.sun{opacity:0;transform:rotate(90deg) scale(.4)}
+:root[data-theme="dark"] .theme-icon.moon{opacity:1;transform:rotate(0deg) scale(1)}
+#settingsBtn svg{transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
+#settingsBtn:hover svg{transform:rotate(90deg)}
 .hidden{display:none!important}
 
 /* ---------- Screens ---------- */
@@ -108,36 +115,26 @@ header{display:flex;align-items:center;justify-content:space-between;padding:20p
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 
 /* ---------- Typography ---------- */
-h1{font-family:'Archivo';font-weight:900;font-size:29px;line-height:1.12;letter-spacing:-.02em;text-align:center}
-h2{font-family:'Archivo';font-weight:700;font-size:18px;letter-spacing:-.01em;text-align:center}
-/* Eyebrow als Pill-Badge; display:table + margin:auto zentriert ohne Parent-Änderung */
-.eyebrow{
-  display:table;margin:0 auto 2px;
-  font-family:'Archivo';font-weight:700;font-size:11px;letter-spacing:.15em;text-transform:uppercase;
-  color:var(--pine);text-align:center;
-  background:color-mix(in srgb,currentColor 7%,transparent);
-  border:1px solid color-mix(in srgb,currentColor 16%,transparent);
-  border-radius:999px;padding:5px 13px;
-}
+h1{font-family:'Sora';font-weight:800;font-size:28px;line-height:1.18;letter-spacing:-.01em;text-align:center}
+h2{font-family:'Sora';font-weight:700;font-size:18px;text-align:center}
+.eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);text-align:center}
 .sub{color:var(--muted);font-size:14.5px;text-align:center;white-space:pre-line}
+.day0-copy{text-align:justify;text-align-last:left;hyphens:auto;-webkit-hyphens:auto;white-space:pre-line}
+.day0-sign{margin-top:2px;text-align:center;font-family:'Sora';font-weight:700;font-size:13px;letter-spacing:.03em;color:var(--accent)}
 em{font-style:normal;color:var(--accent)}
 
-/* ---------- Side carousels (dekorativ, hinter der App) ---------- */
-.side-carousel{
+/* ---------- Side background (gutters only — geometrically outside the
+   app column, so it can never overlap/bleed into the app's content) ---------- */
+.side-bg{
   position:fixed;top:0;bottom:0;width:0;overflow:hidden;
-  z-index:-1;pointer-events:none;background:var(--bg);
+  z-index:0;pointer-events:none;
 }
-.side-carousel.left{left:0}
-.side-carousel.right{right:0}
+.side-bg.left{left:0}
+.side-bg.right{right:0}
+.side-bg img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover}
 @media(min-width:900px){
-  .side-carousel{width:calc((100vw - 760px)/2);}
+  .side-bg{width:calc((100vw - 760px)/2);}
 }
-.side-carousel-track{display:flex;flex-direction:column;height:auto}
-.side-carousel-track img{width:100%;height:auto;display:block}
-.side-carousel.left .side-carousel-track{animation:panY 60s linear infinite}
-.side-carousel.right .side-carousel-track{animation:panYRev 60s linear infinite}
-@keyframes panY{from{transform:translateY(0)}to{transform:translateY(-50%)}}
-@keyframes panYRev{from{transform:translateY(-50%)}to{transform:translateY(0)}}
 
 /* ---------- Cards / Buttons ---------- */
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--card-glow),var(--shadow-soft)}
@@ -169,7 +166,21 @@ em{font-style:normal;color:var(--accent)}
 .cta.secondary{background:var(--card);color:var(--ink);border:1.5px solid var(--line);box-shadow:none}
 .cta.secondary:hover{border-color:var(--ink)}
 .cta.accent{background:var(--accent);color:#fff}
-.ghost-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;font-weight:600;font-family:'Plus Jakarta Sans';padding:8px}
+.cta.wave{position:relative;isolation:isolate}
+.cta.wave::before{
+  content:"";position:absolute;inset:0;z-index:-1;
+  border-radius:inherit;background:var(--accent);
+  animation:cta-wave 3s ease-out infinite;
+}
+@keyframes cta-wave{
+  0%{transform:scale(1);opacity:.55}
+  70%{opacity:0}
+  100%{transform:scale(1.9);opacity:0}
+}
+@media (prefers-reduced-motion: reduce){
+  .cta.wave::before{animation:none}
+}
+.ghost-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;font-weight:600;font-family:'Inter';padding:8px}
 .ghost-btn:hover{color:var(--ink)}
 
 /* ---------- Language screen ---------- */
@@ -234,6 +245,46 @@ select.field{appearance:auto}
 .letter .sig{display:block;margin-top:10px;font-family:'Archivo';font-weight:800;font-size:14px;color:var(--pine)}
 .letter .sig:empty{display:none}
 
+/* ---------- Custom video player ---------- */
+.vplayer{position:relative;width:100%;height:100%}
+.vplay-big{
+  appearance:none;position:absolute;inset:0;margin:auto;width:56px;height:56px;
+  border-radius:50%;border:none;cursor:pointer;
+  background:rgba(0,0,0,.45);color:#fff;padding:14px;
+  display:flex;align-items:center;justify-content:center;
+  opacity:1;transition:opacity .15s,background .15s;
+}
+.vplay-big svg{width:100%;height:100%}
+.vplay-big:hover{background:rgba(0,0,0,.6)}
+.vplayer.playing .vplay-big{opacity:0;pointer-events:none}
+.vbar{
+  position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:8px;
+  padding:20px 10px 10px;color:#fff;
+  background:linear-gradient(to top,rgba(0,0,0,.75),rgba(0,0,0,0));
+  opacity:0;transform:translateY(4px);
+  transition:opacity .18s,transform .18s;
+}
+.vplayer:hover .vbar,.vplayer:focus-within .vbar,.vplayer.playing .vbar{opacity:1;transform:translateY(0)}
+.vbtn{
+  appearance:none;background:none;border:none;cursor:pointer;color:#fff;
+  width:26px;height:26px;padding:0;display:flex;align-items:center;justify-content:center;
+  flex:0 0 auto;opacity:.9;
+}
+.vbtn svg{width:100%;height:100%}
+.vbtn:hover{opacity:1}
+.vbtn.vspeed{width:auto;padding:0 6px;font-family:'Sora';font-weight:700;font-size:12px;border:1px solid rgba(255,255,255,.4);border-radius:8px;height:22px}
+.vtime{font-size:11.5px;font-variant-numeric:tabular-nums;color:rgba(255,255,255,.85);flex:0 0 auto;white-space:nowrap}
+.vseek{
+  flex:1 1 auto;height:4px;-webkit-appearance:none;appearance:none;
+  background:rgba(255,255,255,.35);border-radius:99px;cursor:pointer;
+}
+.vseek::-webkit-slider-thumb{
+  -webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:#fff;
+  box-shadow:0 1px 3px rgba(0,0,0,.4);cursor:pointer;margin-top:0;
+}
+.vseek::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:#fff;border:none;box-shadow:0 1px 3px rgba(0,0,0,.4);cursor:pointer}
+.vseek::-moz-range-track{background:rgba(255,255,255,.35);height:4px;border-radius:99px}
+
 /* ---------- Dashboard ---------- */
 .mission-card{background:var(--contrast);color:#fff;border:none}
 .mission-card .eyebrow{color:rgba(255,255,255,.6)}
@@ -292,6 +343,8 @@ select.field{appearance:auto}
 .unlock-card{border:1px solid var(--accent);background:var(--accent-soft)}
 .small-link-row{display:flex;align-items:center;justify-content:space-between;font-size:13.5px;font-weight:600;cursor:pointer;background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 16px}
 .small-link-row:hover{border-color:#C9C9C2}
+.small-link-row .row-arrow{width:16px;height:16px;color:var(--muted);flex:0 0 auto;transition:transform .12s}
+.small-link-row:hover .row-arrow{transform:translateX(2px);color:var(--ink)}
 .verify-note{background:var(--warn-soft);border:1px solid var(--warn);border-radius:var(--radius-sm);padding:9px 9px 9px 14px;font-size:13px;font-weight:600;color:var(--warn);display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left}
 .verify-note button{background:none;border:1.5px solid var(--warn);border-radius:999px;color:var(--warn);font-size:12.5px;font-weight:700;padding:0 16px;min-height:44px;cursor:pointer;white-space:nowrap;flex-shrink:0}
 
@@ -311,13 +364,7 @@ select.field{appearance:auto}
 .task.done .box{background:var(--success);border-color:var(--success)}
 .slider-block{display:flex;flex-direction:column;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px}
 .slider-head{display:flex;justify-content:space-between;align-items:baseline}
-.slider-head .sv{font-family:'Archivo';font-weight:900;font-size:22px;color:var(--pine);font-variant-numeric:tabular-nums}
 .slider-head .sl{font-size:13.5px;font-weight:600}
-input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:99px;outline:none;
-  background:linear-gradient(to right,var(--pine) 0%,var(--pine) var(--fill,44%),var(--line) var(--fill,44%));}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:var(--accent);border:4px solid var(--card);box-shadow:0 2px 6px rgba(0,0,0,.25),inset 0 1px 1px rgba(255,255,255,.35);cursor:pointer}
-input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--accent);border:4px solid var(--card);box-shadow:0 2px 6px rgba(0,0,0,.25);cursor:pointer}
-input[type=range]:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
 .seg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .seg button{
   background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);
@@ -325,11 +372,26 @@ input[type=range]:focus-visible{outline:3px solid var(--focus);outline-offset:4p
 }
 .seg button.sel{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
 .seg button:focus-visible,.seg2 button:focus-visible,.task:focus-visible,.lang-card:focus-visible,.icon-btn:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.seg button.disabled{opacity:.35;cursor:not-allowed}
+.seg-wrap{grid-template-columns:1fr 1fr;margin-top:4px}
+.seg-num{grid-template-columns:repeat(5,1fr);margin-top:8px}
+.seg-num button{padding:10px 0;font-family:'Sora';font-weight:700}
+.seg-emoji{grid-template-columns:repeat(5,1fr);margin-top:8px}
+.seg-emoji button{padding:10px 0 6px;font-size:22px;line-height:1.2}
+.choice-count{font-size:12px;color:var(--muted);margin-top:-6px}
 .coach-note{
   background:var(--accent-soft);border:1px solid #D7E1FA;border-radius:var(--radius-sm);
   padding:12px 14px;font-size:13px;color:var(--accent);text-align:center;
 }
-.quote-box{background:var(--card);border-left:3px solid var(--pine);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:14px 16px;font-size:15px;font-style:italic}
+.task-hint{font-size:12px;color:var(--muted);margin:-4px 0 2px 34px}
+.chip-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:-4px}
+.chip{
+  background:var(--card);border:1px solid var(--line);border-radius:999px;
+  padding:7px 13px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;font-family:'Inter';
+}
+.chip:hover{border-color:#C9C9C2;color:var(--ink)}
+.speed-hint{font-size:12px;color:var(--muted);text-align:center;margin-top:-6px}
+.quote-box{background:var(--card);border-left:3px solid var(--ink);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:14px 16px;font-size:15px;font-style:italic}
 .tip-box{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px 16px;font-size:13.5px}
 .tip-box b{font-family:'Archivo';font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px}
 
@@ -420,33 +482,42 @@ input[type=range]:focus-visible{outline:3px solid var(--focus);outline-offset:4p
 
 /* ---------- Settings ---------- */
 .settings{gap:12px}
-.seg2{display:flex;gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:4px}
-.seg2 button{flex:1;min-height:44px;border:none;border-radius:999px;background:transparent;font-size:13.5px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans';color:var(--muted);transition:color .2s var(--ease-lux)}
-.seg2 button.sel{background:var(--card);color:var(--ink);box-shadow:var(--card-glow),var(--shadow-soft)}
+.seg2{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.seg2 button{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter';color:var(--ink)}
+.seg2 button.sel{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
 .settings .field-label{text-align:center}
-.back-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;font-weight:600;font-family:'Plus Jakarta Sans';padding:6px 8px 6px 0;align-self:flex-start}
+.back-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;font-weight:600;font-family:'Inter';padding:6px 8px 6px 0;align-self:flex-start;display:inline-flex;align-items:center;gap:4px}
 .back-btn:hover{color:var(--ink)}
+.back-btn svg{width:16px;height:16px}
+.cta.danger{background:#C0392B}
 .footer-note{font-size:11.5px;color:var(--muted);text-align:center;padding-top:8px}
+
+/* ---------- Modal ---------- */
+.modal-overlay{
+  position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.5);
+  display:flex;align-items:center;justify-content:center;padding:20px;
+}
+.modal-card{
+  background:var(--card);border-radius:var(--radius);padding:22px;
+  max-width:380px;width:100%;display:flex;flex-direction:column;gap:10px;
+}
 </style>
 </head>
 <body>
-<div class="side-carousel left" id="sideCarouselLeft" aria-hidden="true">
-  <div class="side-carousel-track"></div>
-</div>
-<div class="side-carousel right" id="sideCarouselRight" aria-hidden="true">
-  <div class="side-carousel-track"></div>
-</div>
+<div class="side-bg left" aria-hidden="true"><img src="assets/bg-fengshui.jpg" alt=""></div>
+<div class="side-bg right" aria-hidden="true"><img src="assets/bg-fengshui.jpg" alt=""></div>
 <div class="app">
 
   <header>
     <div class="brand" id="brandLogo" role="button" tabindex="0">
-      <div class="brand-mark">M</div>
-      <div class="brand-name">Modern Athlete <span>LAB™</span></div>
+      <img src="assets/logo-modern-athlete-lab.jpg" alt="Modern Athlete Lab" class="brand-logo">
     </div>
     <div class="header-right">
       <button class="icon-btn" id="themeToggleBtn" aria-label="Toggle theme">
-        <svg id="themeIconSun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
-        <svg id="themeIconMoon" class="hidden" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <span class="theme-icon-wrap">
+          <svg id="themeIconSun" class="theme-icon sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+          <svg id="themeIconMoon" class="theme-icon moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </span>
       </button>
       <button class="icon-btn hidden" id="settingsBtn" aria-label="Settings">
         <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
@@ -499,14 +570,15 @@ input[type=range]:focus-visible{outline:3px solid var(--focus);outline-offset:4p
 
   <!-- DAY 0 — WELCOME -->
   <section class="screen" id="screen-day0">
-    <button class="back-btn hidden" id="day0BackBtn">← Back</button>
+    <button class="back-btn hidden" id="day0BackBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg> Back</button>
     <div>
       <div class="eyebrow" id="day0Eyebrow">Day 0 · Start Here</div>
       <h1 id="day0Title">Welcome to the Reset.</h1>
     </div>
     <div class="video-card" id="day0Video"></div>
-    <div class="letter"><span id="day0Text"></span><span class="sig" id="day0Sig"></span></div>
-    <button class="cta" id="day0Cta">Start Baseline Check-In</button>
+    <p class="sub day0-copy" id="day0Text"></p>
+    <p class="day0-sign" id="day0Sign"></p>
+    <button class="cta wave" id="day0Cta">Start Baseline Check-In</button>
   </section>
 
   <!-- BASELINE -->
@@ -533,9 +605,9 @@ input[type=range]:focus-visible{outline:3px solid var(--focus);outline-offset:4p
       <input class="field" id="baseFriend" type="text">
     </div>
     <label class="field-label" id="lblGoal">Main goal</label>
-    <select class="field" id="baseGoal"></select>
+    <div class="seg seg-wrap" id="baseGoal"></div>
     <label class="field-label" id="lblStruggle">Biggest current struggle</label>
-    <select class="field" id="baseStruggle"></select>
+    <div class="seg seg-wrap" id="baseStruggle"></div>
     <div id="baseSliders"></div>
     <div class="err" id="baseError"></div>
     <button class="cta" id="baseSubmit">Enter the Reset</button>
@@ -579,18 +651,7 @@ input[type=range]:focus-visible{outline:3px solid var(--focus);outline-offset:4p
     <div class="collage-strip" id="collageStrip"><div class="collage-track" id="collageTrack"></div></div>
 
     <div class="card small-link-row" id="plansRow" role="button" tabindex="0">
-      <span id="plansRowLbl"></span><span>→</span>
-    </div>
-
-    <div class="card" id="leaderboardCard">
-      <div class="leaderboard-head">
-        <h2 id="lbHead"></h2>
-      </div>
-      <div class="prize-note" id="lbPrizeNote">
-        <span id="lbPrizeText"></span>
-        <span class="prize-countdown" id="prizeCountdown">⏱ –</span>
-      </div>
-      <div class="lb-list" id="lbList"></div>
+      <span id="plansRowLbl"></span><svg class="row-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </div>
 
     <div class="card unlock-card hidden" id="bottleneckCard" role="button" tabindex="0" style="cursor:pointer">
@@ -603,13 +664,25 @@ input[type=range]:focus-visible{outline:3px solid var(--focus);outline-offset:4p
     </div>
     <h2 id="archiveHead"></h2>
     <div class="archive" id="archiveList"></div>
-    <div class="small-link-row" id="startHereRow"><span id="startHereLbl"></span><span>→</span></div>
-    <button class="ghost-btn" id="logoutBtn" style="align-self:center"></button>
+    <div class="small-link-row" id="startHereRow"><span id="startHereLbl"></span><svg class="row-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+
+    <div class="card" id="leaderboardCard">
+      <div class="leaderboard-head">
+        <h2 id="lbHead"></h2>
+      </div>
+      <div class="prize-note" id="groupScoreNote" style="justify-content:center"></div>
+      <div class="prize-note" id="lbPrizeNote">
+        <span id="lbPrizeText"></span>
+        <span class="prize-countdown" id="prizeCountdown">⏱ –</span>
+      </div>
+      <div class="prize-note" id="lbDrawNote" style="justify-content:center"></div>
+      <div class="lb-list" id="lbList"></div>
+    </div>
   </section>
 
   <!-- DAY / MISSION -->
   <section class="screen" id="screen-day">
-    <button class="back-btn" id="dayBackBtn">←</button>
+    <button class="back-btn" id="dayBackBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
     <div>
       <div class="eyebrow" id="dayEyebrow"></div>
       <h1 id="dayTitle"></h1>
@@ -620,26 +693,22 @@ input[type=range]:focus-visible{outline:3px solid var(--focus);outline-offset:4p
     <h2 id="tasksHead"></h2>
     <div class="tasks" id="taskList"></div>
     <div id="checkinBlock">
-      <h2 id="checkinHead" style="margin:10px 0 8px"></h2>
+      <h2 id="checkinHead" style="margin:10px 0 2px"></h2>
+      <p class="speed-hint" id="checkinSpeedHint" style="margin-bottom:8px"></p>
       <div style="display:flex;flex-direction:column;gap:10px">
         <div class="slider-block">
-          <div class="slider-head"><span class="sl" id="lblEnergy"></span><span class="sv" id="valEnergy">5</span></div>
-          <input type="range" id="rngEnergy" min="1" max="10" value="5">
+          <div class="slider-head"><span class="sl" id="lblEnergy"></span></div>
+          <div class="seg seg-emoji" id="pickEnergy"></div>
         </div>
         <div class="slider-block">
-          <div class="slider-head"><span class="sl" id="lblSleep"></span><span class="sv" id="valSleep">5</span></div>
-          <input type="range" id="rngSleep" min="1" max="10" value="5">
+          <div class="slider-head"><span class="sl" id="lblSleep"></span></div>
+          <div class="seg seg-emoji" id="pickSleep"></div>
         </div>
         <label class="field-label" id="lblMission"></label>
         <div class="seg" id="segMission"></div>
         <label class="field-label" id="lblReflection"></label>
-        <textarea class="field" id="txtReflection"></textarea>
-        <label class="field-label" id="lblWin"></label>
-        <input class="field" id="txtWin" type="text">
-        <label class="field-label" id="lblHard"></label>
-        <input class="field" id="txtHard" type="text">
-        <label class="field-label" id="lblFeedback"></label>
-        <input class="field" id="txtFeedback" type="text">
+        <textarea class="field" id="txtNote"></textarea>
+        <div class="chip-row" id="noteChips"></div>
         <div class="coach-note" id="coachNote"></div>
         <div class="err" id="dayError"></div>
         <button class="cta accent" id="daySubmit"></button>
@@ -661,6 +730,7 @@ input[type=range]:focus-visible{outline:3px solid var(--focus);outline-offset:4p
     </div>
     <div class="reward-badge" id="rewardBadge"></div>
     <div class="reward-streak" id="rewardStreak"></div>
+    <div class="prize-note" id="rewardSocialProof" style="justify-content:center"></div>
     <div class="quote-box" id="rewardQuote" style="text-align:left"></div>
     <div class="tip-box" style="text-align:left"><b id="rewardTipLbl"></b><span id="rewardTip"></span></div>
     <div class="card" id="teaserCard" style="text-align:left">
@@ -673,7 +743,7 @@ input[type=range]:focus-visible{outline:3px solid var(--focus);outline-offset:4p
 
   <!-- DAY 4 — BOTTLENECK -->
   <section class="screen" id="screen-bottleneck">
-    <button class="back-btn" id="bnBackBtn">←</button>
+    <button class="back-btn" id="bnBackBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
     <div>
       <div class="eyebrow" id="bnEyebrow"></div>
       <h1 id="bnTitle"></h1>
@@ -685,7 +755,7 @@ input[type=range]:focus-visible{outline:3px solid var(--focus);outline-offset:4p
 
   <!-- DAY 7 — FINAL -->
   <section class="screen" id="screen-final">
-    <button class="back-btn" id="finalBackBtn">←</button>
+    <button class="back-btn" id="finalBackBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
     <div>
       <div class="eyebrow" id="finalEyebrow"></div>
       <h1 id="finalTitle"></h1>
@@ -706,7 +776,7 @@ input[type=range]:focus-visible{outline:3px solid var(--focus);outline-offset:4p
 
   <!-- PLANS -->
   <section class="screen" id="screen-plans">
-    <button class="back-btn" id="plansBackBtn">←</button>
+    <button class="back-btn" id="plansBackBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
     <div>
       <div class="eyebrow" id="plansEyebrow"></div>
       <h1 id="plansTitle"></h1>
@@ -730,7 +800,7 @@ input[type=range]:focus-visible{outline:3px solid var(--focus);outline-offset:4p
 
   <!-- SETTINGS -->
   <section class="screen settings" id="screen-settings">
-    <button class="back-btn" id="settingsBackBtn">←</button>
+    <button class="back-btn" id="settingsBackBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
     <h1 id="settingsTitle"></h1>
     <label class="field-label" id="lblLang"></label>
     <div class="seg2">
@@ -745,7 +815,23 @@ input[type=range]:focus-visible{outline:3px solid var(--focus);outline-offset:4p
     <div class="err" id="pwError"></div>
     <div class="ok" id="pwSuccess"></div>
     <button class="cta secondary" id="pwSaveBtn"></button>
+    <button class="cta secondary" id="deleteAccountOpenBtn" style="font-size:12.5px;padding:11px 16px"></button>
+
+    <button class="cta danger" id="logoutBtn" style="margin-top:auto"></button>
   </section>
+
+  <!-- DELETE ACCOUNT CONFIRM (modal) -->
+  <div class="modal-overlay hidden" id="deleteModalOverlay">
+    <div class="modal-card">
+      <label class="field-label" id="lblDelete" style="margin-top:0"></label>
+      <p class="sub" id="deleteWarning" style="text-align:left"></p>
+      <input class="field" id="curPw" type="password" autocomplete="current-password">
+      <input class="field" id="deleteConfirmInput" type="text" autocomplete="off" autocapitalize="off">
+      <div class="err" id="deleteError"></div>
+      <button class="cta danger" id="deleteAccountBtn"></button>
+      <button class="ghost-btn" id="deleteModalCancelBtn" style="align-self:center"></button>
+    </div>
+  </div>
 
   <div class="footer-note" id="footerNote">Modern Athlete LAB™ · The 7-Day Reset</div>
 </div>
@@ -755,12 +841,12 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/fireba
 import {
   getAuth, onAuthStateChanged, signInWithEmailAndPassword,
   createUserWithEmailAndPassword, signOut, sendPasswordResetEmail, sendEmailVerification,
-  updatePassword,
+  EmailAuthProvider, reauthenticateWithCredential, updatePassword, deleteUser,
   setPersistence, browserLocalPersistence, browserSessionPersistence
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 import {
-  getFirestore, doc, setDoc, getDoc, collection, query, where,
-  getDocs, serverTimestamp
+  getFirestore, doc, setDoc, getDoc, deleteDoc, collection, query, where,
+  getDocs, serverTimestamp, runTransaction
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 import {
   getStorage, ref, listAll, getDownloadURL
@@ -796,6 +882,25 @@ const FAKE_LEADERBOARD = [
   { uid:'fake4', name:'Jonas T.', streak:8 },
   { uid:'fake5', name:'Aylin D.', streak:6 }
 ];
+
+/* Group score: real numbers get a small "phantom crew" baked in so it feels
+   alive from day one (same idea as FAKE_LEADERBOARD above). */
+const EMOJI_SCALE = ['😴','😐','🙂','💪','🔥'];
+const FAKE_GROUP_PARTICIPANTS = 5;
+const FAKE_GROUP_PER_PERSON = 4;
+const FAKE_GROUP_CHECKED_IN = 3;
+const PER_PERSON_DAILY_MAX = 6;
+
+/* Short example hints shown under a task, keyed "day-taskIndex". */
+const TASK_HINTS = {
+  '3-0':{ en:"a palm-sized portion", de:"eine Handfläche groß", zh:"約一個手掌大小" },
+  '3-1':{ en:"2–3 litres", de:"2–3 Liter", zh:"2–3公升" },
+  '4-0':{ en:"aim for 5 min less than yesterday", de:"5 Min weniger als gestern", zh:"比昨天少5分鐘" },
+  '4-2':{ en:"5 minutes", de:"5 Minuten", zh:"5分鐘" },
+  '4-3':{ en:"7–8h, same time daily", de:"7–8 Std, jeden Tag gleiche Zeit", zh:"7–8小時，每天同一時間" },
+  '5-0':{ en:"morning water · 10-min walk · lights out by 22:30", de:"z.B. Wasser am Morgen · 10-Min-Walk · Licht aus um 22:30", zh:"例如：早晨喝水・10分鐘散步・22:30關燈" },
+  '5-2':{ en:"pick the time, not the workout", de:"Zeit festlegen, nicht die Trainingsart", zh:"先定時間，而非訓練內容" }
+};
 
 /* René's WhatsApp number in international format without +, e.g. "886912345678".
    Leave empty to let WhatsApp open with the message and free contact choice. */
@@ -990,7 +1095,8 @@ en:{
   errFallback:"Something went wrong. Please try again.",
   errors:{ "auth/invalid-email":"Invalid email address.","auth/missing-password":"Please enter a password.","auth/weak-password":"Password needs at least 6 characters.","auth/email-already-in-use":"An account already exists for this email.","auth/invalid-credential":"Email or password is incorrect.","auth/user-not-found":"No account found for this email.","auth/wrong-password":"Incorrect password." },
   day0Eyebrow:"Day 0 · Start Here", day0Title:"Welcome to the Reset.",
-  day0Text:"Welcome to the 7-Day Modern Athlete Reset. This is not about perfection, fat loss or pushing harder. For the next seven days, we keep it simple: movement, fuel, recovery and reflection. The goal is to help you feel more energy, more structure and more control again. Complete the daily check-ins honestly — I'll personally review them inside my coaching dashboard. — René",
+  day0Text:"Good to have you here. 👊\n\nWelcome to the 7-Day Modern Athlete Reset. This is not about perfection, fat loss or pushing harder. For the next seven days, we keep it simple: movement, fuel, recovery and reflection. The goal is to help you feel more energy, more structure and more control again.\n\nThe goal is not to become perfect. The goal is to become less chaotic.\n\nFifteen seconds a day, that's it. Check in, watch the crew score climb, and see where you land.\n\nTop 3 at the end take a prize — and everyone who finishes all 7 days goes into the draw.\n\nI'm doing it with you. Let's goooo. 🔥\n\nMost people find out something about themselves around day 3. Let's see what yours is.",
+  day0Sign:"René",
   day0Cta:"Start Baseline Check-In", day0CtaDone:"Back to dashboard",
   videoSoon:"Video from René — coming soon", welcomeVideo:"Welcome video",
   baseEyebrow:"Baseline Check-In", baseTitle:"Where are you starting from?",
@@ -1002,14 +1108,15 @@ en:{
   phoneHintLine:"Your LINE ID — so René can reply to you directly.",
   phWhatsapp:"+886 912 345 678", phLine:"your_line_id",
   lblSource:"Who invited you?",
-  lblFriend:"Name of the friend", lblGoal:"Main goal", lblStruggle:"Biggest current struggle",
+  lblFriend:"Name of the friend", lblGoal:"3 biggest goals", lblStruggle:"3 biggest struggles",
   sources:[["instagram","Instagram"],["rene","René personally"],["friend","A friend"],["other","Other"]],
   goals:[["energy","More energy"],["nutrition","Better nutrition"],["training","Better training routine"],["sleep","Better sleep"],["stiffness","Less stiffness"],["consistency","More consistency"],["fat","Lose fat"],["strength","Build strength"],["healthy","Feel healthy again"]],
   struggles:[["nutrition","Nutrition"],["training","Training"],["sleep","Sleep"],["stress","Stress"],["energy","Low energy"],["structure","No structure"],["not_sure","Not sure"]],
   baseSliders:[["energy","Energy today"],["sleep","Sleep quality"],["stress","Stress level"],["movement","Movement consistency"],["nutrition","Nutrition structure"]],
   baseSubmit:"Enter the Reset", baseNameReq:"Please enter your name.",
+  baseGoalReq:"Please choose 3 goals.", baseStruggleReq:"Please choose 3 struggles.",
   dashHello:(n)=> n ? "Welcome back, "+n : "Welcome back",
-  dashHead:"The 7-Day Reset", missionCta:"Start Today's Mission",
+  dashHead:"The 7-Day Reset", missionCta:"Start Today's Move",
   missionDoneTitle:"Day completed ✅", missionDoneDesc:"Strong. Come back tomorrow for the next day.",
   missionAllDoneTitle:"Reset completed", missionAllDoneDesc:"All 7 days done. Your next step is ready below.",
   missionCtaDone:"View today's summary", missionCtaFinal:"See your next step",
@@ -1018,22 +1125,26 @@ en:{
   locked:"Locked", today:"Today",
   bnCardTitle:"Your Bottleneck Snapshot™ 🔓", bnCardSub:"Unlocked after Day 4 — see what's actually blocking you.",
   mapCardTitle:"Your Personal MAP™", mapCardSub:"You completed the Reset. See your next step.",
-  tasksHead:"Today's mission", tasksHeadChoose:"Choose at least one",
-  checkinHead:"Daily check-in",
+  tasksHead:"Today's move", tasksHeadChoose:"Choose at least one",
+  checkinHead:"Quick check-in", checkinSpeedHint:"15 seconds, then you're out",
   lblEnergy:"Energy today", lblSleep:"Sleep last night",
-  lblMission:"Did you complete today's mission?",
-  segMission:[["yes","Yes"],["partly","Partly"],["no","No"]],
-  lblReflection:"Reflection", lblWin:"Biggest win today", lblHard:"What was hard today?",
-  lblFeedback:"Anything you would like to discuss or need support with (optional)",
-  coachNote:"Be honest here. René reviews the challenge check-ins personally.",
-  daySubmit:"Submit check-in", missionReq:"Please answer whether you completed today's mission.",
+  lblMission:"How did it go?",
+  segMission:[["yes","Yes"],["partly","Half"],["no","Nope"]],
+  lblReflection:"Reflection",
+  notePlaceholder:"Anything you want to get off your chest? (optional)",
+  chipWin:"Biggest win", chipHard:"What was hard", chipGrateful:"Grateful for",
+  coachNote:"Write it however it comes out. I read every check-in myself — and I'm in this with you. If something's off, tell me. That's what we're all here for.",
+  daySubmit:"Submit check-in", missionReq:"Please let us know how it went.",
   chooseOneReq:"Choose at least one challenge for today.",
   rewardEyebrow:"Standard Completed ✅", pointsSuffix:"Reset Points",
   badgeUnlocked:"Badge unlocked", streakWord:(n)=> "Current streak: "+n+(n===1?" day":" days"),
   tipLbl:"Tip of the day", teaserLbl:"Tomorrow",
   rewardWhatsapp:"Send René a personal note", rewardContinue:"Continue",
   checkinSaved:"Check-in submitted ✅ — René can now see your progress.",
-  waCheckin:(d,e,s,w,h)=>"Hey René, I completed Day "+d+" of the Modern Athlete Reset.\n\nEnergy: "+e+"/10\nSleep: "+s+"/10\nBiggest win: "+(w||"—")+"\nBiggest struggle: "+(h||"—"),
+  waCheckin:(d,e,s,note)=>"Hey René, I completed Day "+d+" of the Modern Athlete Reset.\n\nEnergy: "+e+"/5\nSleep: "+s+"/5"+(note?"\nNote: "+note:""),
+  groupScoreText:(a,b)=>"Together: "+a+" of "+b+" today",
+  lbDrawText:"🎁 Finish all 7 days → entered into the draw",
+  socialProofText:(a,b)=>a+" of "+b+" already checked in today 🔥",
   bnEyebrow:"Unlocked · Your Bottleneck Snapshot™", bnTitle:"Now the pattern is becoming visible.",
   bnIntro:"You've completed 4 days — and you're already starting to see where your biggest bottlenecks may be.\n\nMost people don't need more motivation. They need clarity about what is actually limiting their energy, consistency and progress.\n\n🏋️ Training — structure, confidence and progression\n🥗 Nutrition — better choices, stable energy and simple routines\n😴 Recovery — sleep, stress and the ability to recharge\n🌱 Lifestyle — habits and systems that fit your real life\n\nChoose the area where you want more personal guidance and support from the Modern Athlete Lab™ community.",
   bnOptions:[
@@ -1068,7 +1179,11 @@ en:{
   settingsTitle:"Settings", lblLang:"Language / Sprache", lblPw:"New password", lblPw2:"Repeat new password",
   pwSave:"Update password", pwFill:"Please fill in both fields.", pwShort:"New password needs at least 6 characters.",
   pwSaved:"Password changed.", pwMismatch:"Passwords don't match.",
-  pwRelogin:"For security, please sign in again, then try right after.",
+  pwRelogin:"For security, please sign in again, then try right after.", pwWrong:"Current password is incorrect.",
+  lblDelete:"Delete account", deleteWarning:"This permanently deletes your account and all your data. This cannot be undone. Type DELETE below to confirm.",
+  deleteWord:"delete", deleteBtn:"Permanently delete my account", deleteMismatch:"Please type DELETE to confirm.",
+  deleteNeedsPw:"Please enter your current password above, then press delete again.", deleteWrongPw:"Current password is incorrect.",
+  cancel:"Cancel",
   verifyNote:"Please verify your email — check your inbox.", verifyResend:"Resend email", verifySent:"Email sent.",
   lbHead:"🏆 Leaderboard", lbPrizeText:"🎁 Top 3 win a gift!", lbYou:"(you)",
   plansRowLbl:"📄 My Plans — request nutrition & training plans",
@@ -1093,8 +1208,9 @@ de:{
   errFallback:"Etwas ist schiefgelaufen. Bitte erneut versuchen.",
   errors:{ "auth/invalid-email":"Ungültige E-Mail-Adresse.","auth/missing-password":"Bitte ein Passwort eingeben.","auth/weak-password":"Passwort braucht mindestens 6 Zeichen.","auth/email-already-in-use":"Für diese E-Mail existiert bereits ein Konto.","auth/invalid-credential":"E-Mail oder Passwort ist falsch.","auth/user-not-found":"Kein Konto mit dieser E-Mail gefunden.","auth/wrong-password":"Falsches Passwort." },
   day0Eyebrow:"Tag 0 · Start Here", day0Title:"Willkommen im Reset.",
-  day0Text:"Willkommen beim 7-Day Modern Athlete Reset. Es geht hier nicht um Perfektion, extremes Abnehmen oder darum, dich komplett zu zerstören. Für die nächsten sieben Tage halten wir es simpel: Bewegung, Ernährung, Regeneration und Reflexion. Das Ziel ist, dass du wieder mehr Energie, Struktur und Kontrolle in deinen Alltag bringst. Füll die täglichen Check-ins ehrlich aus — ich sehe sie in meinem Coaching-Dashboard und schaue sie mir persönlich an. — René",
-  day0Cta:"Baseline-Check-in starten", day0CtaDone:"Zurück zum Dashboard",
+  day0Text:"Schön, dass du da bist. 👊\n\nWillkommen beim 7-Day Modern Athlete Reset. Es geht hier nicht um Perfektion, extremes Abnehmen oder darum, dich komplett zu zerstören. Für die nächsten sieben Tage halten wir es simpel: Bewegung, Ernährung, Regeneration und Reflexion. Das Ziel ist, dass du wieder mehr Energie, Struktur und Kontrolle in deinen Alltag bringst.\n\nDas Ziel ist nicht, perfekt zu werden. Das Ziel ist, weniger chaotisch zu werden.\n\nFünfzehn Sekunden am Tag, mehr nicht. Check-in machen, zusehen wie der Crew-Score steigt, und schauen wo du stehst.\n\nDie Top 3 am Ende kriegen einen Preis — und alle, die alle 7 Tage schaffen, kommen in die Verlosung.\n\nIch mach's mit dir zusammen. Auf geht's. 🔥\n\nDie meisten merken so um Tag 3 rum was über sich selbst. Mal sehen, was es bei dir ist.",
+  day0Sign:"René",
+  day0Cta:"Zur Challenge", day0CtaDone:"Zurück zum Dashboard",
   videoSoon:"Video von René — folgt in Kürze", welcomeVideo:"Willkommens-Video",
   baseEyebrow:"Baseline-Check-in", baseTitle:"Wo startest du gerade?",
   baseSub:"5 Regler, 1 Minute. Das ist dein Vorher-Bild — Tag 7 zeigt dir den Unterschied.",
@@ -1105,14 +1221,15 @@ de:{
   phoneHintLine:"Deine LINE-ID — so kann René dir direkt antworten.",
   phWhatsapp:"+886 912 345 678", phLine:"deine_line_id",
   lblSource:"Wer hat dich eingeladen?",
-  lblFriend:"Name des Freundes", lblGoal:"Hauptziel", lblStruggle:"Größte aktuelle Herausforderung",
+  lblFriend:"Name des Freundes", lblGoal:"3 größte Ziele", lblStruggle:"3 größte Herausforderungen",
   sources:[["instagram","Instagram"],["rene","René persönlich"],["friend","Ein Freund"],["other","Sonstiges"]],
   goals:[["energy","Mehr Energie"],["nutrition","Bessere Ernährung"],["training","Bessere Trainingsroutine"],["sleep","Besserer Schlaf"],["stiffness","Weniger Steifheit"],["consistency","Mehr Konstanz"],["fat","Fett verlieren"],["strength","Kraft aufbauen"],["healthy","Mich wieder gesund fühlen"]],
   struggles:[["nutrition","Ernährung"],["training","Training"],["sleep","Schlaf"],["stress","Stress"],["energy","Wenig Energie"],["structure","Keine Struktur"],["not_sure","Nicht sicher"]],
   baseSliders:[["energy","Energie heute"],["sleep","Schlafqualität"],["stress","Stresslevel"],["movement","Bewegungs-Konstanz"],["nutrition","Ernährungs-Struktur"]],
   baseSubmit:"Reset betreten", baseNameReq:"Bitte gib deinen Namen ein.",
+  baseGoalReq:"Bitte wähle 3 Ziele aus.", baseStruggleReq:"Bitte wähle 3 Herausforderungen aus.",
   dashHello:(n)=> n ? "Willkommen zurück, "+n : "Willkommen zurück",
-  dashHead:"Der 7-Day Reset", missionCta:"Heutige Mission starten",
+  dashHead:"Der 7-Day Reset", missionCta:"Heutigen Move starten",
   missionDoneTitle:"Tag abgeschlossen ✅", missionDoneDesc:"Stark. Komm morgen für den nächsten Tag zurück.",
   missionAllDoneTitle:"Reset abgeschlossen", missionAllDoneDesc:"Alle 7 Tage geschafft. Dein nächster Schritt wartet unten.",
   missionCtaDone:"Heutige Zusammenfassung ansehen", missionCtaFinal:"Deinen nächsten Schritt ansehen",
@@ -1121,22 +1238,26 @@ de:{
   locked:"Gesperrt", today:"Heute",
   bnCardTitle:"Dein Bottleneck Snapshot™ 🔓", bnCardSub:"Nach Tag 4 freigeschaltet — sieh, was dich wirklich blockiert.",
   mapCardTitle:"Deine Personal MAP™", mapCardSub:"Du hast den Reset abgeschlossen. Sieh dir deinen nächsten Schritt an.",
-  tasksHead:"Heutige Mission", tasksHeadChoose:"Wähle mindestens eine",
-  checkinHead:"Täglicher Check-in",
+  tasksHead:"Dein heutiger Move", tasksHeadChoose:"Wähle mindestens eine",
+  checkinHead:"Quick-Check-in", checkinSpeedHint:"15 Sekunden, dann bist du raus",
   lblEnergy:"Energie heute", lblSleep:"Schlaf letzte Nacht",
-  lblMission:"Hast du die heutige Mission abgeschlossen?",
-  segMission:[["yes","Ja"],["partly","Teilweise"],["no","Nein"]],
-  lblReflection:"Reflexion", lblWin:"Größter Win heute", lblHard:"Was war heute schwer?",
-  lblFeedback:"Gibt es etwas, das du besprechen möchtest oder wobei du Unterstützung brauchst? (optional)",
-  coachNote:"Sei hier ehrlich. René schaut sich die Challenge-Check-ins persönlich an.",
-  daySubmit:"Check-in absenden", missionReq:"Bitte beantworte, ob du die heutige Mission abgeschlossen hast.",
+  lblMission:"Wie lief's?",
+  segMission:[["yes","Ja"],["partly","Halb"],["no","Nö"]],
+  lblReflection:"Reflexion",
+  notePlaceholder:"Willst du dir was von der Seele schreiben? (optional)",
+  chipWin:"Größter Win", chipHard:"Was war schwer", chipGrateful:"Dankbar für",
+  coachNote:"Schreib's einfach so wie's kommt. Ich lese jeden Check-in selbst — und ich bin mit dabei. Wenn was nicht passt, sag's mir. Dafür sind wir alle hier.",
+  daySubmit:"Check-in absenden", missionReq:"Sag uns kurz, wie's gelaufen ist.",
   chooseOneReq:"Wähle mindestens eine Challenge für heute.",
   rewardEyebrow:"Standard gehalten ✅", pointsSuffix:"Reset Points",
   badgeUnlocked:"Badge freigeschaltet", streakWord:(n)=> "Aktueller Streak: "+n+(n===1?" Tag":" Tage"),
   tipLbl:"Tipp des Tages", teaserLbl:"Morgen",
   rewardWhatsapp:"René eine persönliche Nachricht senden", rewardContinue:"Weiter",
   checkinSaved:"Check-in gespeichert ✅ — René kann deinen Fortschritt jetzt sehen.",
-  waCheckin:(d,e,s,w,h)=>"Hey René, ich habe Tag "+d+" vom Modern Athlete Reset abgeschlossen.\n\nEnergie: "+e+"/10\nSchlaf: "+s+"/10\nGrößter Win: "+(w||"—")+"\nGrößte Herausforderung: "+(h||"—"),
+  waCheckin:(d,e,s,note)=>"Hey René, ich habe Tag "+d+" vom Modern Athlete Reset abgeschlossen.\n\nEnergie: "+e+"/5\nSchlaf: "+s+"/5"+(note?"\nNotiz: "+note:""),
+  groupScoreText:(a,b)=>"Zusammen: "+a+" von "+b+" heute",
+  lbDrawText:"🎁 Alle 7 Tage schaffen → in der Verlosung",
+  socialProofText:(a,b)=>a+" von "+b+" haben heute schon eingecheckt 🔥",
   bnEyebrow:"Freigeschaltet · Dein Bottleneck Snapshot™", bnTitle:"Jetzt wird das Muster sichtbar.",
   bnIntro:"Du hast 4 Tage abgeschlossen — und beginnst schon zu erkennen, wo deine größten Blockaden liegen könnten.\n\nDie meisten Menschen brauchen nicht mehr Motivation. Sie brauchen Klarheit darüber, was ihre Energie, Konstanz und ihren Fortschritt wirklich limitiert.\n\n🏋️ Training — Struktur, Selbstvertrauen und Fortschritt\n🥗 Ernährung — bessere Entscheidungen, stabile Energie und einfache Routinen\n😴 Recovery — Schlaf, Stress und die Fähigkeit, wieder aufzutanken\n🌱 Lifestyle — Gewohnheiten und Systeme, die zu deinem echten Leben passen\n\nWähle den Bereich, in dem du mehr persönliche Begleitung und Unterstützung aus der Modern Athlete Lab™ Community möchtest.",
   bnOptions:[
@@ -1171,7 +1292,11 @@ de:{
   settingsTitle:"Einstellungen", lblLang:"Sprache / Language", lblPw:"Neues Passwort", lblPw2:"Neues Passwort wiederholen",
   pwSave:"Passwort aktualisieren", pwFill:"Bitte beide Felder ausfüllen.", pwShort:"Neues Passwort braucht mindestens 6 Zeichen.",
   pwSaved:"Passwort geändert.", pwMismatch:"Die Passwörter stimmen nicht überein.",
-  pwRelogin:"Aus Sicherheitsgründen: Bitte melde dich einmal neu an und versuch es direkt danach.",
+  pwRelogin:"Aus Sicherheitsgründen: Bitte melde dich einmal neu an und versuch es direkt danach.", pwWrong:"Aktuelles Passwort ist falsch.",
+  lblDelete:"Konto löschen", deleteWarning:"Dies löscht dein Konto und alle deine Daten dauerhaft. Das kann nicht rückgängig gemacht werden. Gib unten LÖSCHEN ein, um zu bestätigen.",
+  deleteWord:"löschen", deleteBtn:"Konto endgültig löschen", deleteMismatch:"Bitte gib LÖSCHEN ein, um zu bestätigen.",
+  deleteNeedsPw:"Bitte gib oben dein aktuelles Passwort ein und drücke erneut auf Löschen.", deleteWrongPw:"Aktuelles Passwort ist falsch.",
+  cancel:"Abbrechen",
   verifyNote:"Bitte bestätige deine E-Mail — check dein Postfach.", verifyResend:"Erneut senden", verifySent:"E-Mail verschickt.",
   lbHead:"🏆 Bestenliste", lbPrizeText:"🎁 Platz 1–3 kriegen ein Geschenk!", lbYou:"(du)",
   plansRowLbl:"📄 Meine Pläne — Ernährungs- & Trainingsplan anfordern",
@@ -1196,7 +1321,8 @@ zh:{
   errFallback:"發生錯誤，請再試一次。",
   errors:{ "auth/invalid-email":"電子郵件格式無效。","auth/missing-password":"請輸入密碼。","auth/weak-password":"密碼至少需要6個字元。","auth/email-already-in-use":"這個電子郵件已經有帳號了。","auth/invalid-credential":"電子郵件或密碼錯誤。","auth/user-not-found":"找不到這個電子郵件的帳號。","auth/wrong-password":"密碼錯誤。" },
   day0Eyebrow:"Day 0 · 開始這裡", day0Title:"歡迎來到 Reset。",
-  day0Text:"歡迎參加 7-Day Modern Athlete Reset。這不是關於完美、減脂或逼自己更狠。接下來的七天，我們保持簡單：活動、飲食、恢復與反思。目標是幫助你重新找回能量、結構與掌控感。請誠實完成每天的check-in——我會在教練後台親自查看。— René",
+  day0Text:"很高興你在這裡。👊\n\n歡迎參加 7-Day Modern Athlete Reset。這不是關於完美、減脂或逼自己更狠。接下來的七天，我們保持簡單：活動、飲食、恢復與反思。目標是幫助你重新找回能量、結構與掌控感。\n\n目標不是變得完美，而是變得不再那麼混亂。\n\n每天只要15秒。Check-in、看著大家的分數往上爬，看看你排在哪裡。\n\n最後前3名會得到獎品——而完成全部7天的人，都會參加抽獎。\n\n我會陪你一起做。衝吧。🔥\n\n大多數人大概在第3天左右會發現一些關於自己的事。來看看你的是什麼。",
+  day0Sign:"René",
   day0Cta:"開始基準 Check-In", day0CtaDone:"回到儀表板",
   videoSoon:"René 的影片——即將推出", welcomeVideo:"歡迎影片",
   baseEyebrow:"基準 Check-In", baseTitle:"你現在的起點在哪裡？",
@@ -1208,14 +1334,15 @@ zh:{
   phoneHintLine:"你的 LINE ID——這樣 René 才能直接回覆你。",
   phWhatsapp:"+886 912 345 678", phLine:"你的_line_id",
   lblSource:"是誰邀請你的？",
-  lblFriend:"朋友的名字", lblGoal:"主要目標", lblStruggle:"目前最大的困難",
+  lblFriend:"朋友的名字", lblGoal:"3個最重要的目標", lblStruggle:"3個最大的困難",
   sources:[["instagram","Instagram"],["rene","René 本人"],["friend","朋友"],["other","其他"]],
   goals:[["energy","更多能量"],["nutrition","更好的飲食"],["training","更好的訓練習慣"],["sleep","更好的睡眠"],["stiffness","減少僵硬"],["consistency","更有恆心"],["fat","減脂"],["strength","增肌力"],["healthy","重新感覺健康"]],
   struggles:[["nutrition","飲食"],["training","訓練"],["sleep","睡眠"],["stress","壓力"],["energy","能量不足"],["structure","缺乏結構"],["not_sure","不確定"]],
   baseSliders:[["energy","今天的能量"],["sleep","睡眠品質"],["stress","壓力程度"],["movement","活動穩定度"],["nutrition","飲食結構"]],
   baseSubmit:"進入 Reset", baseNameReq:"請輸入你的姓名。",
+  baseGoalReq:"請選擇3個目標。", baseStruggleReq:"請選擇3個困難。",
   dashHello:(n)=> n ? "歡迎回來，"+n : "歡迎回來",
-  dashHead:"7-Day Reset", missionCta:"開始今日任務",
+  dashHead:"7-Day Reset", missionCta:"開始今天的行動",
   missionDoneTitle:"今日完成 ✅", missionDoneDesc:"很棒。明天再回來完成下一天。",
   missionAllDoneTitle:"Reset 已完成", missionAllDoneDesc:"7天都完成了。你的下一步已經準備好了。",
   missionCtaDone:"查看今日總結", missionCtaFinal:"查看你的下一步",
@@ -1224,22 +1351,26 @@ zh:{
   locked:"未解鎖", today:"今天",
   bnCardTitle:"你的 Bottleneck Snapshot™ 🔓", bnCardSub:"第4天後解鎖——看看真正卡住你的是什麼。",
   mapCardTitle:"你的 Personal MAP™", mapCardSub:"你已完成 Reset。查看你的下一步。",
-  tasksHead:"今日任務", tasksHeadChoose:"至少選擇一項",
-  checkinHead:"每日 Check-in",
+  tasksHead:"今天的行動", tasksHeadChoose:"至少選擇一項",
+  checkinHead:"快速 Check-in", checkinSpeedHint:"15秒，馬上搞定",
   lblEnergy:"今天的能量", lblSleep:"昨晚的睡眠",
-  lblMission:"你完成今天的任務了嗎？",
-  segMission:[["yes","是"],["partly","部分完成"],["no","否"]],
-  lblReflection:"反思", lblWin:"今天最大的收穫", lblHard:"今天什麼最難？",
-  lblFeedback:"有什麼想討論或需要支持的嗎？（選填）",
-  coachNote:"在這裡誠實面對自己。René 會親自查看 Challenge 的 Check-in。",
-  daySubmit:"送出 Check-in", missionReq:"請回答你是否完成了今天的任務。",
+  lblMission:"今天做得如何？",
+  segMission:[["yes","是"],["partly","一半"],["no","沒有"]],
+  lblReflection:"反思",
+  notePlaceholder:"有什麼想說的嗎？（選填）",
+  chipWin:"最大的收穫", chipHard:"最難的部分", chipGrateful:"感謝的事",
+  coachNote:"想到什麼就寫什麼。我會親自看每一則 Check-in——我跟你一起在這裡。如果有什麼不對勁，跟我說。這就是我們都在這裡的原因。",
+  daySubmit:"送出 Check-in", missionReq:"跟我們說一下今天做得如何。",
   chooseOneReq:"請至少選擇一項今天的挑戰。",
   rewardEyebrow:"標準達成 ✅", pointsSuffix:"Reset 積分",
   badgeUnlocked:"徽章已解鎖", streakWord:(n)=> "目前連續天數："+n+" 天",
   tipLbl:"今日提示", teaserLbl:"明天",
   rewardWhatsapp:"傳一則訊息給 René", rewardContinue:"繼續",
   checkinSaved:"Check-in 已送出 ✅ — René 現在可以看到你的進度。",
-  waCheckin:(d,e,s,w,h)=>"嗨 René，我完成了 Modern Athlete Reset 第"+d+"天。\n\n能量："+e+"/10\n睡眠："+s+"/10\n最大的收穫："+(w||"—")+"\n最大的困難："+(h||"—"),
+  waCheckin:(d,e,s,note)=>"嗨 René，我完成了 Modern Athlete Reset 第"+d+"天。\n\n能量："+e+"/5\n睡眠："+s+"/5"+(note?"\n備註："+note:""),
+  groupScoreText:(a,b)=>"大家一起："+a+" / "+b+"（今天）",
+  lbDrawText:"🎁 完成全部7天 → 進入抽獎",
+  socialProofText:(a,b)=>"今天已經有 "+a+" / "+b+" 人 check-in 了 🔥",
   bnEyebrow:"已解鎖 · 你的 Bottleneck Snapshot™", bnTitle:"現在模式開始變得清晰。",
   bnIntro:"你已經完成4天了——你已經開始看到自己最大的瓶頸可能在哪裡。\n\n大多數人不需要更多動力。他們需要清楚知道究竟是什麼在限制他們的能量、恆心與進步。\n\n🏋️ 訓練——結構、信心與進步\n🥗 飲食——更好的選擇、穩定的能量與簡單的日常習慣\n😴 恢復——睡眠、壓力與充電的能力\n🌱 生活型態——符合你真實生活的習慣與系統\n\n選擇你想從 Modern Athlete Lab™ 社群獲得更多個人指導與支持的領域。",
   bnOptions:[
@@ -1274,7 +1405,11 @@ zh:{
   settingsTitle:"設定", lblLang:"語言 / Language", lblPw:"新密碼", lblPw2:"再次輸入新密碼",
   pwSave:"更新密碼", pwFill:"請填寫兩個欄位。", pwShort:"新密碼至少需要6個字元。",
   pwSaved:"密碼已變更。", pwMismatch:"兩次輸入的密碼不一致。",
-  pwRelogin:"為了安全，請重新登入後再試一次。",
+  pwRelogin:"為了安全，請重新登入後再試一次。", pwWrong:"目前的密碼不正確。",
+  lblDelete:"刪除帳號", deleteWarning:"此操作將永久刪除你的帳號與所有資料，且無法復原。請在下方輸入「刪除」以確認。",
+  deleteWord:"刪除", deleteBtn:"永久刪除我的帳號", deleteMismatch:"請輸入「刪除」以確認。",
+  deleteNeedsPw:"請在上方輸入目前的密碼，然後再次按下刪除。", deleteWrongPw:"目前的密碼不正確。",
+  cancel:"取消",
   verifyNote:"請驗證你的電子郵件——check你的信箱。", verifyResend:"重新寄送", verifySent:"郵件已寄出。",
   lbHead:"🏆 排行榜", lbPrizeText:"🎁 前3名可獲得禮物！", lbYou:"（你）",
   plansRowLbl:"📄 我的計畫 — 申請飲食與訓練計畫",
@@ -1297,7 +1432,7 @@ const $ = s=>document.querySelector(s);
 const state = {
   uid:null, lang: localStorage.getItem('mal_lang') || null,
   profile:null, checkins:{}, // day -> data
-  currentTasks:new Set(), missionAnswer:null, lastReward:null, viewDay:null
+  currentTasks:new Set(), missionAnswer:null, lastReward:null, viewDay:null, previewActive:false
 };
 const t = ()=> T[state.lang || 'en'];
 const dc = (day)=> DAYS[day][state.lang || 'en'];
@@ -1308,8 +1443,6 @@ let currentScreen = null;
 function applyTheme(theme){
   document.documentElement.setAttribute('data-theme', theme);
   localStorage.setItem('marTheme', theme);
-  $('#themeIconSun').classList.toggle('hidden', theme==='dark');
-  $('#themeIconMoon').classList.toggle('hidden', theme!=='dark');
 }
 applyTheme(localStorage.getItem('marTheme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
 $('#themeToggleBtn').addEventListener('click', ()=>{
@@ -1359,12 +1492,77 @@ function waLink(msg){
   return COACH_WHATSAPP ? 'https://wa.me/'+COACH_WHATSAPP+'?text='+enc : 'https://wa.me/?text='+enc;
 }
 
+function fmtVideoTime(sec){
+  if(!isFinite(sec)||sec<0) sec=0;
+  const m=Math.floor(sec/60), s=Math.floor(sec%60);
+  return m+':'+String(s).padStart(2,'0');
+}
+
+const VICON_PLAY='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+const VICON_PAUSE='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>';
+const VICON_VOL='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 5V4L8 9H4z"/></svg>';
+const VICON_MUTE='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 5V4L8 9H4zm14.6 1.6L17.2 9l-2.4 2.4L12.4 9 11 10.4l2.4 2.4L11 15.2l1.4 1.4 2.4-2.4 2.4 2.4 1.4-1.4-2.4-2.4z"/></svg>';
+const VICON_FULL='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9V4h5v2H6v3H4zm0 6h2v3h3v2H4v-5zm16-6h-2V6h-3V4h5v5zm0 6v5h-5v-2h3v-3h2z"/></svg>';
+
 function renderVideo(el, url, label){
   el.innerHTML='';
   if(url){
-    const v=document.createElement('video');
-    v.src=url; v.controls=true; v.playsInline=true;
-    el.appendChild(v);
+    const SPEEDS=[1,1.25,1.5,2,0.75];
+    let speedIdx=0, seeking=false;
+
+    const wrap=document.createElement('div'); wrap.className='vplayer';
+    wrap.innerHTML=
+      '<video playsinline preload="metadata" src="'+url+'"></video>'+
+      '<button type="button" class="vplay-big" aria-label="Play">'+VICON_PLAY+'</button>'+
+      '<div class="vbar">'+
+        '<button type="button" class="vbtn vplaypause" aria-label="Play">'+VICON_PLAY+'</button>'+
+        '<span class="vtime"><span class="vcur">0:00</span>&nbsp;/&nbsp;<span class="vdur">0:00</span></span>'+
+        '<input type="range" class="vseek" min="0" max="1000" value="0" step="1" aria-label="Seek">'+
+        '<button type="button" class="vbtn vspeed">1x</button>'+
+        '<button type="button" class="vbtn vmute" aria-label="Mute">'+VICON_VOL+'</button>'+
+        '<button type="button" class="vbtn vfull" aria-label="Fullscreen">'+VICON_FULL+'</button>'+
+      '</div>';
+    el.appendChild(wrap);
+
+    const v=wrap.querySelector('video');
+    const bigPlay=wrap.querySelector('.vplay-big');
+    const playBtn=wrap.querySelector('.vplaypause');
+    const seek=wrap.querySelector('.vseek');
+    const curEl=wrap.querySelector('.vcur');
+    const durEl=wrap.querySelector('.vdur');
+    const speedBtn=wrap.querySelector('.vspeed');
+    const muteBtn=wrap.querySelector('.vmute');
+    const fullBtn=wrap.querySelector('.vfull');
+
+    function togglePlay(){ v.paused ? v.play() : v.pause(); }
+    bigPlay.addEventListener('click', togglePlay);
+    playBtn.addEventListener('click', togglePlay);
+    v.addEventListener('click', togglePlay);
+    v.addEventListener('play', ()=>{ wrap.classList.add('playing'); playBtn.innerHTML=VICON_PAUSE; });
+    v.addEventListener('pause', ()=>{ wrap.classList.remove('playing'); playBtn.innerHTML=VICON_PLAY; });
+    v.addEventListener('loadedmetadata', ()=>{ durEl.textContent=fmtVideoTime(v.duration); });
+    v.addEventListener('timeupdate', ()=>{
+      if(!seeking && v.duration) seek.value=String((v.currentTime/v.duration)*1000);
+      curEl.textContent=fmtVideoTime(v.currentTime);
+    });
+    seek.addEventListener('input', ()=>{
+      seeking=true;
+      if(v.duration) v.currentTime=(Number(seek.value)/1000)*v.duration;
+    });
+    seek.addEventListener('change', ()=>{ seeking=false; });
+    speedBtn.addEventListener('click', ()=>{
+      speedIdx=(speedIdx+1)%SPEEDS.length;
+      v.playbackRate=SPEEDS[speedIdx];
+      speedBtn.textContent=SPEEDS[speedIdx]+'x';
+    });
+    muteBtn.addEventListener('click', ()=>{
+      v.muted=!v.muted;
+      muteBtn.innerHTML=v.muted?VICON_MUTE:VICON_VOL;
+    });
+    fullBtn.addEventListener('click', ()=>{
+      if(v.requestFullscreen) v.requestFullscreen();
+      else if(v.webkitEnterFullscreen) v.webkitEnterFullscreen();
+    });
   } else {
     el.innerHTML = '<div class="video-ph"><div class="play">▶</div><div class="vtitle">'+label+'</div><div class="vsub">'+t().videoSoon+'</div></div>';
   }
@@ -1461,6 +1659,7 @@ onAuthStateChanged(auth, async (user)=>{
     }
     try{ await setDoc(doc(db,'users',state.uid),{ lastSeen: serverTimestamp() },{ merge:true }); }catch(e){}
     await loadCheckins();
+    await loadPreviewMode();
     $('#settingsBtn').classList.remove('hidden');
   } else {
     state.uid=null; state.profile=null; state.checkins={};
@@ -1478,6 +1677,15 @@ async function loadCheckins(){
   }catch(e){}
 }
 
+async function loadPreviewMode(){
+  try{
+    const snap=await getDoc(doc(db,'settings','previewMode'));
+    const data=snap.exists() ? snap.data() : null;
+    const expiresAtMs=data?.expiresAt?.toMillis?.() ?? 0;
+    state.previewActive = !!data?.enabled && expiresAtMs > Date.now();
+  }catch(e){ state.previewActive=false; }
+}
+
 function route(){
   if(!state.lang){ show('language'); return; }
   document.documentElement.lang = state.lang;
@@ -1493,10 +1701,8 @@ function renderDay0(fromDash){
   const s=t();
   $('#day0Eyebrow').textContent=s.day0Eyebrow;
   $('#day0Title').textContent=s.day0Title;
-  // Brief-Form: signierte Coach-Nachricht — "— René" wird als Signatur abgesetzt
-  const raw=s.day0Text, sigIdx=raw.lastIndexOf('— René');
-  $('#day0Text').textContent = sigIdx>-1 ? raw.slice(0,sigIdx).trim() : raw;
-  $('#day0Sig').textContent = sigIdx>-1 ? '— René' : '';
+  $('#day0Text').textContent=s.day0Text;
+  $('#day0Sign').textContent=s.day0Sign;
   renderVideo($('#day0Video'), VIDEOS.day0[state.lang], s.welcomeVideo);
   const done = state.profile && state.profile.baselineAt;
   $('#day0Cta').textContent = done ? s.day0CtaDone : s.day0Cta;
@@ -1514,6 +1720,46 @@ function fillSelect(el, options){
     const o=document.createElement('option'); o.value=val; o.textContent=label; el.appendChild(o);
   });
 }
+function renderChoiceGrid(el, options, max){
+  el.innerHTML='';
+  const selected=new Set();
+  function paint(){
+    el.querySelectorAll('button').forEach(b=>{
+      const on=selected.has(b.dataset.key);
+      b.classList.toggle('sel', on);
+      b.classList.toggle('disabled', !on && selected.size>=max);
+    });
+  }
+  options.forEach(([key,label])=>{
+    const b=document.createElement('button');
+    b.type='button'; b.dataset.key=key; b.textContent=label;
+    b.addEventListener('click',()=>{
+      if(selected.has(key)) selected.delete(key);
+      else{ if(selected.size>=max) return; selected.add(key); }
+      paint();
+    });
+    el.appendChild(b);
+  });
+  paint();
+  return { getSelected:()=>Array.from(selected) };
+}
+function renderEmojiPicker(el, value){
+  el.innerHTML=''; el.classList.add('seg-emoji');
+  let current=value;
+  function paint(){
+    el.querySelectorAll('button').forEach(b=>b.classList.toggle('sel', Number(b.dataset.n)===current));
+  }
+  EMOJI_SCALE.forEach((emoji,i)=>{
+    const n=i+1;
+    const b=document.createElement('button');
+    b.type='button'; b.textContent=emoji; b.dataset.n=String(n);
+    b.addEventListener('click',()=>{ current=n; paint(); });
+    el.appendChild(b);
+  });
+  paint();
+  return { getValue:()=>current, setValue:(n)=>{ current=n; paint(); } };
+}
+let baseGoalGrid=null, baseStruggleGrid=null, baseNumPickers={};
 function renderBaseline(){
   const s=t();
   $('#baseEyebrow').textContent=s.baseEyebrow;
@@ -1535,39 +1781,46 @@ function renderBaseline(){
   $('#lblStruggle').textContent=s.lblStruggle;
   $('#baseSubmit').textContent=s.baseSubmit;
   fillSelect($('#baseSource'), s.sources);
-  fillSelect($('#baseGoal'), s.goals);
-  fillSelect($('#baseStruggle'), s.struggles);
+  baseGoalGrid=renderChoiceGrid($('#baseGoal'), s.goals, 3);
+  baseStruggleGrid=renderChoiceGrid($('#baseStruggle'), s.struggles, 3);
   $('#baseSource').onchange=()=>{ $('#friendNameWrap').classList.toggle('hidden', $('#baseSource').value!=='friend'); };
   const box=$('#baseSliders'); box.innerHTML='';
-  box.style.cssText='display:flex;flex-direction:column;gap:10px;margin-top:4px';
+  box.style.cssText='display:flex;flex-direction:column;gap:14px;margin-top:4px';
+  baseNumPickers={};
   s.baseSliders.forEach(([key,label])=>{
     const w=document.createElement('div'); w.className='slider-block';
-    w.innerHTML='<div class="slider-head"><span class="sl">'+label+'</span><span class="sv" id="bv_'+key+'">5</span></div>'+
-      '<input type="range" min="1" max="10" value="5" id="br_'+key+'">';
+    w.innerHTML='<div class="slider-head"><span class="sl">'+label+'</span></div>';
+    const grid=document.createElement('div'); grid.className='seg';
+    w.appendChild(grid);
     box.appendChild(w);
-    w.querySelector('input').addEventListener('input',e=>{ $('#bv_'+key).textContent=e.target.value; });
+    baseNumPickers[key]=renderEmojiPicker(grid, 3);
   });
 }
 $('#baseSubmit').addEventListener('click', async ()=>{
   const s=t(); const err=$('#baseError'); err.textContent='';
   const name=$('#baseName').value.trim();
   if(!name){ err.textContent=s.baseNameReq; return; }
+  const mainGoals=baseGoalGrid.getSelected();
+  const biggestStruggles=baseStruggleGrid.getSelected();
+  if(mainGoals.length!==3){ err.textContent=s.baseGoalReq; return; }
+  if(biggestStruggles.length!==3){ err.textContent=s.baseStruggleReq; return; }
   const baseline={};
-  s.baseSliders.forEach(([key])=>{ baseline[key]=parseInt($('#br_'+key).value,10); });
+  s.baseSliders.forEach(([key])=>{ baseline[key]=baseNumPickers[key].getValue(); });
   const data={
     name,
     phone: $('#basePhone').value.trim(),
     contactChannel: $('#baseChannel').value,
     source: $('#baseSource').value,
     invitedBy: $('#baseSource').value==='friend' ? $('#baseFriend').value.trim() : '',
-    mainGoal: $('#baseGoal').value,
-    biggestStruggle: $('#baseStruggle').value,
+    mainGoals, biggestStruggles,
     baseline, baselineAt: serverTimestamp(),
     preferredLanguage: state.lang, email: auth.currentUser?.email || ''
   };
+  const isFirstTime = !state.profile?.baselineAt;
   try{
     await setDoc(doc(db,'users',state.uid), data, { merge:true });
     Object.assign(state.profile, data, { baselineAt:{ seconds: Date.now()/1000 } });
+    if(isFirstTime) recordNewParticipant().catch(()=>{});
     renderDash(); show('dash');
   }catch(e){ err.textContent=t().errFallback; }
 });
@@ -1648,9 +1901,10 @@ function renderDash(){
   const bnUnlocked = done>=4;
   for(let d=1; d<=7; d++){
     const isDone=!!state.checkins[d];
-    const isCurrent=!isDone && d===day && (TEST_ALL_DAYS_UNLOCKED || !completedToday());
-    // Test-Modus: alle noch offenen Tage sind klickbar (🔓), nicht nur der nächste
-    const isOpen=TEST_ALL_DAYS_UNLOCKED && !isDone && !isCurrent;
+    const previewAll = TEST_ALL_DAYS_UNLOCKED || state.previewActive;
+    const isCurrent=!isDone && d===day && (previewAll || !completedToday());
+    // Test-/Preview-Modus: alle noch offenen Tage sind klickbar (🔓), nicht nur der nächste
+    const isOpen=previewAll && !isDone && !isCurrent;
 
     const node=document.createElement('div');
     node.className='spine-node '+(isDone?'done':(isCurrent?'today':'locked'));
@@ -1696,12 +1950,15 @@ function renderDash(){
   list.appendChild(rail); list.appendChild(rows);
   $('#startHereLbl').textContent=s.startHereLbl;
   $('#startHereRow').onclick=()=>{ renderDay0(true); show('day0'); };
-  $('#logoutBtn').textContent=s.logout;
 
   renderCollageStrip();
   $('#plansRowLbl').textContent=s.plansRowLbl;
   $('#plansRow').classList.toggle('hidden', completedDays().length < 4);
   $('#plansRow').onclick=()=>{ renderPlans(); show('plans'); };
+  $('#lbDrawNote').textContent=s.lbDrawText;
+  loadGroupScore().then(({groupSum,groupMax})=>{
+    $('#groupScoreNote').textContent = s.groupScoreText(groupSum, groupMax);
+  }).catch(()=>{});
   renderLeaderboard();
 }
 
@@ -1717,13 +1974,42 @@ function renderCollageStrip(){
   track.innerHTML = doubled.map(src=>'<img src="'+src+'" alt="">').join('');
 }
 
-function renderSideCarousels(){
-  const doubled=[...COLLAGE_PHOTOS,...COLLAGE_PHOTOS];
-  const html = doubled.map(src=>'<img src="'+src+'" alt="">').join('');
-  $('#sideCarouselLeft .side-carousel-track').innerHTML = html;
-  $('#sideCarouselRight .side-carousel-track').innerHTML = html;
+/* =========================================================
+   GROUP SCORE — aggregate-only counters (dailyStats/stats), no
+   personal data, same collections the coach dashboard already uses.
+========================================================= */
+async function recordGroupProgress(standardsToday){
+  await runTransaction(db, async (tx)=>{
+    const ref=doc(db,'dailyStats',todayStr());
+    const snap=await tx.get(ref);
+    const cur=snap.exists()?snap.data():{};
+    tx.set(ref,{ sum:(cur.sum||0)+standardsToday, count:(cur.count||0)+1 },{merge:true});
+  });
 }
-renderSideCarousels();
+async function recordNewParticipant(){
+  await runTransaction(db, async (tx)=>{
+    const ref=doc(db,'stats','participantCount');
+    const snap=await tx.get(ref);
+    const cur=snap.exists()?(snap.data().count||0):0;
+    tx.set(ref,{ count: cur+1 });
+  });
+}
+async function loadGroupScore(){
+  let sum=0, count=0, participants=0;
+  try{
+    const snap=await getDoc(doc(db,'dailyStats',todayStr()));
+    if(snap.exists()){ sum=snap.data().sum||0; count=snap.data().count||0; }
+  }catch(e){}
+  try{
+    const pSnap=await getDoc(doc(db,'stats','participantCount'));
+    if(pSnap.exists()) participants=pSnap.data().count||0;
+  }catch(e){}
+  const totalCrew = participants + FAKE_GROUP_PARTICIPANTS;
+  const groupMax = totalCrew * PER_PERSON_DAILY_MAX;
+  const groupSum = Math.min(groupMax, sum + FAKE_GROUP_PARTICIPANTS*FAKE_GROUP_PER_PERSON);
+  const checkedIn = Math.min(totalCrew, count + FAKE_GROUP_CHECKED_IN);
+  return { groupSum, groupMax, checkedIn, totalCrew };
+}
 
 /* =========================================================
    LEADERBOARD
@@ -1835,6 +2121,7 @@ $('#brandLogo').addEventListener('click',()=>{ if(state.uid && state.profile?.ba
 /* =========================================================
    DAY SCREEN
 ========================================================= */
+let energyPicker=null, sleepPicker=null;
 function openDay(day, archived){
   const s=t(); const c=dc(day);
   state.viewDay=day;
@@ -1860,6 +2147,13 @@ function openDay(day, archived){
       });
     }
     list.appendChild(el);
+    const hint=TASK_HINTS[day+'-'+i];
+    if(hint){
+      const hintEl=document.createElement('div');
+      hintEl.className='task-hint';
+      hintEl.textContent=hint[state.lang]||hint.en;
+      list.appendChild(hintEl);
+    }
   });
 
   $('#checkinBlock').classList.toggle('hidden', !!archived);
@@ -1870,25 +2164,35 @@ function openDay(day, archived){
     $('#arcTipLbl').textContent=s.tipLbl;
     $('#arcTip').textContent=c.tip;
     const e=existing;
+    const noteText = e.note || [e.biggestWin, e.biggestStruggle, e.reflection].filter(Boolean).join(' · ');
     $('#arcStats').innerHTML =
-      '<b>'+s.lblEnergy+':</b> '+e.energy+'/10 · <b>'+s.lblSleep+':</b> '+e.sleep+'/10 · <b>+'+(e.points||0)+' '+s.pointsSuffix+'</b>'+
-      (e.biggestWin?'<br><b>'+s.lblWin+':</b> '+e.biggestWin:'')+
-      (e.reflection?'<br><b>'+s.lblReflection+':</b> '+e.reflection:'');
+      '<b>'+s.lblEnergy+':</b> '+e.energy+'/5 · <b>'+s.lblSleep+':</b> '+e.sleep+'/5 · <b>+'+(e.points||0)+' '+s.pointsSuffix+'</b>'+
+      (noteText?'<br><b>'+s.lblReflection+':</b> '+noteText:'');
   } else {
     $('#checkinHead').textContent=s.checkinHead;
+    $('#checkinSpeedHint').textContent=s.checkinSpeedHint;
     $('#lblEnergy').textContent=s.lblEnergy;
     $('#lblSleep').textContent=s.lblSleep;
     $('#lblMission').textContent=s.lblMission;
-    $('#lblReflection').textContent=s.lblReflection+' — '+c.reflection;
-    $('#lblWin').textContent=s.lblWin;
-    $('#lblHard').textContent=s.lblHard;
-    $('#lblFeedback').textContent=s.lblFeedback;
+    $('#lblReflection').textContent=c.reflection;
     $('#coachNote').textContent=s.coachNote;
     $('#daySubmit').textContent=s.daySubmit;
     $('#dayError').textContent='';
-    $('#rngEnergy').value=5; $('#valEnergy').textContent='5';
-    $('#rngSleep').value=5; $('#valSleep').textContent='5';
-    $('#txtReflection').value=''; $('#txtWin').value=''; $('#txtHard').value=''; $('#txtFeedback').value='';
+    const prev=state.checkins[day-1];
+    energyPicker=renderEmojiPicker($('#pickEnergy'), prev?prev.energy:3);
+    sleepPicker=renderEmojiPicker($('#pickSleep'), prev?prev.sleep:3);
+    const noteField=$('#txtNote'); noteField.value=''; noteField.placeholder=s.notePlaceholder;
+    const chipRow=$('#noteChips'); chipRow.innerHTML='';
+    ['chipWin','chipHard','chipGrateful'].forEach(key=>{
+      const b=document.createElement('button');
+      b.type='button'; b.className='chip'; b.textContent=s[key];
+      b.addEventListener('click',()=>{
+        const prefix=s[key]+': ';
+        noteField.value = noteField.value.trim() ? noteField.value.replace(/\s*$/,'')+'\n'+prefix : prefix;
+        noteField.focus(); noteField.selectionStart=noteField.selectionEnd=noteField.value.length;
+      });
+      chipRow.appendChild(b);
+    });
     const seg=$('#segMission'); seg.innerHTML='';
     s.segMission.forEach(([val,label])=>{
       const b=document.createElement('button');
@@ -1899,18 +2203,6 @@ function openDay(day, archived){
   }
   show('day');
 }
-$('#rngEnergy').addEventListener('input',e=>{ $('#valEnergy').textContent=e.target.value; });
-$('#rngSleep').addEventListener('input',e=>{ $('#valSleep').textContent=e.target.value; });
-
-/* Slider-Spur füllt sich bis zum Wert (delegiert, deckt auch Baseline-Slider ab) */
-function syncRangeFill(r){
-  const pct=((r.value-r.min)/((r.max-r.min)||1))*100;
-  r.style.setProperty('--fill',pct+'%');
-}
-document.addEventListener('input',e=>{ if(e.target.matches?.('input[type=range]')) syncRangeFill(e.target); });
-const fillObserver=new MutationObserver(()=>{ document.querySelectorAll('input[type=range]').forEach(syncRangeFill); });
-fillObserver.observe(document.body,{ childList:true, subtree:true });
-document.querySelectorAll('input[type=range]').forEach(syncRangeFill);
 $('#dayBackBtn').addEventListener('click',()=>{ renderDash(); show('dash'); });
 
 $('#daySubmit').addEventListener('click', async ()=>{
@@ -1919,23 +2211,21 @@ $('#daySubmit').addEventListener('click', async ()=>{
   if(!state.missionAnswer){ err.textContent=s.missionReq; return; }
   if(DAYS[day].chooseOne && state.currentTasks.size===0){ err.textContent=s.chooseOneReq; return; }
 
-  // points: tasks share 70 (chooseOne day: any task = full 70), check-in 10, reflection 20
+  // points: tasks share 70 (chooseOne day: any task = full 70), check-in 10, note 20
   const n=c.tasks.length;
   let taskPts;
   if(DAYS[day].chooseOne) taskPts = state.currentTasks.size>0 ? 70 : 0;
   else taskPts = Math.min(70, Math.round(70/n*state.currentTasks.size));
-  const reflection=$('#txtReflection').value.trim();
-  const points = taskPts + 10 + (reflection?20:0);
+  const note=$('#txtNote').value.trim();
+  const points = taskPts + 10 + (note?20:0);
+  const wasCheckedInToday = completedToday();
 
   const data={
     uid:state.uid, day, dateStr:todayStr(),
-    energy:parseInt($('#rngEnergy').value,10),
-    sleep:parseInt($('#rngSleep').value,10),
+    energy:energyPicker.getValue(),
+    sleep:sleepPicker.getValue(),
     completedMission:state.missionAnswer,
-    reflection,
-    biggestWin:$('#txtWin').value.trim(),
-    biggestStruggle:$('#txtHard').value.trim(),
-    wantsFeedback:$('#txtFeedback').value.trim(),
+    note,
     tasksChecked:[...state.currentTasks].sort((a,b)=>a-b),
     points, createdAt:serverTimestamp()
   };
@@ -1949,8 +2239,12 @@ $('#daySubmit').addEventListener('click', async ()=>{
       lastCompletionDate: todayStr(), lastActive: serverTimestamp(),
       latestBadge: BADGES[day]
     },{ merge:true });
+    if(!wasCheckedInToday){
+      const standardsToday=(DAYS[day].chooseOne ? (state.currentTasks.size>0?1:0) : state.currentTasks.size) + 1;
+      recordGroupProgress(standardsToday).catch(()=>{});
+    }
     state.lastReward={ day, points };
-    renderReward(day, points);
+    await renderReward(day, points);
     show('reward');
   }catch(e){ err.textContent=t().errFallback; }
   finally{ btn.disabled=false; }
@@ -1959,7 +2253,7 @@ $('#daySubmit').addEventListener('click', async ()=>{
 /* =========================================================
    REWARD
 ========================================================= */
-function renderReward(day, points){
+async function renderReward(day, points){
   const s=t(); const c=dc(day);
   $('#rewardEyebrow').textContent=s.rewardEyebrow;
   $('#rewardPoints').innerHTML='+'+points+'<small></small>';
@@ -1978,7 +2272,10 @@ function renderReward(day, points){
   const wa=$('#rewardWhatsapp');
   wa.textContent=s.rewardWhatsapp;
   const ci=state.checkins[day];
-  wa.onclick=()=>window.open(waLink(s.waCheckin(day, ci.energy, ci.sleep, ci.biggestWin, ci.biggestStruggle)),'_blank');
+  wa.onclick=()=>window.open(waLink(s.waCheckin(day, ci.energy, ci.sleep, ci.note)),'_blank');
+  loadGroupScore().then(({checkedIn,totalCrew})=>{
+    $('#rewardSocialProof').textContent = s.socialProofText(checkedIn, totalCrew);
+  }).catch(()=>{});
   const cont=$('#rewardContinue');
   cont.textContent=s.rewardContinue;
   cont.onclick=()=>{
@@ -2067,8 +2364,28 @@ function renderSettings(){
   $('#setLangDe').classList.toggle('sel', state.lang==='de');
   $('#setLangZh').classList.toggle('sel', state.lang==='zh');
   $('#pwError').textContent=''; $('#pwSuccess').textContent='';
-  $('#newPw').value=''; $('#newPw2').value='';
+  $('#curPw').value=''; $('#newPw').value=''; $('#newPw2').value='';
+  $('#curPw').placeholder = state.lang==='de'?'Aktuelles Passwort':(state.lang==='zh'?'目前的密碼':'Current password');
+  $('#newPw').placeholder = state.lang==='de'?'Neues Passwort':(state.lang==='zh'?'新密碼':'New password');
+  $('#logoutBtn').textContent=s.logout;
+  $('#deleteAccountOpenBtn').textContent=s.lblDelete;
+  $('#lblDelete').textContent=s.lblDelete;
+  $('#deleteWarning').textContent=s.deleteWarning;
+  $('#deleteAccountBtn').textContent=s.deleteBtn;
+  $('#deleteModalCancelBtn').textContent=s.cancel;
+  $('#deleteConfirmInput').placeholder=s.deleteWord.toUpperCase();
+  $('#deleteConfirmInput').value=''; $('#deleteError').textContent='';
 }
+function openDeleteModal(){
+  $('#deleteConfirmInput').value=''; $('#deleteError').textContent='';
+  $('#deleteModalOverlay').classList.remove('hidden');
+  $('#deleteConfirmInput').focus();
+}
+function closeDeleteModal(){ $('#deleteModalOverlay').classList.add('hidden'); }
+$('#deleteAccountOpenBtn').addEventListener('click', openDeleteModal);
+$('#deleteModalCancelBtn').addEventListener('click', closeDeleteModal);
+$('#deleteModalOverlay').addEventListener('click', (e)=>{ if(e.target.id==='deleteModalOverlay') closeDeleteModal(); });
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && !$('#deleteModalOverlay').classList.contains('hidden')) closeDeleteModal(); });
 $('#settingsBtn').addEventListener('click',()=>{
   if(currentScreen==='settings'){ route(); return; }
   renderSettings(); show('settings');
@@ -2098,6 +2415,25 @@ $('#pwSaveBtn').addEventListener('click', async ()=>{
     ok.textContent=s.pwSaved;
   }catch(e){
     err.textContent = e.code==='auth/requires-recent-login' ? s.pwRelogin : s.errFallback;
+  }
+});
+$('#deleteAccountBtn').addEventListener('click', async ()=>{
+  const s=t();
+  const err=$('#deleteError'); err.textContent='';
+  const typed=$('#deleteConfirmInput').value.trim().toLowerCase();
+  if(typed!==s.deleteWord.toLowerCase()){ err.textContent=s.deleteMismatch; return; }
+  const cur=$('#curPw').value;
+  try{
+    if(cur){
+      const cred=EmailAuthProvider.credential(auth.currentUser.email, cur);
+      await reauthenticateWithCredential(auth.currentUser, cred);
+    }
+    try{ await deleteDoc(doc(db,'users',state.uid)); }catch(e){}
+    await deleteUser(auth.currentUser);
+  }catch(e){
+    if(e.code==='auth/requires-recent-login'){ err.textContent=s.deleteNeedsPw; }
+    else if(e.code==='auth/invalid-credential'||e.code==='auth/wrong-password'){ err.textContent=s.deleteWrongPw; }
+    else{ err.textContent=s.errFallback; }
   }
 });
 </script>

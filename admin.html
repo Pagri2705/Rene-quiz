@@ -135,6 +135,13 @@ h2{font-family:'Sora';font-weight:700;font-size:16px}
     </div>
 
     <div id="tab-participants" style="display:flex;flex-direction:column;gap:14px">
+      <div class="filter-row" style="justify-content:space-between;align-items:center">
+        <span id="previewModeStatus" style="font-size:12.5px;color:var(--muted)">Lädt …</span>
+        <span style="display:flex;gap:8px">
+          <button class="btn-sm" id="previewModeActivateBtn">🔓 Alle Tage freischalten (7 Tage)</button>
+          <button class="btn-sm hidden" id="previewModeResetBtn">Jetzt zurücksetzen</button>
+        </span>
+      </div>
       <div class="stats-row">
         <div class="stat-card"><div class="stat-num" id="statTotal">–</div><div class="stat-label">Teilnehmer</div></div>
         <div class="stat-card"><div class="stat-num" id="statActive">–</div><div class="stat-label">Heute aktiv</div></div>
@@ -158,7 +165,6 @@ h2{font-family:'Sora';font-weight:700;font-size:16px}
 
     <div id="tab-account" class="hidden" style="display:flex;flex-direction:column;gap:10px;max-width:360px">
       <h2>Passwort ändern</h2>
-      <input class="field" id="curPw" type="password" placeholder="Aktuelles Passwort" autocomplete="current-password">
       <input class="field" id="newPw" type="password" placeholder="Neues Passwort" autocomplete="new-password">
       <div class="err" id="pwError"></div>
       <div class="ok" id="pwSuccess"></div>
@@ -172,11 +178,11 @@ h2{font-family:'Sora';font-weight:700;font-size:16px}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
 import {
   getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut,
-  EmailAuthProvider, reauthenticateWithCredential, updatePassword,
+  updatePassword,
   setPersistence, browserLocalPersistence, browserSessionPersistence
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 import {
-  getFirestore, doc, setDoc, collection, getDocs, query, where, serverTimestamp
+  getFirestore, doc, setDoc, getDoc, collection, getDocs, query, where, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 import {
   getStorage, ref, listAll, getDownloadURL, uploadBytes
@@ -229,6 +235,7 @@ onAuthStateChanged(auth, async (user)=>{
     $('#logoutBtn').classList.remove('hidden');
     show('dash');
     await loadParticipants();
+    await loadPreviewMode();
   } else {
     $('#logoutBtn').classList.add('hidden');
     show('auth');
@@ -408,8 +415,8 @@ function renderList(){
       ['Kontakt', (p.channel==='line'?'LINE: ':'WhatsApp: ')+esc(p.phone||'—')+phoneWarn],
       ['Letzter Reminder', esc(p.lastNudgeSentStr||'—')],
       ['Quelle', (SOURCE_LBL[p.source]||'—')+(p.invitedBy?' · von '+esc(p.invitedBy):'')],
-      ['Hauptziel', GOAL_LBL[p.mainGoal]||'—'],
-      ['Größte Baustelle', STRUGGLE_LBL[p.biggestStruggle]||'—'],
+      ['3 größte Ziele', (p.mainGoals&&p.mainGoals.length?p.mainGoals.map(g=>GOAL_LBL[g]||g).join(', '):(GOAL_LBL[p.mainGoal]||'—'))],
+      ['3 größte Baustellen', (p.biggestStruggles&&p.biggestStruggles.length?p.biggestStruggles.map(g=>STRUGGLE_LBL[g]||g).join(', '):(STRUGGLE_LBL[p.biggestStruggle]||'—'))],
       ['Guidance-Interesse', p.guidanceInterest?(GUIDE_LBL[p.guidanceInterest]||p.guidanceInterest):'—'],
       ['Zuletzt online', esc(p.lastSeenStr||'nie')],
       ['Baseline', b.energy?('Energie '+b.energy+' · Schlaf '+b.sleep+' · Stress '+b.stress+' · Bewegung '+b.movement+' · Ernährung '+b.nutrition):'—']
@@ -591,10 +598,12 @@ $('#copyBroadcastBtn').addEventListener('click', async ()=>{
 /* ---------- CSV ---------- */
 function csvEsc(v){ const s=String(v??''); return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; }
 $('#exportCsvBtn').addEventListener('click',()=>{
-  const headers=['Name','E-Mail','Kanal','Kontakt','Nummer-Status','Sprache','Quelle','Eingeladen von','Tag','Punkte','Streak','Ø Energie','Hauptziel','Baustelle','Guidance','Ernährungsplan angefragt','Trainingsplan angefragt','Hot Lead','Reminder fällig','Tage inaktiv','Letzter Reminder','Kontaktiert','Zuletzt online','Notizen'];
+  const headers=['Name','E-Mail','Kanal','Kontakt','Nummer-Status','Sprache','Quelle','Eingeladen von','Tag','Punkte','Streak','Ø Energie','3 größte Ziele','3 größte Baustellen','Guidance','Ernährungsplan angefragt','Trainingsplan angefragt','Hot Lead','Reminder fällig','Tage inaktiv','Letzter Reminder','Kontaktiert','Zuletzt online','Notizen'];
   const rows=participants.map(p=>[
     p.name||'', p.email||'', p.channel==='line'?'LINE':'WhatsApp', p.phone||'', p.channel==='whatsapp'?p.phoneStat:'', p.preferredLanguage||'', SOURCE_LBL[p.source]||'', p.invitedBy||'',
-    (p.doneCount||0)+'/7', p.points||0, p.streak||0, p.avgEnergy||'', GOAL_LBL[p.mainGoal]||'', STRUGGLE_LBL[p.biggestStruggle]||'',
+    (p.doneCount||0)+'/7', p.points||0, p.streak||0, p.avgEnergy||'',
+    (p.mainGoals&&p.mainGoals.length?p.mainGoals.map(g=>GOAL_LBL[g]||g).join(' / '):(GOAL_LBL[p.mainGoal]||'')),
+    (p.biggestStruggles&&p.biggestStruggles.length?p.biggestStruggles.map(g=>STRUGGLE_LBL[g]||g).join(' / '):(STRUGGLE_LBL[p.biggestStruggle]||'')),
     p.guidanceInterest||'', p.nutritionPlanRequestedAt?'Ja':'Nein', p.trainingPlanRequestedAt?'Ja':'Nein',
     p.hot?'Ja':'Nein', p.needsNudge?'Ja':'Nein', p.daysInactive??'', p.lastNudgeSentStr||'', p.contacted?'Ja':'Nein', p.lastSeenStr||'', p.coachNotes||''
   ]);
@@ -605,21 +614,42 @@ $('#exportCsvBtn').addEventListener('click',()=>{
   URL.revokeObjectURL(url);
 });
 
+/* ---------- Vorschau-Modus ---------- */
+const PREVIEW_MODE_DURATION_MS = 7*24*60*60*1000;
+async function loadPreviewMode(){
+  const snap = await getDoc(doc(db,'settings','previewMode'));
+  const data = snap.exists() ? snap.data() : null;
+  const expiresAtMs = data?.expiresAt?.toMillis?.() ?? 0;
+  const active = !!data?.enabled && expiresAtMs > Date.now();
+  $('#previewModeStatus').textContent = active
+    ? '🔓 Alle Tage offen bis '+new Date(expiresAtMs).toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'})
+    : 'Alle Tage folgen dem normalen Fortschritt (ein Tag pro Kalendertag).';
+  $('#previewModeActivateBtn').classList.toggle('hidden', active);
+  $('#previewModeResetBtn').classList.toggle('hidden', !active);
+}
+$('#previewModeActivateBtn').addEventListener('click', async ()=>{
+  const expiresAt = new Date(Date.now() + PREVIEW_MODE_DURATION_MS);
+  await setDoc(doc(db,'settings','previewMode'), { enabled:true, activatedAt: serverTimestamp(), expiresAt });
+  await loadPreviewMode();
+});
+$('#previewModeResetBtn').addEventListener('click', async ()=>{
+  await setDoc(doc(db,'settings','previewMode'), { enabled:false }, { merge:true });
+  await loadPreviewMode();
+});
+
 /* ---------- Account ---------- */
 $('#pwSaveBtn').addEventListener('click', async ()=>{
-  const cur=$('#curPw').value, next=$('#newPw').value;
+  const next=$('#newPw').value;
   const err=$('#pwError'), ok=$('#pwSuccess');
   err.textContent=''; ok.textContent='';
-  if(!cur||!next){ err.textContent='Bitte beide Felder ausfüllen.'; return; }
+  if(!next){ err.textContent='Bitte ein neues Passwort eingeben.'; return; }
   if(next.length<6){ err.textContent='Neues Passwort braucht mindestens 6 Zeichen.'; return; }
   try{
-    const cred=EmailAuthProvider.credential(auth.currentUser.email,cur);
-    await reauthenticateWithCredential(auth.currentUser,cred);
     await updatePassword(auth.currentUser,next);
-    $('#curPw').value=''; $('#newPw').value='';
+    $('#newPw').value='';
     ok.textContent='Passwort geändert.';
   }catch(e){
-    err.textContent=(e.code==='auth/invalid-credential'||e.code==='auth/wrong-password')?'Aktuelles Passwort ist falsch.':'Etwas ist schiefgelaufen.';
+    err.textContent=(e.code==='auth/requires-recent-login')?'Bitte einmal ab- und wieder anmelden, dann erneut versuchen.':'Etwas ist schiefgelaufen.';
   }
 });
 </script>
