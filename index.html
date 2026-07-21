@@ -6,48 +6,65 @@
 <title>The 7-Day Modern Athlete Reset™</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;900&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 /* =========================================================
    MODERN ATHLETE LAB — 7-Day Reset
    Bright · minimal · premium · editorial
 ========================================================= */
 :root{
-  --bg:#F6F6F3;
+  --bg:#F4F3EE;
   --card:#FFFFFF;
-  --ink:#15181D;
-  --muted:#6A7076;
-  --line:#E7E7E2;
-  --accent:#2456D6;
-  --accent-soft:#EEF2FE;
-  --success:#178A5B;
-  --success-soft:#E9F6F0;
-  --warn:#B7791F;
-  --warn-soft:#FBF3E4;
-  --radius:20px;
-  --radius-sm:14px;
-  --contrast:#15181D;
+  --ink:#171A17;
+  --muted:#5B615B;
+  --line:#DEDCD2;
+  --accent:#D9480F;        /* Signal — nur Interaktion/Conversion */
+  --accent-soft:#FBE9E0;
+  --pine:#1E4B40;          /* Struktur/Marke */
+  --pine-soft:#E4EDE9;
+  --success:#1C7C4C;
+  --success-soft:#E6F3EC;
+  --warn:#9A6410;
+  --warn-soft:#F8EFDC;
+  --focus:#1D4ED8;
+  --error:#B42318;
+  --error-soft:#FBEAE7;
+  --radius:16px;
+  --radius-sm:12px;
+  --contrast:#171A17;
+  --bezel:color-mix(in srgb,var(--ink) 7%,var(--bg));
+  --hairline:color-mix(in srgb,var(--ink) 9%,transparent);
+  --card-glow:inset 0 1px 0 rgba(255,255,255,.65);
+  --shadow-soft:0 1px 2px rgba(20,22,18,.04),0 10px 28px -16px rgba(20,22,18,.13);
+  --ease-lux:cubic-bezier(.32,.72,0,1);
 }
 :root[data-theme="dark"]{
-  --contrast:#0B0C0E;
-  --bg:#111316;
-  --card:#1B1E23;
-  --ink:#F3F4F1;
-  --muted:#9A9FA6;
-  --line:#2C2F35;
-  --accent:#5C86EE;
-  --accent-soft:#1E2740;
-  --success:#3FBE8B;
-  --success-soft:#123328;
-  --warn:#E0A83E;
-  --warn-soft:#3A2F16;
+  --contrast:#0C0E0B;
+  --bg:#131511;
+  --card:#1C1F1A;
+  --ink:#EDECE5;
+  --muted:#9EA398;
+  --line:#2C2F29;
+  --accent:#F0561A;
+  --accent-soft:#33210F;
+  --pine:#7FB5A5;
+  --pine-soft:#20302B;
+  --success:#5FBC8D;
+  --success-soft:#1E2E26;
+  --warn:#D9A24A;
+  --warn-soft:#2E2617;
+  --focus:#7C9EFF;
+  --error:#F0837A;
+  --error-soft:#361D1A;
+  --card-glow:inset 0 1px 0 rgba(255,255,255,.05);
+  --shadow-soft:0 1px 2px rgba(0,0,0,.25),0 10px 28px -16px rgba(0,0,0,.5);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow-x:hidden;max-width:100vw;overflow-anchor:none;background:var(--bg)}
 body{
   background:var(--bg);
   color:var(--ink);
-  font-family:'Inter',system-ui,sans-serif;
+  font-family:'Plus Jakarta Sans',system-ui,sans-serif;
   font-size:16px;line-height:1.55;
   -webkit-font-smoothing:antialiased;
   display:flex;justify-content:center;
@@ -71,9 +88,9 @@ header{display:flex;align-items:center;justify-content:space-between;padding:20p
 .brand-mark{
   width:32px;height:32px;border-radius:10px;background:var(--contrast);
   display:grid;place-items:center;color:#fff;
-  font-family:'Sora';font-weight:800;font-size:14px;
+  font-family:'Archivo';font-weight:800;font-size:14px;
 }
-.brand-name{font-family:'Sora';font-weight:700;font-size:12px;letter-spacing:.16em;text-transform:uppercase}
+.brand-name{font-family:'Archivo';font-weight:700;font-size:12px;letter-spacing:.16em;text-transform:uppercase}
 .brand-name span{color:var(--muted);font-weight:600}
 .header-right{display:flex;align-items:center;gap:8px}
 .icon-btn{
@@ -91,10 +108,18 @@ header{display:flex;align-items:center;justify-content:space-between;padding:20p
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 
 /* ---------- Typography ---------- */
-h1{font-family:'Sora';font-weight:800;font-size:28px;line-height:1.18;letter-spacing:-.01em;text-align:center}
-h2{font-family:'Sora';font-weight:700;font-size:18px;text-align:center}
-.eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);text-align:center}
-.sub{color:var(--muted);font-size:14.5px;text-align:center}
+h1{font-family:'Archivo';font-weight:900;font-size:29px;line-height:1.12;letter-spacing:-.02em;text-align:center}
+h2{font-family:'Archivo';font-weight:700;font-size:18px;letter-spacing:-.01em;text-align:center}
+/* Eyebrow als Pill-Badge; display:table + margin:auto zentriert ohne Parent-Änderung */
+.eyebrow{
+  display:table;margin:0 auto 2px;
+  font-family:'Archivo';font-weight:700;font-size:11px;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--pine);text-align:center;
+  background:color-mix(in srgb,currentColor 7%,transparent);
+  border:1px solid color-mix(in srgb,currentColor 16%,transparent);
+  border-radius:999px;padding:5px 13px;
+}
+.sub{color:var(--muted);font-size:14.5px;text-align:center;white-space:pre-line}
 em{font-style:normal;color:var(--accent)}
 
 /* ---------- Side carousels (dekorativ, hinter der App) ---------- */
@@ -115,20 +140,36 @@ em{font-style:normal;color:var(--accent)}
 @keyframes panYRev{from{transform:translateY(-50%)}to{transform:translateY(0)}}
 
 /* ---------- Cards / Buttons ---------- */
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--card-glow),var(--shadow-soft)}
+.stat-tile,.archive-row,.task,.slider-block,.option-card,.small-link-row,.tip-box,.lang-card{box-shadow:var(--card-glow),var(--shadow-soft)}
+/* CTA: Pill + Button-in-Button-Pfeilkreis + Press-Physik */
 .cta{
   appearance:none;border:none;cursor:pointer;width:100%;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;
   background:var(--contrast);color:#fff;
-  font-family:'Sora';font-weight:700;font-size:15px;
-  border-radius:16px;padding:16px 20px;
-  transition:transform .12s ease,opacity .15s;
+  font-family:'Archivo';font-weight:700;font-size:15px;
+  border-radius:999px;padding:9px 9px 9px 22px;min-height:52px;
+  box-shadow:var(--shadow-soft);
+  transition:transform .2s var(--ease-lux),opacity .2s var(--ease-lux);
 }
-.cta:hover{opacity:.92}
-.cta:active{transform:scale(.985)}
-.cta[disabled]{opacity:.4;cursor:not-allowed}
-.cta.secondary{background:var(--card);color:var(--ink);border:1px solid var(--line)}
-.cta.accent{background:var(--accent)}
-.ghost-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;font-weight:600;font-family:'Inter';padding:8px}
+.cta::after{
+  content:"→";display:grid;place-items:center;flex-shrink:0;
+  width:34px;height:34px;border-radius:50%;
+  background:color-mix(in srgb,currentColor 15%,transparent);
+  font-size:16px;font-weight:700;
+  transition:transform .2s var(--ease-lux);
+}
+.cta:hover{opacity:.95;transform:translateY(-1px)}
+.cta:hover::after{transform:translate(2px,-1px) scale(1.05)}
+.cta:active{transform:scale(.98)}
+.cta:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.cta[disabled]{opacity:.65;cursor:not-allowed;transform:none}
+.cta[disabled]::before{content:"";width:16px;height:16px;border-radius:50%;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;animation:ctaspin .8s linear infinite;flex-shrink:0}
+@keyframes ctaspin{to{transform:rotate(360deg)}}
+.cta.secondary{background:var(--card);color:var(--ink);border:1.5px solid var(--line);box-shadow:none}
+.cta.secondary:hover{border-color:var(--ink)}
+.cta.accent{background:var(--accent);color:#fff}
+.ghost-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;font-weight:600;font-family:'Plus Jakarta Sans';padding:8px}
 .ghost-btn:hover{color:var(--ink)}
 
 /* ---------- Language screen ---------- */
@@ -137,26 +178,33 @@ em{font-style:normal;color:var(--accent)}
 .lang-card{
   background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
   padding:28px 16px;cursor:pointer;display:flex;flex-direction:column;gap:6px;align-items:center;
-  font-family:'Sora';font-weight:700;font-size:17px;transition:border-color .15s,transform .12s;
+  font-family:'Archivo';font-weight:700;font-size:17px;transition:border-color .15s,transform .12s;
 }
 .lang-card:hover{border-color:var(--ink)}
 .lang-card:active{transform:scale(.98)}
 .lang-card .flag{font-size:26px}
-.lang-card .lsub{font-size:12px;color:var(--muted);font-family:'Inter';font-weight:500}
+.lang-card .lsub{font-size:12px;color:var(--muted);font-family:'Plus Jakarta Sans';font-weight:500}
 
 /* ---------- Auth ---------- */
 .auth{justify-content:center;gap:14px}
 .field{
   width:100%;background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);
-  color:var(--ink);font-family:'Inter';font-size:15px;padding:14px 16px;
+  color:var(--ink);font-family:'Plus Jakarta Sans';font-size:15px;padding:14px 16px;
 }
 .field::placeholder{color:#A2A7AC}
-.field:focus-visible{outline:none;border-color:var(--accent)}
+.field:focus-visible{outline:3px solid var(--focus);outline-offset:1px;border-color:var(--focus)}
 textarea.field{min-height:96px;resize:vertical}
 select.field{appearance:auto}
 .field-label{font-size:12.5px;font-weight:600;color:var(--muted);margin-top:4px}
-.err{font-size:13px;color:#C0392B;min-height:18px}
-.ok{font-size:13px;color:var(--success);min-height:18px}
+.f-hint{font-size:11.5px;color:var(--muted);margin-top:-8px}
+.f-hint:empty{display:none}
+/* Meldungen: Icon + Text + Farbe (nie Farbe allein), zentriert */
+.err,.ok{display:flex;gap:8px;align-items:center;justify-content:center;text-align:center;font-size:13px;font-weight:600;border-radius:10px;padding:11px 13px;line-height:1.45}
+.err{background:var(--error-soft);color:var(--error);border:1px solid color-mix(in srgb,var(--error) 45%,transparent)}
+.ok{background:var(--success-soft);color:var(--success);border:1px solid color-mix(in srgb,var(--success) 45%,transparent)}
+.err::before{content:"⚠";flex-shrink:0}
+.ok::before{content:"✓";flex-shrink:0;font-weight:800}
+.err:empty,.ok:empty{display:none}
 .password-field{position:relative;width:100%}
 .password-field .field{padding-right:46px}
 .password-toggle{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:15px;padding:8px;color:var(--muted)}
@@ -167,17 +215,24 @@ select.field{appearance:auto}
 
 /* ---------- Video placeholder ---------- */
 .video-card{
-  position:relative;border-radius:var(--radius);overflow:hidden;background:var(--contrast);
+  position:relative;border-radius:var(--radius);overflow:hidden;background:#12211C;
   aspect-ratio:16/9;display:grid;place-items:center;color:#fff;
+  box-shadow:var(--card-glow),var(--shadow-soft);
 }
 .video-card video{width:100%;height:100%;object-fit:cover}
-.video-ph{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:16px}
+.video-ph{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:16px}
 .video-ph .play{
-  width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.14);
-  border:1px solid rgba(255,255,255,.35);display:grid;place-items:center;font-size:18px;
+  width:56px;height:56px;border-radius:50%;background:var(--accent);color:#fff;
+  display:grid;place-items:center;font-size:19px;padding-left:4px;
+  box-shadow:0 10px 28px -10px rgba(0,0,0,.55);
 }
-.video-ph .vtitle{font-family:'Sora';font-weight:700;font-size:14px}
+.video-ph .vtitle{font-family:'Archivo';font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
 .video-ph .vsub{font-size:12px;color:rgba(255,255,255,.65)}
+
+/* Coach-Brief (Tag 0): Renés Stimme hat app-weit eine Form — Pine-Kante */
+.letter{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--pine);border-radius:var(--radius);padding:16px 18px;font-size:14px;line-height:1.6;text-align:left;box-shadow:var(--card-glow),var(--shadow-soft)}
+.letter .sig{display:block;margin-top:10px;font-family:'Archivo';font-weight:800;font-size:14px;color:var(--pine)}
+.letter .sig:empty{display:none}
 
 /* ---------- Dashboard ---------- */
 .mission-card{background:var(--contrast);color:#fff;border:none}
@@ -185,34 +240,60 @@ select.field{appearance:auto}
 .mission-card h2{font-size:22px;margin:6px 0 4px;color:#fff}
 .mission-card .sub{color:rgba(255,255,255,.72)}
 .mission-card .cta{background:#fff;color:var(--contrast);margin-top:16px}
+.dash-head-row{display:flex;align-items:center;justify-content:center;gap:14px}
+.daycount{font-family:'Archivo';font-weight:900;font-size:26px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.daycount small{font-size:14px;color:var(--muted);font-weight:700}
+.mini-trend{display:flex;align-items:flex-end;justify-content:center;gap:3px;height:24px;margin-bottom:4px}
+.mini-trend i{width:9px;background:var(--pine);border-radius:2px;opacity:.85}
+.mini-trend i.ghost{opacity:.15}
 .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .stat-tile{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 12px;text-align:center}
-.stat-num{font-family:'Sora';font-weight:800;font-size:20px}
+.stat-num{font-family:'Archivo';font-weight:900;font-size:21px;font-variant-numeric:tabular-nums}
 .stat-label{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
 .progress-track{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:8px}
-.progress-fill{height:100%;background:var(--accent);border-radius:99px;transition:width .5s ease}
+.progress-fill{height:100%;background:var(--success);border-radius:99px;transition:width .5s var(--ease-lux)}
 .level-chip{
   display:inline-flex;align-items:center;gap:8px;align-self:center;
-  background:var(--accent-soft);color:var(--accent);border-radius:999px;
-  padding:8px 16px;font-size:13px;font-weight:700;font-family:'Sora';
+  background:var(--pine-soft);color:var(--pine);border:1px solid var(--pine);border-radius:999px;
+  padding:8px 16px;font-size:13px;font-weight:700;font-family:'Archivo';
 }
-.archive{display:flex;flex-direction:column;gap:8px}
+/* Die 7-Tage-Spine (S1): vertikale Progress-Rail + Tages-Zeilen */
+.archive{display:grid;grid-template-columns:44px 1fr;gap:12px}
+.spine-rail{display:flex;flex-direction:column;align-items:center;padding-top:6px}
+.spine-node{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;flex-shrink:0;
+  font-family:'Archivo';font-weight:700;font-size:13px;font-variant-numeric:tabular-nums}
+.spine-node.done{background:var(--pine);color:var(--bg)}
+.spine-node.today{background:var(--accent);color:#fff;box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 18%,transparent)}
+.spine-node.locked{background:transparent;border:1.5px dashed var(--line);color:var(--muted)}
+.spine-node.gate{width:26px;height:26px;font-size:11px;background:var(--pine-soft);color:var(--pine);border:1.5px solid var(--pine)}
+.spine-node.gate.locked-gate{background:transparent;border-style:dashed;border-color:var(--line);color:var(--muted)}
+.spine-link{width:2px;flex:1;min-height:14px;background:var(--pine)}
+.spine-link.future{background:transparent;border-left:2px dashed var(--line)}
+.spine-rows{display:flex;flex-direction:column;gap:8px}
 .archive-row{
   display:flex;align-items:center;gap:12px;background:var(--card);
-  border:1px solid var(--line);border-radius:var(--radius-sm);padding:13px 16px;
-  font-size:14px;font-weight:600;
+  border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 14px;
+  font-size:14px;font-weight:600;min-height:58px;
 }
-.archive-row.clickable{cursor:pointer}
-.archive-row.clickable:hover{border-color:#C9C9C2}
-.archive-row .a-day{font-family:'Sora';font-weight:700;font-size:12px;color:var(--muted);width:48px;flex-shrink:0}
+.archive-row.clickable{cursor:pointer;transition:border-color .2s var(--ease-lux)}
+.archive-row.clickable:hover{border-color:var(--pine)}
+.archive-row.today-row{border-color:var(--accent);border-width:1.5px}
 .archive-row .a-name{flex:1}
-.archive-row .a-state{font-size:14px}
-.archive-row.locked{opacity:.5}
+.archive-row .a-name small{display:block;font-size:12px;color:var(--muted);font-weight:500}
+.archive-row .a-state{font-family:'Archivo';font-weight:700;font-size:13px;color:var(--success);font-variant-numeric:tabular-nums}
+.archive-row .a-state.a-today{color:var(--accent)}
+.archive-row .a-state.a-locked{color:var(--muted);font-size:11.5px;font-weight:600}
+.archive-row.locked{opacity:.55}
+.gate-row{background:var(--pine-soft);border:1px solid var(--pine);border-radius:var(--radius-sm);padding:12px 14px;font-size:12.5px;color:var(--ink)}
+.gate-row b{font-family:'Archivo';color:var(--pine);font-size:13px}
+.gate-row.locked{opacity:.55;background:var(--card);border-color:var(--line)}
+.gate-row.clickable{cursor:pointer}
+.gate-row.clickable:hover{border-color:var(--accent)}
 .unlock-card{border:1px solid var(--accent);background:var(--accent-soft)}
 .small-link-row{display:flex;align-items:center;justify-content:space-between;font-size:13.5px;font-weight:600;cursor:pointer;background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 16px}
 .small-link-row:hover{border-color:#C9C9C2}
-.verify-note{background:var(--warn-soft);border:1px solid #EAD9B0;border-radius:var(--radius-sm);padding:10px 14px;font-size:12.5px;color:var(--warn);display:flex;flex-direction:column;gap:6px;align-items:center;text-align:center}
-.verify-note button{background:none;border:1px solid #EAD9B0;border-radius:999px;color:var(--warn);font-size:12px;font-weight:600;padding:5px 12px;cursor:pointer}
+.verify-note{background:var(--warn-soft);border:1px solid var(--warn);border-radius:var(--radius-sm);padding:9px 9px 9px 14px;font-size:13px;font-weight:600;color:var(--warn);display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left}
+.verify-note button{background:none;border:1.5px solid var(--warn);border-radius:999px;color:var(--warn);font-size:12.5px;font-weight:700;padding:0 16px;min-height:44px;cursor:pointer;white-space:nowrap;flex-shrink:0}
 
 /* ---------- Day / Mission ---------- */
 .tasks{display:flex;flex-direction:column;gap:8px}
@@ -230,24 +311,27 @@ select.field{appearance:auto}
 .task.done .box{background:var(--success);border-color:var(--success)}
 .slider-block{display:flex;flex-direction:column;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px}
 .slider-head{display:flex;justify-content:space-between;align-items:baseline}
-.slider-head .sv{font-family:'Sora';font-weight:800;font-size:22px;color:var(--accent)}
+.slider-head .sv{font-family:'Archivo';font-weight:900;font-size:22px;color:var(--pine);font-variant-numeric:tabular-nums}
 .slider-head .sl{font-size:13.5px;font-weight:600}
-input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:99px;background:var(--line);outline:none}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:var(--accent);border:4px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2);cursor:pointer}
-input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--accent);border:4px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2);cursor:pointer}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:99px;outline:none;
+  background:linear-gradient(to right,var(--pine) 0%,var(--pine) var(--fill,44%),var(--line) var(--fill,44%));}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:var(--accent);border:4px solid var(--card);box-shadow:0 2px 6px rgba(0,0,0,.25),inset 0 1px 1px rgba(255,255,255,.35);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--accent);border:4px solid var(--card);box-shadow:0 2px 6px rgba(0,0,0,.25);cursor:pointer}
+input[type=range]:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
 .seg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .seg button{
   background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);
-  padding:12px;font-size:13.5px;font-weight:600;font-family:'Inter';cursor:pointer;color:var(--ink);
+  padding:12px;font-size:13.5px;font-weight:600;font-family:'Plus Jakarta Sans';cursor:pointer;color:var(--ink);
 }
 .seg button.sel{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.seg button:focus-visible,.seg2 button:focus-visible,.task:focus-visible,.lang-card:focus-visible,.icon-btn:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .coach-note{
   background:var(--accent-soft);border:1px solid #D7E1FA;border-radius:var(--radius-sm);
   padding:12px 14px;font-size:13px;color:var(--accent);text-align:center;
 }
-.quote-box{background:var(--card);border-left:3px solid var(--ink);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:14px 16px;font-size:15px;font-style:italic}
+.quote-box{background:var(--card);border-left:3px solid var(--pine);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:14px 16px;font-size:15px;font-style:italic}
 .tip-box{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px 16px;font-size:13.5px}
-.tip-box b{font-family:'Sora';font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px}
+.tip-box b{font-family:'Archivo';font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px}
 
 /* ---------- Reward ---------- */
 .reward{justify-content:center;text-align:center;gap:16px}
@@ -257,23 +341,56 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
   animation:pop .5s cubic-bezier(.34,1.56,.64,1);
 }
 @keyframes pop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
-.reward-points{font-family:'Sora';font-weight:800;font-size:34px}
+.reward-points{font-family:'Archivo';font-weight:900;font-size:56px;letter-spacing:-.03em;line-height:1;color:var(--success);font-variant-numeric:tabular-nums}
+.reward-points small{display:block;font-size:15px;letter-spacing:0;color:var(--muted);font-weight:700;font-family:'Plus Jakarta Sans';margin-top:6px}
 .reward-badge{
   display:inline-flex;align-items:center;gap:10px;align-self:center;
-  background:var(--contrast);color:#fff;border-radius:999px;padding:10px 20px;
-  font-family:'Sora';font-weight:700;font-size:14px;
+  background:var(--pine-soft);color:var(--pine);border:1px solid var(--pine);border-radius:999px;padding:10px 20px;
+  font-family:'Archivo';font-weight:700;font-size:13.5px;
   animation:pop .6s .15s cubic-bezier(.34,1.56,.64,1) backwards;
 }
 .reward-streak{font-size:14px;color:var(--muted);font-weight:600}
+.reward-streak b{color:var(--accent)}
 
 /* ---------- Bottleneck / Final ---------- */
-.option-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;gap:8px}
-.option-card h3{font-family:'Sora';font-weight:700;font-size:16px}
+.option-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;gap:8px;transition:border-color .2s var(--ease-lux)}
+.option-card h3{font-family:'Archivo';font-weight:700;font-size:16px}
 .option-card p{font-size:13.5px;color:var(--muted)}
-.option-card .cta{margin-top:6px;padding:13px}
-.offer-list{display:flex;flex-direction:column;gap:6px;font-size:14px}
-.offer-list div::before{content:"✓";color:var(--success);font-weight:700;margin-right:8px}
-.price-tag{font-family:'Sora';font-weight:800;font-size:22px}
+.option-card .cta{margin-top:6px}
+.option-card.selectable{cursor:pointer}
+.option-card.selectable:hover{border-color:var(--pine)}
+.option-card.dashed{border-style:dashed}
+.option-card.premium{
+  position:relative;overflow:hidden;border:1px solid transparent;
+  background:
+    linear-gradient(var(--card),var(--card)) padding-box,
+    linear-gradient(115deg,var(--pine) 0%,var(--accent) 45%,var(--pine) 100%) border-box;
+  background-size:100% 100%,220% 220%;
+  animation:premiumBorder 7s ease infinite;
+}
+.option-card.premium:hover{border-color:transparent}
+.option-card.premium::after{
+  content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;
+  background:linear-gradient(115deg,transparent 0%,rgba(255,255,255,.28) 50%,transparent 100%);
+  transform:skewX(-20deg);animation:premiumShimmer 4.5s ease-in-out infinite;pointer-events:none;
+}
+@keyframes premiumBorder{0%{background-position:0 0,0% 50%}50%{background-position:0 0,100% 50%}100%{background-position:0 0,0% 50%}}
+@keyframes premiumShimmer{0%{left:-60%}60%{left:130%}100%{left:130%}}
+/* Score-Band (Tag 7): Punkte als sichtbarer Beleg unter der Tier-Headline */
+.score-band-wrap{display:flex;flex-direction:column;gap:8px}
+.score-band{display:flex;align-items:baseline;justify-content:center;gap:10px}
+.score-big{font-family:'Archivo';font-weight:900;font-size:44px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.score-of{font-size:15px;color:var(--muted);font-weight:600}
+.score-bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.score-bar i{display:block;height:100%;background:var(--success);border-radius:4px;transition:width .5s var(--ease-lux)}
+/* Offer als Preistafel: Pine-Kopf mit Preis rechts */
+.offer{border:1.5px solid var(--pine);border-radius:var(--radius);overflow:hidden;box-shadow:var(--card-glow),var(--shadow-soft)}
+.offer-head{background:var(--pine);color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+:root[data-theme="dark"] .offer-head{color:#131511}
+.offer-head h2{font-size:15px;text-align:left;color:inherit}
+.offer-list{display:flex;flex-direction:column;gap:8px;font-size:13.5px;padding:14px 18px;background:var(--card)}
+.offer-list div::before{content:"—";color:var(--pine);font-weight:700;margin-right:8px}
+.price-tag{font-family:'Archivo';font-weight:900;font-size:16px;white-space:nowrap}
 .prize-note{background:var(--warn-soft);border:1px solid #EAD9B0;border-radius:var(--radius-sm);padding:12px 16px;font-size:13.5px;text-align:center}
 .prize-note{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;text-align:left}
 .prize-countdown{font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:700}
@@ -283,12 +400,12 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 .lb-list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
 .lb-row{display:flex;align-items:center;gap:12px;background:var(--bg);border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 14px}
 .lb-row.lb-me{border-color:var(--accent);background:var(--accent-soft)}
-.lb-rank{font-family:'Sora';font-weight:800;font-size:14px;color:var(--muted);width:22px;text-align:center}
+.lb-rank{font-family:'Archivo';font-weight:800;font-size:14px;color:var(--muted);width:22px;text-align:center}
 .lb-row:nth-child(1) .lb-rank{color:#C08A1E}
 .lb-row:nth-child(2) .lb-rank{color:#8C8C8C}
 .lb-row:nth-child(3) .lb-rank{color:#B0703C}
 .lb-name{flex:1;font-weight:600;font-size:13.5px}
-.lb-streak{font-family:'Sora';font-weight:700;font-size:13px;color:var(--accent);font-variant-numeric:tabular-nums}
+.lb-streak{font-family:'Archivo';font-weight:700;font-size:13px;color:var(--accent);font-variant-numeric:tabular-nums}
 
 /* ---------- Collage strip ---------- */
 .collage-strip{width:100%;height:120px;overflow:hidden;border-radius:var(--radius);border:1px solid var(--line)}
@@ -303,10 +420,11 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 
 /* ---------- Settings ---------- */
 .settings{gap:12px}
-.seg2{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.seg2 button{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter';color:var(--ink)}
-.seg2 button.sel{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
-.back-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;font-weight:600;font-family:'Inter';padding:6px 8px 6px 0;align-self:flex-start}
+.seg2{display:flex;gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:4px}
+.seg2 button{flex:1;min-height:44px;border:none;border-radius:999px;background:transparent;font-size:13.5px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans';color:var(--muted);transition:color .2s var(--ease-lux)}
+.seg2 button.sel{background:var(--card);color:var(--ink);box-shadow:var(--card-glow),var(--shadow-soft)}
+.settings .field-label{text-align:center}
+.back-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;font-weight:600;font-family:'Plus Jakarta Sans';padding:6px 8px 6px 0;align-self:flex-start}
 .back-btn:hover{color:var(--ink)}
 .footer-note{font-size:11.5px;color:var(--muted);text-align:center;padding-top:8px}
 </style>
@@ -387,7 +505,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
       <h1 id="day0Title">Welcome to the Reset.</h1>
     </div>
     <div class="video-card" id="day0Video"></div>
-    <p class="sub" id="day0Text"></p>
+    <div class="letter"><span id="day0Text"></span><span class="sig" id="day0Sig"></span></div>
     <button class="cta" id="day0Cta">Start Baseline Check-In</button>
   </section>
 
@@ -396,6 +514,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
     <div>
       <div class="eyebrow" id="baseEyebrow">Baseline Check-In</div>
       <h1 id="baseTitle">Where are you starting from?</h1>
+      <p class="sub" id="baseSub" style="margin-top:6px"></p>
     </div>
     <label class="field-label" id="lblName">Name</label>
     <input class="field" id="baseName" type="text" autocomplete="name">
@@ -406,6 +525,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
     </select>
     <label class="field-label" id="lblPhone">WhatsApp number (optional, recommended)</label>
     <input class="field" id="basePhone" type="tel" autocomplete="tel" placeholder="+886 912 345 678">
+    <div class="f-hint" id="phoneHint"></div>
     <label class="field-label" id="lblSource">Who invited you?</label>
     <select class="field" id="baseSource"></select>
     <div id="friendNameWrap" class="hidden">
@@ -429,7 +549,10 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
     </div>
     <div>
       <div class="eyebrow" id="dashHello"></div>
-      <h1 id="dashHead"></h1>
+      <div class="dash-head-row">
+        <h1 id="dashHead"></h1>
+        <div class="daycount" id="dayCount">0<small>/07</small></div>
+      </div>
     </div>
     <div class="card mission-card" id="missionCard">
       <div class="eyebrow" id="missionEyebrow"></div>
@@ -439,17 +562,16 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
     </div>
     <div class="stat-row">
       <div class="stat-tile">
-        <div class="stat-num" id="statDay">0/7</div>
-        <div class="stat-label" id="statDayLbl">Progress</div>
-        <div class="progress-track"><div class="progress-fill" id="statBar" style="width:0%"></div></div>
-      </div>
-      <div class="stat-tile">
         <div class="stat-num" id="statStreak">0</div>
         <div class="stat-label" id="statStreakLbl">Streak</div>
       </div>
       <div class="stat-tile">
         <div class="stat-num" id="statPoints">0</div>
         <div class="stat-label" id="statPointsLbl">Reset Points</div>
+      </div>
+      <div class="stat-tile">
+        <div class="mini-trend" id="statTrend" aria-hidden="true"></div>
+        <div class="stat-label" id="statTrendLbl"></div>
       </div>
     </div>
     <div class="level-chip" id="levelChip"></div>
@@ -568,12 +690,15 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
       <div class="eyebrow" id="finalEyebrow"></div>
       <h1 id="finalTitle"></h1>
     </div>
+    <div class="score-band-wrap">
+      <div class="score-band"><span class="score-big" id="scorePoints">0</span><span class="score-of" id="scoreOf"></span></div>
+      <div class="score-bar"><i id="scoreBar" style="width:0%"></i></div>
+    </div>
     <div class="video-card" id="finalVideo"></div>
     <p class="sub" id="finalIntro"></p>
     <div class="prize-note" id="prizeNote"></div>
-    <div class="card">
-      <h2 id="offerTitle"></h2>
-      <div class="price-tag" style="margin:6px 0" id="offerPrice"></div>
+    <div class="offer">
+      <div class="offer-head"><h2 id="offerTitle"></h2><span class="price-tag" id="offerPrice"></span></div>
       <div class="offer-list" id="offerList"></div>
     </div>
     <div id="finalCtas" style="display:flex;flex-direction:column;gap:10px"></div>
@@ -614,8 +739,9 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
       <button id="setLangZh">中文</button>
     </div>
     <label class="field-label" id="lblPw"></label>
-    <input class="field" id="curPw" type="password" autocomplete="current-password">
     <input class="field" id="newPw" type="password" autocomplete="new-password">
+    <label class="field-label" id="lblPw2"></label>
+    <input class="field" id="newPw2" type="password" autocomplete="new-password">
     <div class="err" id="pwError"></div>
     <div class="ok" id="pwSuccess"></div>
     <button class="cta secondary" id="pwSaveBtn"></button>
@@ -629,7 +755,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/fireba
 import {
   getAuth, onAuthStateChanged, signInWithEmailAndPassword,
   createUserWithEmailAndPassword, signOut, sendPasswordResetEmail, sendEmailVerification,
-  EmailAuthProvider, reauthenticateWithCredential, updatePassword,
+  updatePassword,
   setPersistence, browserLocalPersistence, browserSessionPersistence
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 import {
@@ -657,6 +783,11 @@ const PRIZE_DEADLINE = new Date('2026-08-10T23:59:59');
 /* Firebase Storage needs the Blaze plan — set to true once that's upgraded
    and storage.rules is published, to switch on PDF plan uploads/downloads. */
 const STORAGE_ENABLED = false;
+/* ======= TEST-MODUS =======
+   true  = Tage 1–7 sind für ALLE sofort freigeschaltet (damit René alles testen kann).
+   false = Original-Verhalten: ein Tag pro Kalendertag, streng der Reihe nach.
+   Zum Zurücksetzen NUR diese eine Zeile auf false stellen — sonst ändert sich nichts. */
+const TEST_ALL_DAYS_UNLOCKED = true;
 const COLLAGE_PHOTOS = Array.from({length:18},(_,i)=>'assets/collage/photo'+(i+1)+'.jpg');
 const FAKE_LEADERBOARD = [
   { uid:'fake1', name:'Lena K.', streak:14 },
@@ -691,21 +822,21 @@ const DAYS = {
 1:{ chooseOne:false,
   en:{ name:"Awareness", theme:"Track, don't judge.",
     desc:"Today is only about noticing your current patterns — no judgment, no fixing yet.",
-    tasks:["Track your sleep","Track your energy","Track your water intake","Track your meals","Track your mood","Track your movement"],
+    tasks:["Track your water intake","Track your meals","Track your mood","Track your movement"],
     reflection:"What did you notice today?",
     quote:"You don't change what you don't notice. Awareness is the first rep.",
     tip:"Track without judgment. The goal is not to be perfect. The goal is to see the pattern.",
     teaser:"Tomorrow: feel your body again." },
   de:{ name:"Awareness", theme:"Beobachten, nicht bewerten.",
     desc:"Heute geht es nur darum, deine aktuellen Muster wahrzunehmen — ohne Bewertung, ohne sofort etwas zu ändern.",
-    tasks:["Schlaf notieren","Energie notieren","Wasser notieren","Mahlzeiten notieren","Stimmung notieren","Bewegung notieren"],
+    tasks:["Wasser notieren","Mahlzeiten notieren","Stimmung notieren","Bewegung notieren"],
     reflection:"Welches Muster ist dir heute aufgefallen?",
     quote:"Du veränderst nicht, was du nicht wahrnimmst. Wahrnehmung ist die erste Wiederholung.",
     tip:"Beobachte ohne zu bewerten. Es geht nicht um Perfektion — es geht darum, das Muster zu sehen.",
     teaser:"Morgen: Spür deinen Körper wieder." },
   zh:{ name:"覺察", theme:"觀察，先別評判。",
     desc:"今天只需要留意你目前的習慣模式——不評判、先不急著改變。",
-    tasks:["記錄睡眠","記錄能量","記錄飲水量","記錄三餐","記錄心情","記錄活動量"],
+    tasks:["記錄飲水量","記錄三餐","記錄心情","記錄活動量"],
     reflection:"你今天注意到什麼？",
     quote:"你不會改變你沒有注意到的事。覺察是第一步。",
     tip:"觀察但不評判。目標不是完美，而是看清模式。",
@@ -759,7 +890,7 @@ const DAYS = {
     desc:"Tonight decides tomorrow's energy. We build a simple evening structure.",
     tasks:["Reduce evening screen time","Create a simple evening routine","Do 5 minutes of calm breathing","Set a realistic sleep target"],
     reflection:"What is your biggest recovery problem right now?",
-    quote:"Recovery is not time away from progress. Recovery is what makes progress possible.",
+    quote:"Recovery doesn't take your time away from progress. Recovery is what makes progress possible.",
     tip:"Your evening routine decides tomorrow's energy more than your morning motivation.",
     teaser:"Tomorrow: remove decision fatigue." },
   de:{ name:"Recovery", theme:"Regeneration ist produktiv.",
@@ -823,21 +954,21 @@ const DAYS = {
 7:{ chooseOne:false,
   en:{ name:"The New Standard", theme:"This wasn't a challenge. It was proof.",
     desc:"Seven days done. Today you look back — and decide what you keep.",
-    tasks:["Review your 7 days","Choose the 1–2 habits you keep","Complete your final check-in"],
+    tasks:["Reflect for 10 min on the past 7 days","Choose 1–2 habits you want to stick to","Complete your final check-in"],
     reflection:"What changed? How do you feel? What surprised you? What do you need help with next?",
     quote:"This wasn't a challenge. It was proof.",
     tip:"Don't try to keep everything. Keep the 1–2 habits that created the biggest shift.",
     teaser:"" },
   de:{ name:"The New Standard", theme:"Das war keine Challenge. Das war der Beweis.",
     desc:"Sieben Tage geschafft. Heute blickst du zurück — und entscheidest, was du behältst.",
-    tasks:["Deine 7 Tage durchgehen","Die 1–2 Gewohnheiten wählen, die du behältst","Finalen Check-in abschließen"],
+    tasks:["10 Min über die letzten 7 Tage reflektieren","1–2 Gewohnheiten wählen, an denen du festhalten willst","Finalen Check-in abschließen"],
     reflection:"Was hat sich verändert? Wie fühlst du dich? Was hat dich überrascht? Wobei brauchst du als Nächstes Hilfe?",
     quote:"Das war keine Challenge. Das war der Beweis.",
     tip:"Versuch nicht, alles beizubehalten. Behalte die 1–2 Gewohnheiten mit dem größten Effekt.",
     teaser:"" },
   zh:{ name:"全新的標準", theme:"這不是一場挑戰，而是一份證明。",
     desc:"七天完成了。今天回顧這段旅程——並決定你要保留什麼。",
-    tasks:["回顧你的7天","選擇你要保留的1–2個習慣","完成最終的Check-in"],
+    tasks:["花10分鐘回顧過去7天","選擇你想堅持的1–2個習慣","完成最終的Check-in"],
     reflection:"有什麼改變了？你現在感覺如何？有什麼讓你驚訝？接下來你需要什麼幫助？",
     quote:"這不是一場挑戰，而是一份證明。",
     tip:"不要試圖保留所有事情。只保留帶來最大改變的1–2個習慣。",
@@ -863,9 +994,12 @@ en:{
   day0Cta:"Start Baseline Check-In", day0CtaDone:"Back to dashboard",
   videoSoon:"Video from René — coming soon", welcomeVideo:"Welcome video",
   baseEyebrow:"Baseline Check-In", baseTitle:"Where are you starting from?",
+  baseSub:"5 sliders, 1 minute. This is your before-picture — Day 7 will show you the difference.",
   lblName:"Name", lblChannel:"Contact channel",
-  lblPhoneWhatsapp:"WhatsApp number (optional, recommended — include country code, e.g. +886...)",
+  lblPhoneWhatsapp:"WhatsApp number (optional, recommended)",
   lblPhoneLine:"LINE ID (optional, recommended)",
+  phoneHintWhatsapp:"Include your country code — so René can reply to you directly.",
+  phoneHintLine:"Your LINE ID — so René can reply to you directly.",
   phWhatsapp:"+886 912 345 678", phLine:"your_line_id",
   lblSource:"Who invited you?",
   lblFriend:"Name of the friend", lblGoal:"Main goal", lblStruggle:"Biggest current struggle",
@@ -879,7 +1013,7 @@ en:{
   missionDoneTitle:"Day completed ✅", missionDoneDesc:"Strong. Come back tomorrow for the next day.",
   missionAllDoneTitle:"Reset completed", missionAllDoneDesc:"All 7 days done. Your next step is ready below.",
   missionCtaDone:"View today's summary", missionCtaFinal:"See your next step",
-  dayWord:"Day", statDayLbl:"Progress", statStreakLbl:"Day streak", statPointsLbl:"Reset Points",
+  dayWord:"Day", statDayLbl:"Progress", statStreakLbl:"Day streak", statPointsLbl:"Reset Points", statEnergyLbl:"Your energy",
   levelDefault:"Reset Participant", archiveHead:"Your 7 days", startHereLbl:"▶ Day 0 · Welcome video", logout:"Log out",
   locked:"Locked", today:"Today",
   bnCardTitle:"Your Bottleneck Snapshot™ 🔓", bnCardSub:"Unlocked after Day 4 — see what's actually blocking you.",
@@ -890,8 +1024,8 @@ en:{
   lblMission:"Did you complete today's mission?",
   segMission:[["yes","Yes"],["partly","Partly"],["no","No"]],
   lblReflection:"Reflection", lblWin:"Biggest win today", lblHard:"What was hard today?",
-  lblFeedback:"Anything René should look at? (optional)",
-  coachNote:"Be honest here. René reviews the challenge check-ins personally — this is where the coaching begins.",
+  lblFeedback:"Anything you would like to discuss or need support with (optional)",
+  coachNote:"Be honest here. René reviews the challenge check-ins personally.",
   daySubmit:"Submit check-in", missionReq:"Please answer whether you completed today's mission.",
   chooseOneReq:"Choose at least one challenge for today.",
   rewardEyebrow:"Standard Completed ✅", pointsSuffix:"Reset Points",
@@ -901,7 +1035,7 @@ en:{
   checkinSaved:"Check-in submitted ✅ — René can now see your progress.",
   waCheckin:(d,e,s,w,h)=>"Hey René, I completed Day "+d+" of the Modern Athlete Reset.\n\nEnergy: "+e+"/10\nSleep: "+s+"/10\nBiggest win: "+(w||"—")+"\nBiggest struggle: "+(h||"—"),
   bnEyebrow:"Unlocked · Your Bottleneck Snapshot™", bnTitle:"Now the pattern is becoming visible.",
-  bnIntro:"You've completed 4 days. Most people don't need more motivation — they need to know what is actually blocking their energy, consistency and progress. For some it's nutrition. For others it's training structure. For many it's recovery and lifestyle. Choose where you want personal guidance:",
+  bnIntro:"You've completed 4 days — and you're already starting to see where your biggest bottlenecks may be.\n\nMost people don't need more motivation. They need clarity about what is actually limiting their energy, consistency and progress.\n\n🏋️ Training — structure, confidence and progression\n🥗 Nutrition — better choices, stable energy and simple routines\n😴 Recovery — sleep, stress and the ability to recharge\n🌱 Lifestyle — habits and systems that fit your real life\n\nChoose the area where you want more personal guidance and support from the Modern Athlete Lab™ community.",
   bnOptions:[
     { key:"nutrition", title:"Fuel MAP™", desc:"For better energy, fewer cravings and simple nutrition structure.", cta:"I want nutrition guidance",
       wa:"Hey René, I completed Day 4 of the Modern Athlete Reset and I'd like help with my nutrition guidance." },
@@ -914,7 +1048,7 @@ en:{
   ],
   bnSaved:"Saved. René will see your choice in his dashboard.",
   finalEyebrow:"Day 7 completed", finalTitle:"Ready To Build Your Personal MAP™?",
-  finalIntro:"You've seen what seven simple days can change. Now imagine what happens when your nutrition, training, recovery and lifestyle are built around your real life — your schedule, your goals, your body and your current bottlenecks. This is where your Personal MAP™ begins.",
+  finalIntro:"You've seen what seven simple days can reveal. Now you don't have to continue alone.\n\nModern Athlete Lab™ is a community for people who want to build better health, stronger habits and a body that can handle real life.\n\nInside the Lab, we support each other, share progress, stay accountable and create an environment that makes healthy choices easier.\n\n🏋️ Training — build strength, movement and physical confidence\n🥗 Nutrition — create simple habits that support your energy and goals\n😴 Recovery — improve sleep, stress management and your ability to recharge\n🌱 Lifestyle — build routines that work with your real schedule\n\nYou do not need a perfect plan or more motivation. You need the right environment, clear next steps and people who are moving in the same direction.\n\nThis is where awareness becomes action, consistency becomes easier and your Personal MAP™ begins.",
   finalTiers:{
     top:{ title:"You Didn't Just Finish — You Showed You Can Be Consistent.",
       intro:"Seven days, real consistency, no shortcuts. That's exactly the kind of person who gets the most out of a Personal MAP™ — because you've already proven you follow through. Let's build the version of this that runs on autopilot for the next 90 days." },
@@ -931,9 +1065,10 @@ en:{
     ["Book A Free Discovery Call","Hey René, I completed the 7-Day Reset — I'd like to book a free discovery call."],
     ["Ask René For My Next Step","Hey René, I completed the 7-Day Reset. What would you recommend as my next step?"]
   ],
-  settingsTitle:"Settings", lblLang:"Language / Sprache", lblPw:"Change password (current, then new)",
+  settingsTitle:"Settings", lblLang:"Language / Sprache", lblPw:"New password", lblPw2:"Repeat new password",
   pwSave:"Update password", pwFill:"Please fill in both fields.", pwShort:"New password needs at least 6 characters.",
-  pwSaved:"Password changed.", pwWrong:"Current password is incorrect.",
+  pwSaved:"Password changed.", pwMismatch:"Passwords don't match.",
+  pwRelogin:"For security, please sign in again, then try right after.",
   verifyNote:"Please verify your email — check your inbox.", verifyResend:"Resend email", verifySent:"Email sent.",
   lbHead:"🏆 Leaderboard", lbPrizeText:"🎁 Top 3 win a gift!", lbYou:"(you)",
   plansRowLbl:"📄 My Plans — request nutrition & training plans",
@@ -962,9 +1097,12 @@ de:{
   day0Cta:"Baseline-Check-in starten", day0CtaDone:"Zurück zum Dashboard",
   videoSoon:"Video von René — folgt in Kürze", welcomeVideo:"Willkommens-Video",
   baseEyebrow:"Baseline-Check-in", baseTitle:"Wo startest du gerade?",
+  baseSub:"5 Regler, 1 Minute. Das ist dein Vorher-Bild — Tag 7 zeigt dir den Unterschied.",
   lblName:"Name", lblChannel:"Kontaktkanal",
-  lblPhoneWhatsapp:"WhatsApp-Nummer (optional, empfohlen — mit Ländervorwahl, z. B. +886...)",
+  lblPhoneWhatsapp:"WhatsApp-Nummer (optional, empfohlen)",
   lblPhoneLine:"LINE-ID (optional, empfohlen)",
+  phoneHintWhatsapp:"Mit Ländervorwahl (z. B. +886...) — so kann René dir direkt antworten.",
+  phoneHintLine:"Deine LINE-ID — so kann René dir direkt antworten.",
   phWhatsapp:"+886 912 345 678", phLine:"deine_line_id",
   lblSource:"Wer hat dich eingeladen?",
   lblFriend:"Name des Freundes", lblGoal:"Hauptziel", lblStruggle:"Größte aktuelle Herausforderung",
@@ -978,7 +1116,7 @@ de:{
   missionDoneTitle:"Tag abgeschlossen ✅", missionDoneDesc:"Stark. Komm morgen für den nächsten Tag zurück.",
   missionAllDoneTitle:"Reset abgeschlossen", missionAllDoneDesc:"Alle 7 Tage geschafft. Dein nächster Schritt wartet unten.",
   missionCtaDone:"Heutige Zusammenfassung ansehen", missionCtaFinal:"Deinen nächsten Schritt ansehen",
-  dayWord:"Tag", statDayLbl:"Fortschritt", statStreakLbl:"Tage-Streak", statPointsLbl:"Reset Points",
+  dayWord:"Tag", statDayLbl:"Fortschritt", statStreakLbl:"Tage-Streak", statPointsLbl:"Reset Points", statEnergyLbl:"Deine Energie",
   levelDefault:"Reset-Teilnehmer", archiveHead:"Deine 7 Tage", startHereLbl:"▶ Tag 0 · Willkommens-Video", logout:"Abmelden",
   locked:"Gesperrt", today:"Heute",
   bnCardTitle:"Dein Bottleneck Snapshot™ 🔓", bnCardSub:"Nach Tag 4 freigeschaltet — sieh, was dich wirklich blockiert.",
@@ -989,8 +1127,8 @@ de:{
   lblMission:"Hast du die heutige Mission abgeschlossen?",
   segMission:[["yes","Ja"],["partly","Teilweise"],["no","Nein"]],
   lblReflection:"Reflexion", lblWin:"Größter Win heute", lblHard:"Was war heute schwer?",
-  lblFeedback:"Soll René sich etwas Bestimmtes anschauen? (optional)",
-  coachNote:"Sei hier ehrlich. Hier schauen wir uns die Check-in Challenge gemeinsam an und leiten deinen Weg ein.",
+  lblFeedback:"Gibt es etwas, das du besprechen möchtest oder wobei du Unterstützung brauchst? (optional)",
+  coachNote:"Sei hier ehrlich. René schaut sich die Challenge-Check-ins persönlich an.",
   daySubmit:"Check-in absenden", missionReq:"Bitte beantworte, ob du die heutige Mission abgeschlossen hast.",
   chooseOneReq:"Wähle mindestens eine Challenge für heute.",
   rewardEyebrow:"Standard gehalten ✅", pointsSuffix:"Reset Points",
@@ -1000,7 +1138,7 @@ de:{
   checkinSaved:"Check-in gespeichert ✅ — René kann deinen Fortschritt jetzt sehen.",
   waCheckin:(d,e,s,w,h)=>"Hey René, ich habe Tag "+d+" vom Modern Athlete Reset abgeschlossen.\n\nEnergie: "+e+"/10\nSchlaf: "+s+"/10\nGrößter Win: "+(w||"—")+"\nGrößte Herausforderung: "+(h||"—"),
   bnEyebrow:"Freigeschaltet · Dein Bottleneck Snapshot™", bnTitle:"Jetzt wird das Muster sichtbar.",
-  bnIntro:"Du hast 4 Tage abgeschlossen. Die meisten Menschen brauchen nicht mehr Motivation — sie müssen wissen, was ihre Energie, Konstanz und ihren Fortschritt wirklich blockiert. Bei manchen ist es die Ernährung. Bei anderen die Trainingsstruktur. Bei vielen sind es Regeneration und Lifestyle. Wähle, wo du persönliche Begleitung willst:",
+  bnIntro:"Du hast 4 Tage abgeschlossen — und beginnst schon zu erkennen, wo deine größten Blockaden liegen könnten.\n\nDie meisten Menschen brauchen nicht mehr Motivation. Sie brauchen Klarheit darüber, was ihre Energie, Konstanz und ihren Fortschritt wirklich limitiert.\n\n🏋️ Training — Struktur, Selbstvertrauen und Fortschritt\n🥗 Ernährung — bessere Entscheidungen, stabile Energie und einfache Routinen\n😴 Recovery — Schlaf, Stress und die Fähigkeit, wieder aufzutanken\n🌱 Lifestyle — Gewohnheiten und Systeme, die zu deinem echten Leben passen\n\nWähle den Bereich, in dem du mehr persönliche Begleitung und Unterstützung aus der Modern Athlete Lab™ Community möchtest.",
   bnOptions:[
     { key:"nutrition", title:"Fuel MAP™", desc:"Für bessere Energie, weniger Cravings und einfache Ernährungsstruktur.", cta:"Ich will Ernährungs-Guidance",
       wa:"Hey René, ich habe Tag 4 vom Modern Athlete Reset abgeschlossen und hätte gern Hilfe bei meiner Ernährung." },
@@ -1013,7 +1151,7 @@ de:{
   ],
   bnSaved:"Gespeichert. René sieht deine Auswahl in seinem Dashboard.",
   finalEyebrow:"Tag 7 abgeschlossen", finalTitle:"Bereit für deine Personal MAP™?",
-  finalIntro:"Du hast gesehen, was sieben einfache Tage verändern können. Stell dir vor, was passiert, wenn Ernährung, Training, Regeneration und Lifestyle um dein echtes Leben herum gebaut werden — deinen Zeitplan, deine Ziele, deinen Körper und deine aktuellen Bottlenecks. Hier beginnt deine Personal MAP™.",
+  finalIntro:"Du hast gesehen, was sieben einfache Tage bewirken können. Jetzt musst du nicht mehr allein weitermachen.\n\nModern Athlete Lab™ ist eine Community für Menschen, die bessere Gesundheit, stärkere Gewohnheiten und einen Körper aufbauen wollen, der dem echten Leben standhält.\n\nInnerhalb des Labs unterstützen wir uns gegenseitig, teilen Fortschritte, bleiben verbindlich und schaffen ein Umfeld, das gesunde Entscheidungen leichter macht.\n\n🏋️ Training — Kraft, Bewegung und körperliches Selbstvertrauen aufbauen\n🥗 Ernährung — einfache Gewohnheiten schaffen, die deine Energie und Ziele unterstützen\n😴 Recovery — Schlaf, Stressmanagement und deine Fähigkeit zur Erholung verbessern\n🌱 Lifestyle — Routinen aufbauen, die zu deinem echten Alltag passen\n\nDu brauchst keinen perfekten Plan und nicht mehr Motivation. Du brauchst das richtige Umfeld, klare nächste Schritte und Menschen, die in die gleiche Richtung gehen.\n\nHier wird aus Bewusstsein Handeln, aus Konstanz wird es leichter — und hier beginnt deine Personal MAP™.",
   finalTiers:{
     top:{ title:"Du hast nicht nur durchgezogen — du hast bewiesen, dass du dranbleibst.",
       intro:"Sieben Tage, echte Konstanz, keine Abkürzungen. Genau das ist der Typ Mensch, der am meisten aus einer Personal MAP™ rausholt — weil du schon bewiesen hast, dass du dranbleibst. Lass uns daraus eine Version bauen, die auch die nächsten 90 Tage von allein läuft." },
@@ -1030,9 +1168,10 @@ de:{
     ["Kostenloses Erstgespräch buchen","Hey René, ich habe den 7-Day Reset abgeschlossen — ich würde gern ein kostenloses Erstgespräch buchen."],
     ["René nach meinem nächsten Schritt fragen","Hey René, ich habe den 7-Day Reset abgeschlossen. Was würdest du mir als nächsten Schritt empfehlen?"]
   ],
-  settingsTitle:"Einstellungen", lblLang:"Sprache / Language", lblPw:"Passwort ändern (aktuell, dann neu)",
+  settingsTitle:"Einstellungen", lblLang:"Sprache / Language", lblPw:"Neues Passwort", lblPw2:"Neues Passwort wiederholen",
   pwSave:"Passwort aktualisieren", pwFill:"Bitte beide Felder ausfüllen.", pwShort:"Neues Passwort braucht mindestens 6 Zeichen.",
-  pwSaved:"Passwort geändert.", pwWrong:"Aktuelles Passwort ist falsch.",
+  pwSaved:"Passwort geändert.", pwMismatch:"Die Passwörter stimmen nicht überein.",
+  pwRelogin:"Aus Sicherheitsgründen: Bitte melde dich einmal neu an und versuch es direkt danach.",
   verifyNote:"Bitte bestätige deine E-Mail — check dein Postfach.", verifyResend:"Erneut senden", verifySent:"E-Mail verschickt.",
   lbHead:"🏆 Bestenliste", lbPrizeText:"🎁 Platz 1–3 kriegen ein Geschenk!", lbYou:"(du)",
   plansRowLbl:"📄 Meine Pläne — Ernährungs- & Trainingsplan anfordern",
@@ -1061,9 +1200,12 @@ zh:{
   day0Cta:"開始基準 Check-In", day0CtaDone:"回到儀表板",
   videoSoon:"René 的影片——即將推出", welcomeVideo:"歡迎影片",
   baseEyebrow:"基準 Check-In", baseTitle:"你現在的起點在哪裡？",
+  baseSub:"5個滑桿，1分鐘。這是你的「之前」——第7天會讓你看到差異。",
   lblName:"姓名", lblChannel:"聯絡方式",
-  lblPhoneWhatsapp:"WhatsApp 號碼（選填，建議填寫——請含國碼，例如 +886...）",
+  lblPhoneWhatsapp:"WhatsApp 號碼（選填，建議填寫）",
   lblPhoneLine:"LINE ID（選填，建議填寫）",
+  phoneHintWhatsapp:"請含國碼（例如 +886...）——這樣 René 才能直接回覆你。",
+  phoneHintLine:"你的 LINE ID——這樣 René 才能直接回覆你。",
   phWhatsapp:"+886 912 345 678", phLine:"你的_line_id",
   lblSource:"是誰邀請你的？",
   lblFriend:"朋友的名字", lblGoal:"主要目標", lblStruggle:"目前最大的困難",
@@ -1077,7 +1219,7 @@ zh:{
   missionDoneTitle:"今日完成 ✅", missionDoneDesc:"很棒。明天再回來完成下一天。",
   missionAllDoneTitle:"Reset 已完成", missionAllDoneDesc:"7天都完成了。你的下一步已經準備好了。",
   missionCtaDone:"查看今日總結", missionCtaFinal:"查看你的下一步",
-  dayWord:"Day", statDayLbl:"進度", statStreakLbl:"連續天數", statPointsLbl:"Reset 積分",
+  dayWord:"Day", statDayLbl:"進度", statStreakLbl:"連續天數", statPointsLbl:"Reset 積分", statEnergyLbl:"你的能量",
   levelDefault:"Reset 參與者", archiveHead:"你的7天", startHereLbl:"▶ Day 0 · 歡迎影片", logout:"登出",
   locked:"未解鎖", today:"今天",
   bnCardTitle:"你的 Bottleneck Snapshot™ 🔓", bnCardSub:"第4天後解鎖——看看真正卡住你的是什麼。",
@@ -1088,8 +1230,8 @@ zh:{
   lblMission:"你完成今天的任務了嗎？",
   segMission:[["yes","是"],["partly","部分完成"],["no","否"]],
   lblReflection:"反思", lblWin:"今天最大的收穫", lblHard:"今天什麼最難？",
-  lblFeedback:"有什麼想讓 René 特別留意的嗎？（選填）",
-  coachNote:"在這裡誠實面對自己。我們會一起檢視這個 Check-in Challenge，並開啟你的旅程。",
+  lblFeedback:"有什麼想討論或需要支持的嗎？（選填）",
+  coachNote:"在這裡誠實面對自己。René 會親自查看 Challenge 的 Check-in。",
   daySubmit:"送出 Check-in", missionReq:"請回答你是否完成了今天的任務。",
   chooseOneReq:"請至少選擇一項今天的挑戰。",
   rewardEyebrow:"標準達成 ✅", pointsSuffix:"Reset 積分",
@@ -1099,7 +1241,7 @@ zh:{
   checkinSaved:"Check-in 已送出 ✅ — René 現在可以看到你的進度。",
   waCheckin:(d,e,s,w,h)=>"嗨 René，我完成了 Modern Athlete Reset 第"+d+"天。\n\n能量："+e+"/10\n睡眠："+s+"/10\n最大的收穫："+(w||"—")+"\n最大的困難："+(h||"—"),
   bnEyebrow:"已解鎖 · 你的 Bottleneck Snapshot™", bnTitle:"現在模式開始變得清晰。",
-  bnIntro:"你已經完成4天了。大多數人不需要更多動力——他們需要知道究竟是什麼在阻礙他們的能量、恆心與進步。對某些人來說是飲食，對某些人是訓練結構，對很多人來說是恢復與生活型態。選擇你想要獲得個人指導的方向：",
+  bnIntro:"你已經完成4天了——你已經開始看到自己最大的瓶頸可能在哪裡。\n\n大多數人不需要更多動力。他們需要清楚知道究竟是什麼在限制他們的能量、恆心與進步。\n\n🏋️ 訓練——結構、信心與進步\n🥗 飲食——更好的選擇、穩定的能量與簡單的日常習慣\n😴 恢復——睡眠、壓力與充電的能力\n🌱 生活型態——符合你真實生活的習慣與系統\n\n選擇你想從 Modern Athlete Lab™ 社群獲得更多個人指導與支持的領域。",
   bnOptions:[
     { key:"nutrition", title:"Fuel MAP™", desc:"為了更好的能量、更少的渴望與簡單的飲食結構。", cta:"我想要飲食指導",
       wa:"嗨 René，我完成了 Modern Athlete Reset 第4天，我想要飲食方面的指導。" },
@@ -1112,7 +1254,7 @@ zh:{
   ],
   bnSaved:"已儲存。René 會在他的後台看到你的選擇。",
   finalEyebrow:"第7天完成", finalTitle:"準備好建立你的 Personal MAP™ 了嗎？",
-  finalIntro:"你已經看到簡單的七天能帶來什麼改變。現在想像一下，當你的飲食、訓練、恢復與生活型態都圍繞著你真實的生活——你的行程、你的目標、你的身體與你目前的瓶頸——來打造時會發生什麼。這就是你的 Personal MAP™ 的起點。",
+  finalIntro:"你已經看到簡單七天能帶來什麼改變。現在你不必再獨自前進。\n\nModern Athlete Lab™ 是一個社群，給想要建立更好健康、更強習慣，以及能應付真實生活的身體的人。\n\n在 Lab 裡，我們互相支持、分享進度、保持當責，並創造一個讓健康選擇變得更容易的環境。\n\n🏋️ 訓練——建立力量、活動能力與身體自信\n🥗 飲食——建立支持你能量與目標的簡單習慣\n😴 恢復——改善睡眠、壓力管理與充電能力\n🌱 生活型態——建立符合你真實行程的日常習慣\n\n你不需要完美的計畫或更多動力。你需要對的環境、清楚的下一步，以及和你朝同方向前進的人。\n\n這就是覺察轉化為行動、恆心變得更容易，也是你的 Personal MAP™ 開始的地方。",
   finalTiers:{
     top:{ title:"你不只完成了——你證明了自己能夠保持一致。",
       intro:"七天，真正的一致性，沒有捷徑。這正是最能從 Personal MAP™ 中獲益的人——因為你已經證明自己會堅持到底。讓我們把這個節奏打造成接下來90天都能自動運行的版本。" },
@@ -1129,9 +1271,10 @@ zh:{
     ["預約免費諮詢","嗨 René，我完成了 7-Day Reset——我想預約一次免費諮詢。"],
     ["請 René 給我下一步建議","嗨 René，我完成了 7-Day Reset。你會建議我的下一步是什麼？"]
   ],
-  settingsTitle:"設定", lblLang:"語言 / Language", lblPw:"變更密碼（先輸入目前密碼，再輸入新密碼）",
+  settingsTitle:"設定", lblLang:"語言 / Language", lblPw:"新密碼", lblPw2:"再次輸入新密碼",
   pwSave:"更新密碼", pwFill:"請填寫兩個欄位。", pwShort:"新密碼至少需要6個字元。",
-  pwSaved:"密碼已變更。", pwWrong:"目前的密碼不正確。",
+  pwSaved:"密碼已變更。", pwMismatch:"兩次輸入的密碼不一致。",
+  pwRelogin:"為了安全，請重新登入後再試一次。",
   verifyNote:"請驗證你的電子郵件——check你的信箱。", verifyResend:"重新寄送", verifySent:"郵件已寄出。",
   lbHead:"🏆 排行榜", lbPrizeText:"🎁 前3名可獲得禮物！", lbYou:"（你）",
   plansRowLbl:"📄 我的計畫 — 申請飲食與訓練計畫",
@@ -1193,6 +1336,8 @@ function dateOffsetStr(offset){
 
 function completedDays(){ return Object.keys(state.checkins).map(Number).sort((a,b)=>a-b); }
 function currentDay(){ return Math.min(7, completedDays().length + 1); }
+/* Test-Modus: erster noch offener Tag (erlaubt Lücken, z. B. Tag 2 übersprungen) */
+function nextOpenDay(){ for(let d=1;d<=7;d++){ if(!state.checkins[d]) return d; } return 7; }
 function allDone(){ return completedDays().length >= 7; }
 function totalPoints(){ return completedDays().reduce((sum,d)=> sum + (state.checkins[d].points||0), 0); }
 const MAX_TOTAL_POINTS = 700; // 7 days x 100 max/day (70 tasks + 10 check-in + 20 reflection)
@@ -1348,7 +1493,10 @@ function renderDay0(fromDash){
   const s=t();
   $('#day0Eyebrow').textContent=s.day0Eyebrow;
   $('#day0Title').textContent=s.day0Title;
-  $('#day0Text').textContent=s.day0Text;
+  // Brief-Form: signierte Coach-Nachricht — "— René" wird als Signatur abgesetzt
+  const raw=s.day0Text, sigIdx=raw.lastIndexOf('— René');
+  $('#day0Text').textContent = sigIdx>-1 ? raw.slice(0,sigIdx).trim() : raw;
+  $('#day0Sig').textContent = sigIdx>-1 ? '— René' : '';
   renderVideo($('#day0Video'), VIDEOS.day0[state.lang], s.welcomeVideo);
   const done = state.profile && state.profile.baselineAt;
   $('#day0Cta').textContent = done ? s.day0CtaDone : s.day0Cta;
@@ -1370,12 +1518,14 @@ function renderBaseline(){
   const s=t();
   $('#baseEyebrow').textContent=s.baseEyebrow;
   $('#baseTitle').textContent=s.baseTitle;
+  $('#baseSub').textContent=s.baseSub;
   $('#lblName').textContent=s.lblName;
   $('#lblChannel').textContent=s.lblChannel;
   const syncChannel=()=>{
     const isLine=$('#baseChannel').value==='line';
     $('#lblPhone').textContent=isLine ? s.lblPhoneLine : s.lblPhoneWhatsapp;
     $('#basePhone').placeholder=isLine ? s.phLine : s.phWhatsapp;
+    $('#phoneHint').textContent=isLine ? s.phoneHintLine : s.phoneHintWhatsapp;
   };
   $('#baseChannel').onchange=syncChannel;
   syncChannel();
@@ -1427,7 +1577,7 @@ $('#baseSubmit').addEventListener('click', async ()=>{
 ========================================================= */
 function renderDash(){
   const s=t();
-  const day=currentDay(), done=completedDays().length;
+  const day = TEST_ALL_DAYS_UNLOCKED ? nextOpenDay() : currentDay(), done=completedDays().length;
   $('#dashHello').textContent = s.dashHello(state.profile?.name || '');
   $('#dashHead').textContent = s.dashHead;
 
@@ -1448,7 +1598,7 @@ function renderDash(){
     $('#missionDesc').textContent = s.missionAllDoneDesc;
     dcta.textContent = s.missionCtaFinal;
     dcta.onclick=()=>{ renderFinal(); show('final'); };
-  } else if(completedToday()){
+  } else if(!TEST_ALL_DAYS_UNLOCKED && completedToday()){
     const lastDay = completedDays()[completedDays().length-1];
     $('#missionEyebrow').textContent = s.dayWord+' '+lastDay+' / 7 — '+dc(lastDay).name;
     $('#missionTitle').textContent = s.missionDoneTitle;
@@ -1464,18 +1614,25 @@ function renderDash(){
   }
 
   // stats
-  $('#statDay').textContent = done+'/7';
-  $('#statDayLbl').textContent = s.statDayLbl;
-  $('#statBar').style.width = Math.round(done/7*100)+'%';
+  $('#dayCount').innerHTML = '0'+Math.min(done,7)+'<small>/07</small>';
   $('#statStreak').textContent = computeStreak();
   $('#statStreakLbl').textContent = s.statStreakLbl;
   $('#statPoints').textContent = totalPoints();
   $('#statPointsLbl').textContent = s.statPointsLbl;
+  $('#statTrendLbl').textContent = s.statEnergyLbl;
+  const trend=$('#statTrend'); trend.innerHTML='';
+  for(let d=1; d<=7; d++){
+    const bar=document.createElement('i');
+    const e=state.checkins[d]?.energy;
+    if(e){ bar.style.height=(e*10)+'%'; }
+    else { bar.style.height='12%'; bar.className='ghost'; }
+    trend.appendChild(bar);
+  }
   $('#levelChip').textContent = '● '+(latestBadge() || s.levelDefault);
 
-  // unlock cards
+  // unlock cards (Bottleneck-Karte ersetzt durch Gate ◈ in der Spine)
   const bn=$('#bottleneckCard');
-  bn.classList.toggle('hidden', !(done>=4));
+  bn.classList.add('hidden');
   $('#bnCardTitle').textContent=s.bnCardTitle; $('#bnCardSub').textContent=s.bnCardSub;
   bn.onclick=()=>{ renderBottleneck(); show('bottleneck'); };
   const mc=$('#mapCard');
@@ -1483,20 +1640,60 @@ function renderDash(){
   $('#mapCardTitle').textContent=s.mapCardTitle; $('#mapCardSub').textContent=s.mapCardSub;
   mc.onclick=()=>{ renderFinal(); show('final'); };
 
-  // archive
+  // archive → 7-Tage-Spine (S1): Rail links, Zeilen rechts, Gate ◈ zwischen Tag 4 und 5
   $('#archiveHead').textContent=s.archiveHead;
   const list=$('#archiveList'); list.innerHTML='';
+  const rail=document.createElement('div'); rail.className='spine-rail';
+  const rows=document.createElement('div'); rows.className='spine-rows';
+  const bnUnlocked = done>=4;
   for(let d=1; d<=7; d++){
-    const row=document.createElement('div');
     const isDone=!!state.checkins[d];
-    const isCurrent=!isDone && d===day && !completedToday();
-    row.className='archive-row'+(isDone||isCurrent?' clickable':' locked');
-    row.innerHTML='<span class="a-day">'+s.dayWord+' '+d+'</span><span class="a-name">'+dc(d).name+'</span>'+
-      '<span class="a-state">'+(isDone?'✅':(isCurrent?'🔓':'🔒'))+'</span>';
+    const isCurrent=!isDone && d===day && (TEST_ALL_DAYS_UNLOCKED || !completedToday());
+    // Test-Modus: alle noch offenen Tage sind klickbar (🔓), nicht nur der nächste
+    const isOpen=TEST_ALL_DAYS_UNLOCKED && !isDone && !isCurrent;
+
+    const node=document.createElement('div');
+    node.className='spine-node '+(isDone?'done':(isCurrent?'today':'locked'));
+    node.textContent=d;
+    rail.appendChild(node);
+
+    const row=document.createElement('div');
+    row.className='archive-row'+(isDone||isCurrent||isOpen?' clickable':' locked')+(isCurrent?' today-row':'');
+    const stateHtml = isDone
+      ? '<span class="a-state">+'+(state.checkins[d].points||0)+'</span>'
+      : (isCurrent
+        ? '<span class="a-state a-today">'+s.today+'</span>'
+        : (isOpen
+          ? '<span class="a-state a-today">🔓</span>'
+          : '<span class="a-state a-locked">'+s.locked+'</span>'));
+    row.innerHTML='<span class="a-name">'+dc(d).name+'<small>'+dc(d).theme+'</small></span>'+stateHtml;
     if(isDone) row.onclick=()=>openDay(d,true);
-    else if(isCurrent) row.onclick=()=>openDay(d,false);
-    list.appendChild(row);
+    else if(isCurrent||isOpen) row.onclick=()=>openDay(d,false);
+    rows.appendChild(row);
+
+    if(d<7){
+      const link=document.createElement('div');
+      link.className='spine-link'+(isDone?'':' future');
+      rail.appendChild(link);
+    }
+    // Gate ◈ zwischen Tag 4 und 5
+    if(d===4){
+      const gnode=document.createElement('div');
+      gnode.className='spine-node gate'+(bnUnlocked?'':' locked-gate');
+      gnode.textContent='◈';
+      rail.appendChild(gnode);
+      const glink=document.createElement('div');
+      glink.className='spine-link'+(bnUnlocked?'':' future');
+      rail.appendChild(glink);
+
+      const grow=document.createElement('div');
+      grow.className='gate-row'+(bnUnlocked?' clickable':' locked');
+      grow.innerHTML='<b>◈ '+s.bnCardTitle+'</b><br>'+s.bnCardSub;
+      if(bnUnlocked) grow.onclick=()=>{ renderBottleneck(); show('bottleneck'); };
+      rows.appendChild(grow);
+    }
   }
+  list.appendChild(rail); list.appendChild(rows);
   $('#startHereLbl').textContent=s.startHereLbl;
   $('#startHereRow').onclick=()=>{ renderDay0(true); show('day0'); };
   $('#logoutBtn').textContent=s.logout;
@@ -1704,6 +1901,16 @@ function openDay(day, archived){
 }
 $('#rngEnergy').addEventListener('input',e=>{ $('#valEnergy').textContent=e.target.value; });
 $('#rngSleep').addEventListener('input',e=>{ $('#valSleep').textContent=e.target.value; });
+
+/* Slider-Spur füllt sich bis zum Wert (delegiert, deckt auch Baseline-Slider ab) */
+function syncRangeFill(r){
+  const pct=((r.value-r.min)/((r.max-r.min)||1))*100;
+  r.style.setProperty('--fill',pct+'%');
+}
+document.addEventListener('input',e=>{ if(e.target.matches?.('input[type=range]')) syncRangeFill(e.target); });
+const fillObserver=new MutationObserver(()=>{ document.querySelectorAll('input[type=range]').forEach(syncRangeFill); });
+fillObserver.observe(document.body,{ childList:true, subtree:true });
+document.querySelectorAll('input[type=range]').forEach(syncRangeFill);
 $('#dayBackBtn').addEventListener('click',()=>{ renderDash(); show('dash'); });
 
 $('#daySubmit').addEventListener('click', async ()=>{
@@ -1755,7 +1962,8 @@ $('#daySubmit').addEventListener('click', async ()=>{
 function renderReward(day, points){
   const s=t(); const c=dc(day);
   $('#rewardEyebrow').textContent=s.rewardEyebrow;
-  $('#rewardPoints').textContent='+'+points+' '+s.pointsSuffix;
+  $('#rewardPoints').innerHTML='+'+points+'<small></small>';
+  $('#rewardPoints').querySelector('small').textContent=s.pointsSuffix;
   $('#rewardBadge').textContent='🏅 '+BADGES[day]+' — '+s.badgeUnlocked;
   $('#rewardStreak').textContent=s.streakWord(computeStreak());
   $('#rewardQuote').textContent='“'+c.quote+'”';
@@ -1792,12 +2000,13 @@ function renderBottleneck(){
   const box=$('#bnOptions'); box.innerHTML='';
   s.bnOptions.forEach(opt=>{
     const card=document.createElement('div');
-    card.className='option-card';
+    card.className='option-card selectable'+(opt.key==='not_sure'?' dashed':' premium');
     const chosen = state.profile?.guidanceInterest===opt.key;
     card.innerHTML='<h3>'+opt.title+(chosen?' ✓':'')+'</h3><p>'+opt.desc+'</p>';
     const b=document.createElement('button');
     b.className='cta'+(opt.key==='not_sure'?' secondary':'');
     b.textContent=opt.cta;
+    card.onclick=(e)=>{ if(e.target!==b) b.click(); };
     b.onclick=async ()=>{
       try{
         await setDoc(doc(db,'users',state.uid),{
@@ -1824,6 +2033,9 @@ function renderFinal(){
   $('#finalEyebrow').textContent=s.finalEyebrow;
   $('#finalTitle').textContent=tier?.title || s.finalTitle;
   $('#finalIntro').textContent=tier?.intro || s.finalIntro;
+  $('#scorePoints').textContent=points;
+  $('#scoreOf').textContent='/ '+MAX_TOTAL_POINTS+' '+s.pointsSuffix;
+  $('#scoreBar').style.width=Math.min(100,Math.round(points/MAX_TOTAL_POINTS*100))+'%';
   $('#prizeNote').textContent=s.prizeNote;
   renderVideo($('#finalVideo'), VIDEOS.final[state.lang], 'Personal MAP™');
   $('#offerTitle').textContent=s.offerTitle;
@@ -1849,14 +2061,13 @@ function renderSettings(){
   $('#settingsTitle').textContent=s.settingsTitle;
   $('#lblLang').textContent=s.lblLang;
   $('#lblPw').textContent=s.lblPw;
+  $('#lblPw2').textContent=s.lblPw2;
   $('#pwSaveBtn').textContent=s.pwSave;
   $('#setLangEn').classList.toggle('sel', state.lang==='en');
   $('#setLangDe').classList.toggle('sel', state.lang==='de');
   $('#setLangZh').classList.toggle('sel', state.lang==='zh');
   $('#pwError').textContent=''; $('#pwSuccess').textContent='';
-  $('#curPw').value=''; $('#newPw').value='';
-  $('#curPw').placeholder = state.lang==='de'?'Aktuelles Passwort':(state.lang==='zh'?'目前的密碼':'Current password');
-  $('#newPw').placeholder = state.lang==='de'?'Neues Passwort':(state.lang==='zh'?'新密碼':'New password');
+  $('#newPw').value=''; $('#newPw2').value='';
 }
 $('#settingsBtn').addEventListener('click',()=>{
   if(currentScreen==='settings'){ route(); return; }
@@ -1875,19 +2086,18 @@ $('#setLangDe').addEventListener('click',()=>switchLang('de'));
 $('#setLangZh').addEventListener('click',()=>switchLang('zh'));
 $('#pwSaveBtn').addEventListener('click', async ()=>{
   const s=t();
-  const cur=$('#curPw').value, next=$('#newPw').value;
+  const next=$('#newPw').value, next2=$('#newPw2').value;
   const err=$('#pwError'), ok=$('#pwSuccess');
   err.textContent=''; ok.textContent='';
-  if(!cur||!next){ err.textContent=s.pwFill; return; }
+  if(!next||!next2){ err.textContent=s.pwFill; return; }
   if(next.length<6){ err.textContent=s.pwShort; return; }
+  if(next!==next2){ err.textContent=s.pwMismatch; return; }
   try{
-    const cred=EmailAuthProvider.credential(auth.currentUser.email, cur);
-    await reauthenticateWithCredential(auth.currentUser, cred);
     await updatePassword(auth.currentUser, next);
-    $('#curPw').value=''; $('#newPw').value='';
+    $('#newPw').value=''; $('#newPw2').value='';
     ok.textContent=s.pwSaved;
   }catch(e){
-    err.textContent=(e.code==='auth/invalid-credential'||e.code==='auth/wrong-password')?s.pwWrong:s.errFallback;
+    err.textContent = e.code==='auth/requires-recent-login' ? s.pwRelogin : s.errFallback;
   }
 });
 </script>
