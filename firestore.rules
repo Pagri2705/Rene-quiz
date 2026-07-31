@@ -53,7 +53,7 @@ service cloud.firestore {
       allow write: if isSignedIn() && request.auth.uid == uid;
     }
 
-    // Vorschau-Modus: Coach schaltet befristet (z.B. 7 Tage) alle Reset-Tage
+    // Vorschau-Modus: Coach schaltet befristet (5 Tage) alle Reset-Tage
     // als offen/bearbeitbar frei, unabhaengig vom tatsaechlichen Fortschritt.
     match /settings/{settingId} {
       allow read: if isSignedIn();

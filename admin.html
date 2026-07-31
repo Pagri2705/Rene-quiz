@@ -138,7 +138,7 @@ h2{font-family:'Sora';font-weight:700;font-size:16px}
       <div class="filter-row" style="justify-content:space-between;align-items:center">
         <span id="previewModeStatus" style="font-size:12.5px;color:var(--muted)">Lädt …</span>
         <span style="display:flex;gap:8px">
-          <button class="btn-sm" id="previewModeActivateBtn">🔓 Alle Tage freischalten (7 Tage)</button>
+          <button class="btn-sm" id="previewModeActivateBtn">🔓 Alle Tage freischalten (5 Tage)</button>
           <button class="btn-sm hidden" id="previewModeResetBtn">Jetzt zurücksetzen</button>
         </span>
       </div>
@@ -615,7 +615,7 @@ $('#exportCsvBtn').addEventListener('click',()=>{
 });
 
 /* ---------- Vorschau-Modus ---------- */
-const PREVIEW_MODE_DURATION_MS = 7*24*60*60*1000;
+const PREVIEW_MODE_DURATION_MS = 5*24*60*60*1000;
 async function loadPreviewMode(){
   const snap = await getDoc(doc(db,'settings','previewMode'));
   const data = snap.exists() ? snap.data() : null;
