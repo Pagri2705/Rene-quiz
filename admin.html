@@ -215,6 +215,13 @@ const SOURCE_LBL = { instagram:'Instagram', rene:'René persönlich', friend:'Fr
 const GOAL_LBL = { energy:'Mehr Energie', nutrition:'Bessere Ernährung', training:'Bessere Trainingsroutine', sleep:'Besserer Schlaf', stiffness:'Weniger Steifheit', consistency:'Mehr Konstanz', fat:'Fett verlieren', strength:'Kraft aufbauen', healthy:'Gesund fühlen' };
 const STRUGGLE_LBL = { nutrition:'Ernährung', training:'Training', sleep:'Schlaf', stress:'Stress', energy:'Wenig Energie', structure:'Keine Struktur', not_sure:'Nicht sicher' };
 const GUIDE_LBL = { nutrition:'Fuel MAP™ (Ernährung)', training:'Movement MAP™ (Training)', lifestyle:'Recovery/Lifestyle MAP™', not_sure:'Bottleneck unklar' };
+const WEEKDAY_LBL_DE = { mon:'Mo', tue:'Di', wed:'Mi', thu:'Do', fri:'Fr', sat:'Sa', sun:'So' };
+const WEEKDAY_ORDER = ['mon','tue','wed','thu','fri','sat','sun'];
+/* Die 3 gezählten Check-in-Items — dieselbe Logik wie in index.html. */
+function itemsChecked(c){ return (c.training?1:0)+(c.protein?1:0)+(c.task?1:0); }
+function trainingDaysLbl(days){
+  return (days&&days.length) ? WEEKDAY_ORDER.filter(d=>days.includes(d)).map(d=>WEEKDAY_LBL_DE[d]).join(', ') : '—';
+}
 
 /* ---------- Auth ---------- */
 $('#authSubmitBtn').addEventListener('click', async ()=>{
@@ -299,6 +306,7 @@ async function loadParticipants(){
     const doneCount=checkins.length;
     const energies=checkins.map(c=>c.energy).filter(v=>v!=null);
     const avgEnergy=energies.length? Math.round(energies.reduce((a,b)=>a+b,0)/energies.length*10)/10 : 0;
+    const checksTotal=checkins.reduce((sum,c)=>sum+itemsChecked(c),0);
     const last=checkins[checkins.length-1];
     const lastSeenStr=u.lastSeen?.toDate ? u.lastSeen.toDate().toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'}) : null;
     const activeToday = checkins.some(c=>c.dateStr===todayStr());
@@ -313,7 +321,7 @@ async function loadParticipants(){
     const lastNudgeSentStr = u.lastNudgeSentAt?.toDate ? u.lastNudgeSentAt.toDate().toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'}) : null;
     const nudgeSentToday = u.lastNudgeSentAt?.toDate ? u.lastNudgeSentAt.toDate().toDateString()===today.toDateString() : false;
 
-    participants.push({ ...u, checkins, doneCount, avgEnergy, last, lastSeenStr, activeToday, daysInactive, needsNudge,
+    participants.push({ ...u, checkins, doneCount, avgEnergy, checksTotal, last, lastSeenStr, activeToday, daysInactive, needsNudge,
       channel, phoneStat: phoneStatus(u.phone), lastNudgeSentStr, nudgeSentToday });
   }
   participants.forEach(p=>{ p.hot=isHotLead(p); p.needsAttention=p.hot||p.needsNudge; });
@@ -396,8 +404,7 @@ function renderList(){
     const chips=[];
     chips.push('<span class="chip day">Tag '+(p.doneCount||0)+'/7</span>');
     chips.push('<span class="chip">'+(p.preferredLanguage==='de'?'DE':'EN')+'</span>');
-    if(p.points) chips.push('<span class="chip">'+p.points+' P</span>');
-    if(p.streak) chips.push('<span class="chip">⚡ '+p.streak+'</span>');
+    if(p.checksTotal) chips.push('<span class="chip">✓ '+p.checksTotal+'/21</span>');
     if(p.doneCount>=7) chips.push('<span class="chip done7">Reset ✓</span>');
     if(p.needsNudge) chips.push('<span class="chip nudge">⏰ '+p.daysInactive+'d inaktiv</span>');
     if(p.hot) chips.push('<span class="chip hotlead">🔥 Hot Lead</span>');
@@ -419,18 +426,16 @@ function renderList(){
       ['3 größte Baustellen', (p.biggestStruggles&&p.biggestStruggles.length?p.biggestStruggles.map(g=>STRUGGLE_LBL[g]||g).join(', '):(STRUGGLE_LBL[p.biggestStruggle]||'—'))],
       ['Guidance-Interesse', p.guidanceInterest?(GUIDE_LBL[p.guidanceInterest]||p.guidanceInterest):'—'],
       ['Zuletzt online', esc(p.lastSeenStr||'nie')],
-      ['Baseline', b.energy?('Energie '+b.energy+' · Schlaf '+b.sleep+' · Stress '+b.stress+' · Bewegung '+b.movement+' · Ernährung '+b.nutrition):'—']
+      ['Trainingstage (Plan)', esc(trainingDaysLbl(p.trainingDays))]
     ].map(([k,v])=>'<b>'+k+'</b><span>'+v+'</span>').join('');
 
-    const eBars=p.checkins.map(c=>'<div class="bar e" style="height:'+(c.energy*10)+'%" title="Tag '+c.day+': '+c.energy+'/10"></div>').join('');
-    const sBars=p.checkins.map(c=>'<div class="bar s" style="height:'+(c.sleep*10)+'%" title="Tag '+c.day+': '+c.sleep+'/10"></div>').join('');
+    const eBars=p.checkins.map(c=>'<div class="bar e" style="height:'+(c.energy*20)+'%" title="Tag '+c.day+': '+c.energy+'/5"></div>').join('');
 
     const ciRows=p.checkins.map(c=>{
-      const flag=c.wantsFeedback?'<div class="ci-flag">⚑ Für René: '+esc(c.wantsFeedback)+'</div>':'';
-      return '<div class="ci-row"><b>Tag '+c.day+'</b> · '+esc(c.dateStr)+' · Energie '+c.energy+'/10 · Schlaf '+c.sleep+'/10 · Mission: '+esc(c.completedMission)+' · +'+(c.points||0)+' P'+
-        (c.biggestWin?'<br><b>Win:</b> '+esc(c.biggestWin):'')+
-        (c.biggestStruggle?'<br><b>Schwer:</b> '+esc(c.biggestStruggle):'')+
-        (c.reflection?'<br><b>Reflexion:</b> '+esc(c.reflection):'')+flag+'</div>';
+      const mk=v=>v?'✓':'–';
+      return '<div class="ci-row"><b>Tag '+c.day+'</b> · '+esc(c.dateStr)+
+        ' · Training: '+mk(c.training)+(c.isTrainingDay===false?' (kein Trainingstag)':'')+
+        ' · Protein: '+mk(c.protein)+' · Aufgabe: '+mk(c.task)+' · Energie '+(c.energy||'—')+'/5</div>';
     }).join('') || '<div class="empty-note" style="padding:8px 0">Noch keine Check-ins.</div>';
 
     card.innerHTML=
@@ -442,8 +447,7 @@ function renderList(){
       '</div>'+
       '<div class="p-detail">'+
         '<div class="kv">'+kv+'</div>'+
-        (p.checkins.length?'<div><div class="trend">'+eBars+'</div><div class="trend-label">Energie-Trend</div>'+
-        '<div class="trend" style="margin-top:8px">'+sBars+'</div><div class="trend-label">Schlaf-Trend</div></div>':'')+
+        (p.checkins.length?'<div><div class="trend">'+eBars+'</div><div class="trend-label">Energie-Trend</div></div>':'')+
         '<div style="display:flex;flex-direction:column;gap:8px">'+ciRows+'</div>'+
         '<div class="plan-uploads">'+
           '<div class="plan-upload-row">'+
@@ -598,10 +602,10 @@ $('#copyBroadcastBtn').addEventListener('click', async ()=>{
 /* ---------- CSV ---------- */
 function csvEsc(v){ const s=String(v??''); return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; }
 $('#exportCsvBtn').addEventListener('click',()=>{
-  const headers=['Name','E-Mail','Kanal','Kontakt','Nummer-Status','Sprache','Quelle','Eingeladen von','Tag','Punkte','Streak','Ø Energie','3 größte Ziele','3 größte Baustellen','Guidance','Ernährungsplan angefragt','Trainingsplan angefragt','Hot Lead','Reminder fällig','Tage inaktiv','Letzter Reminder','Kontaktiert','Zuletzt online','Notizen'];
+  const headers=['Name','E-Mail','Kanal','Kontakt','Nummer-Status','Sprache','Quelle','Eingeladen von','Tag','Häkchen gehalten','Ø Energie','Trainingstage (Plan)','3 größte Ziele','3 größte Baustellen','Guidance','Ernährungsplan angefragt','Trainingsplan angefragt','Hot Lead','Reminder fällig','Tage inaktiv','Letzter Reminder','Kontaktiert','Zuletzt online','Notizen'];
   const rows=participants.map(p=>[
     p.name||'', p.email||'', p.channel==='line'?'LINE':'WhatsApp', p.phone||'', p.channel==='whatsapp'?p.phoneStat:'', p.preferredLanguage||'', SOURCE_LBL[p.source]||'', p.invitedBy||'',
-    (p.doneCount||0)+'/7', p.points||0, p.streak||0, p.avgEnergy||'',
+    (p.doneCount||0)+'/7', (p.checksTotal||0)+'/21', p.avgEnergy||'', trainingDaysLbl(p.trainingDays),
     (p.mainGoals&&p.mainGoals.length?p.mainGoals.map(g=>GOAL_LBL[g]||g).join(' / '):(GOAL_LBL[p.mainGoal]||'')),
     (p.biggestStruggles&&p.biggestStruggles.length?p.biggestStruggles.map(g=>STRUGGLE_LBL[g]||g).join(' / '):(STRUGGLE_LBL[p.biggestStruggle]||'')),
     p.guidanceInterest||'', p.nutritionPlanRequestedAt?'Ja':'Nein', p.trainingPlanRequestedAt?'Ja':'Nein',

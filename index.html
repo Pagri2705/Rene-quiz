@@ -378,7 +378,25 @@ select.field{appearance:auto}
 .seg-num button{padding:10px 0;font-family:'Sora';font-weight:700}
 .seg-emoji{grid-template-columns:repeat(5,1fr);margin-top:8px}
 .seg-emoji button{padding:10px 0 6px;font-size:22px;line-height:1.2}
+.seg-week{grid-template-columns:repeat(7,1fr);gap:6px;margin-top:4px}
+.seg-week button{padding:10px 0;font-size:12.5px}
 .choice-count{font-size:12px;color:var(--muted);margin-top:-6px}
+/* Check-in items (A: gezählt) vs. Energie (B: nicht gezählt) — bewusst
+   unterschiedliche Optik, damit sofort klar ist: zählt zur Kette vs. Info */
+.task.off{opacity:.5;cursor:not-allowed}
+.task.off:hover{border-color:var(--line)}
+.task-off-note{font-size:11.5px;color:var(--muted);margin:-4px 0 2px 34px}
+.energy-block{
+  margin-top:6px;padding-top:14px;border-top:1px dashed var(--line);
+  display:flex;flex-direction:column;gap:8px;
+}
+.energy-block .sl{font-size:13px;font-weight:600;color:var(--muted)}
+.energy-block .seg-emoji button{padding:8px 0 4px;font-size:19px}
+.energy-hint{font-size:11.5px;color:var(--muted);margin-top:-4px}
+/* Verpasster Tag: sichtbar, aber gedämpft — anders als "locked" (Zukunft) */
+.spine-node.missed{background:var(--line);color:var(--muted);border:none}
+.archive-row.missed{opacity:.7}
+.archive-row .a-state.a-missed{color:var(--muted);font-size:11.5px;font-weight:600}
 .coach-note{
   background:var(--accent-soft);border:1px solid #D7E1FA;border-radius:var(--radius-sm);
   padding:12px 14px;font-size:13px;color:var(--accent);text-align:center;
@@ -491,6 +509,28 @@ select.field{appearance:auto}
 .back-btn svg{width:16px;height:16px}
 .cta.danger{background:#C0392B}
 .footer-note{font-size:11.5px;color:var(--muted);text-align:center;padding-top:8px}
+
+/* ---------- Bottom tab bar ---------- */
+.app.has-bottomnav{padding-bottom:calc(100px + env(safe-area-inset-bottom))}
+.bottom-nav{
+  position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));
+  transform:translateX(-50%);
+  width:calc(100% - 40px);max-width:420px;
+  background:var(--card);border:1px solid var(--line);border-radius:999px;
+  display:flex;align-items:stretch;justify-content:space-between;
+  padding:6px;box-shadow:var(--card-glow),0 12px 32px -12px rgba(20,22,18,.28);
+  z-index:40;
+}
+.bottom-nav button{
+  appearance:none;background:none;border:none;cursor:pointer;flex:1;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  padding:9px 4px;border-radius:999px;color:var(--muted);
+  font-family:'Inter';font-size:10.5px;font-weight:700;
+  transition:background .18s var(--ease-lux),color .18s var(--ease-lux);
+}
+.bottom-nav button svg{width:20px;height:20px;flex-shrink:0}
+.bottom-nav button.sel{background:var(--accent-soft);color:var(--accent)}
+.bottom-nav button:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 
 /* ---------- Modal ---------- */
 .modal-overlay{
@@ -608,7 +648,8 @@ select.field{appearance:auto}
     <div class="seg seg-wrap" id="baseGoal"></div>
     <label class="field-label" id="lblStruggle">Biggest current struggle</label>
     <div class="seg seg-wrap" id="baseStruggle"></div>
-    <div id="baseSliders"></div>
+    <label class="field-label" id="lblTrainingDays">Which days will you train this week?</label>
+    <div class="seg seg-week" id="baseTrainingDays"></div>
     <div class="err" id="baseError"></div>
     <button class="cta" id="baseSubmit">Enter the Reset</button>
   </section>
@@ -623,7 +664,7 @@ select.field{appearance:auto}
       <div class="eyebrow" id="dashHello"></div>
       <div class="dash-head-row">
         <h1 id="dashHead"></h1>
-        <div class="daycount" id="dayCount">0<small>/07</small></div>
+        <div class="daycount" id="dayCount">0<small>/7</small></div>
       </div>
     </div>
     <div class="card mission-card" id="missionCard">
@@ -634,12 +675,12 @@ select.field{appearance:auto}
     </div>
     <div class="stat-row">
       <div class="stat-tile">
-        <div class="stat-num" id="statStreak">0</div>
-        <div class="stat-label" id="statStreakLbl">Streak</div>
+        <div class="stat-num" id="statDays">0</div>
+        <div class="stat-label" id="statDaysLbl">Days done</div>
       </div>
       <div class="stat-tile">
-        <div class="stat-num" id="statPoints">0</div>
-        <div class="stat-label" id="statPointsLbl">Reset Points</div>
+        <div class="stat-num" id="statChecks">0</div>
+        <div class="stat-label" id="statChecksLbl">Kept</div>
       </div>
       <div class="stat-tile">
         <div class="mini-trend" id="statTrend" aria-hidden="true"></div>
@@ -662,9 +703,9 @@ select.field{appearance:auto}
       <h2 id="mapCardTitle"></h2>
       <p class="sub" id="mapCardSub"></p>
     </div>
+    <div class="small-link-row" id="startHereRow"><span id="startHereLbl"></span><svg class="row-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
     <h2 id="archiveHead"></h2>
     <div class="archive" id="archiveList"></div>
-    <div class="small-link-row" id="startHereRow"><span id="startHereLbl"></span><svg class="row-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
 
     <div class="card" id="leaderboardCard">
       <div class="leaderboard-head">
@@ -690,34 +731,22 @@ select.field{appearance:auto}
     </div>
     <div class="video-card" id="dayVideo"></div>
     <p class="sub" id="dayDesc"></p>
-    <h2 id="tasksHead"></h2>
-    <div class="tasks" id="taskList"></div>
+    <div class="quote-box" id="dayQuote"></div>
     <div id="checkinBlock">
       <h2 id="checkinHead" style="margin:10px 0 2px"></h2>
       <p class="speed-hint" id="checkinSpeedHint" style="margin-bottom:8px"></p>
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <div class="slider-block">
-          <div class="slider-head"><span class="sl" id="lblEnergy"></span></div>
-          <div class="seg seg-emoji" id="pickEnergy"></div>
-        </div>
-        <div class="slider-block">
-          <div class="slider-head"><span class="sl" id="lblSleep"></span></div>
-          <div class="seg seg-emoji" id="pickSleep"></div>
-        </div>
-        <label class="field-label" id="lblMission"></label>
-        <div class="seg" id="segMission"></div>
-        <label class="field-label" id="lblReflection"></label>
-        <textarea class="field" id="txtNote"></textarea>
-        <div class="chip-row" id="noteChips"></div>
-        <div class="coach-note" id="coachNote"></div>
-        <div class="err" id="dayError"></div>
-        <button class="cta accent" id="daySubmit"></button>
+      <div class="tasks" id="checkinItems"></div>
+      <div class="energy-block" id="energyBlock">
+        <span class="sl" id="lblEnergy"></span>
+        <div class="seg seg-emoji" id="pickEnergy"></div>
+        <p class="energy-hint" id="energyHint"></p>
       </div>
+      <div class="err" id="dayError"></div>
+      <button class="cta accent" id="daySubmit"></button>
     </div>
     <div id="archiveView" class="hidden" style="display:flex;flex-direction:column;gap:10px">
-      <div class="quote-box" id="arcQuote"></div>
-      <div class="tip-box"><b id="arcTipLbl"></b><span id="arcTip"></span></div>
-      <div class="card" id="arcStats" style="font-size:14px"></div>
+      <div class="tasks" id="arcItems"></div>
+      <div class="card" id="arcEnergy" style="font-size:14px"></div>
     </div>
   </section>
 
@@ -732,7 +761,6 @@ select.field{appearance:auto}
     <div class="reward-streak" id="rewardStreak"></div>
     <div class="prize-note" id="rewardSocialProof" style="justify-content:center"></div>
     <div class="quote-box" id="rewardQuote" style="text-align:left"></div>
-    <div class="tip-box" style="text-align:left"><b id="rewardTipLbl"></b><span id="rewardTip"></span></div>
     <div class="card" id="teaserCard" style="text-align:left">
       <div class="eyebrow" id="teaserLbl"></div>
       <p style="font-size:14.5px;margin-top:4px" id="teaserText"></p>
@@ -763,6 +791,8 @@ select.field{appearance:auto}
     <div class="score-band-wrap">
       <div class="score-band"><span class="score-big" id="scorePoints">0</span><span class="score-of" id="scoreOf"></span></div>
       <div class="score-bar"><i id="scoreBar" style="width:0%"></i></div>
+      <div class="stat-label" id="finalEnergyLbl" style="text-align:center;margin-top:6px"></div>
+      <div class="mini-trend" id="finalEnergyTrend" aria-hidden="true" style="justify-content:center"></div>
     </div>
     <div class="video-card" id="finalVideo"></div>
     <p class="sub" id="finalIntro"></p>
@@ -834,6 +864,25 @@ select.field{appearance:auto}
   </div>
 
   <div class="footer-note" id="footerNote">Modern Athlete LAB™ · The 7-Day Reset</div>
+
+  <nav class="bottom-nav hidden" id="bottomNav">
+    <button type="button" data-tab="home" id="navHomeBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+      <span class="nav-lbl">Home</span>
+    </button>
+    <button type="button" data-tab="plan" id="navPlanBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      <span class="nav-lbl">Plan</span>
+    </button>
+    <button type="button" data-tab="progress" id="navProgressBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      <span class="nav-lbl">Progress</span>
+    </button>
+    <button type="button" data-tab="profile" id="navProfileBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+      <span class="nav-lbl">Profile</span>
+    </button>
+  </nav>
 </div>
 
 <script type="module">
@@ -875,32 +924,28 @@ const STORAGE_ENABLED = false;
    Zum Zurücksetzen NUR diese eine Zeile auf false stellen — sonst ändert sich nichts. */
 const TEST_ALL_DAYS_UNLOCKED = true;
 const COLLAGE_PHOTOS = Array.from({length:18},(_,i)=>'assets/collage/photo'+(i+1)+'.jpg');
+/* Leaderboard ranks by kept check-ins (0–21), not a resettable streak. */
 const FAKE_LEADERBOARD = [
-  { uid:'fake1', name:'Lena K.', streak:14 },
-  { uid:'fake2', name:'Markus B.', streak:11 },
-  { uid:'fake3', name:'Sarah W.', streak:9 },
-  { uid:'fake4', name:'Jonas T.', streak:8 },
-  { uid:'fake5', name:'Aylin D.', streak:6 }
+  { uid:'fake1', name:'Lena K.', checks:19 },
+  { uid:'fake2', name:'Markus B.', checks:16 },
+  { uid:'fake3', name:'Sarah W.', checks:14 },
+  { uid:'fake4', name:'Jonas T.', checks:12 },
+  { uid:'fake5', name:'Aylin D.', checks:9 }
 ];
 
 /* Group score: real numbers get a small "phantom crew" baked in so it feels
    alive from day one (same idea as FAKE_LEADERBOARD above). */
 const EMOJI_SCALE = ['😴','😐','🙂','💪','🔥'];
 const FAKE_GROUP_PARTICIPANTS = 5;
-const FAKE_GROUP_PER_PERSON = 4;
+const FAKE_GROUP_PER_PERSON = 2;
 const FAKE_GROUP_CHECKED_IN = 3;
-const PER_PERSON_DAILY_MAX = 6;
+const PER_PERSON_DAILY_MAX = 3;
 
-/* Short example hints shown under a task, keyed "day-taskIndex". */
-const TASK_HINTS = {
-  '3-0':{ en:"a palm-sized portion", de:"eine Handfläche groß", zh:"約一個手掌大小" },
-  '3-1':{ en:"2–3 litres", de:"2–3 Liter", zh:"2–3公升" },
-  '4-0':{ en:"aim for 5 min less than yesterday", de:"5 Min weniger als gestern", zh:"比昨天少5分鐘" },
-  '4-2':{ en:"5 minutes", de:"5 Minuten", zh:"5分鐘" },
-  '4-3':{ en:"7–8h, same time daily", de:"7–8 Std, jeden Tag gleiche Zeit", zh:"7–8小時，每天同一時間" },
-  '5-0':{ en:"morning water · 10-min walk · lights out by 22:30", de:"z.B. Wasser am Morgen · 10-Min-Walk · Licht aus um 22:30", zh:"例如：早晨喝水・10分鐘散步・22:30關燈" },
-  '5-2':{ en:"pick the time, not the workout", de:"Zeit festlegen, nicht die Trainingsart", zh:"先定時間，而非訓練內容" }
-};
+/* Mo–So, in this fixed order — used for the Day-0 training-day picker and
+   to check "is today one of the days this client planned to train". */
+const WEEKDAY_KEYS = ['mon','tue','wed','thu','fri','sat','sun'];
+/* JS Date.getDay() is Sun-first (0=Sun); map it onto WEEKDAY_KEYS. */
+const JS_DAY_TO_KEY = ['sun','mon','tue','wed','thu','fri','sat'];
 
 /* René's WhatsApp number in international format without +, e.g. "886912345678".
    Leave empty to let WhatsApp open with the message and free contact choice. */
@@ -923,160 +968,93 @@ const VIDEOS = {
 ========================================================= */
 const BADGES = ["","Observer","Mover","Fuel Builder","Recovery Operator","Structure Builder","Resilience Builder","Modern Athlete Standard"];
 
+/* Jeder Tag hat jetzt dieselbe Check-in-Mechanik (siehe CHECKIN_ITEMS unten) —
+   hier steht nur noch das, was sich pro Tag unterscheidet: Video-Thema, Intro-Text,
+   Zitat (Thema "Wort halten / Handeln statt Wissen") und der Teaser für morgen. */
 const DAYS = {
-1:{ chooseOne:false,
-  en:{ name:"Awareness", theme:"Track, don't judge.",
+1:{ en:{ name:"Awareness", theme:"Track, don't judge.",
     desc:"Today is only about noticing your current patterns — no judgment, no fixing yet.",
-    tasks:["Track your water intake","Track your meals","Track your mood","Track your movement"],
-    reflection:"What did you notice today?",
-    quote:"You don't change what you don't notice. Awareness is the first rep.",
-    tip:"Track without judgment. The goal is not to be perfect. The goal is to see the pattern.",
+    quote:"The only person watching is the one you promised.",
     teaser:"Tomorrow: feel your body again." },
   de:{ name:"Awareness", theme:"Beobachten, nicht bewerten.",
     desc:"Heute geht es nur darum, deine aktuellen Muster wahrzunehmen — ohne Bewertung, ohne sofort etwas zu ändern.",
-    tasks:["Wasser notieren","Mahlzeiten notieren","Stimmung notieren","Bewegung notieren"],
-    reflection:"Welches Muster ist dir heute aufgefallen?",
-    quote:"Du veränderst nicht, was du nicht wahrnimmst. Wahrnehmung ist die erste Wiederholung.",
-    tip:"Beobachte ohne zu bewerten. Es geht nicht um Perfektion — es geht darum, das Muster zu sehen.",
+    quote:"Der Einzige, der zusieht, ist der, dem du es versprochen hast.",
     teaser:"Morgen: Spür deinen Körper wieder." },
   zh:{ name:"覺察", theme:"觀察，先別評判。",
     desc:"今天只需要留意你目前的習慣模式——不評判、先不急著改變。",
-    tasks:["記錄飲水量","記錄三餐","記錄心情","記錄活動量"],
-    reflection:"你今天注意到什麼？",
-    quote:"你不會改變你沒有注意到的事。覺察是第一步。",
-    tip:"觀察但不評判。目標不是完美，而是看清模式。",
+    quote:"唯一在看的人，是你許下承諾的那個人。",
     teaser:"明天：重新感受你的身體。" } },
-2:{ chooseOne:false,
-  en:{ name:"Movement", theme:"Feel your body again.",
+2:{ en:{ name:"Movement", theme:"Feel your body again.",
     desc:"Simple movement today — nothing extreme. The goal is to reconnect with your body.",
-    tasks:["Complete a simple full-body movement session","Go for a 20-minute walk","Do 2 minutes of mobility"],
-    reflection:"Where did your body feel stiff, weak or restricted?",
-    quote:"Energy often comes after movement, not before.",
-    tip:"When you feel stuck, move first. A 10-minute walk can shift your state.",
+    quote:"A promise you keep when no one's watching is the one that counts.",
     teaser:"Tomorrow: eat to support energy." },
   de:{ name:"Movement", theme:"Spür deinen Körper wieder.",
     desc:"Heute einfache Bewegung — nichts Extremes. Das Ziel ist, wieder Verbindung zu deinem Körper aufzubauen.",
-    tasks:["Eine einfache Ganzkörper-Einheit absolvieren","20 Minuten spazieren gehen","2 Minuten Mobility machen"],
-    reflection:"Wo hat sich dein Körper steif, schwach oder eingeschränkt angefühlt?",
-    quote:"Energie kommt oft nach der Bewegung, nicht davor.",
-    tip:"Wenn du feststeckst: Beweg dich zuerst. Ein 10-Minuten-Walk kann deinen Zustand verändern.",
+    quote:"Ein Versprechen, das du hältst, wenn keiner zusieht — das zählt.",
     teaser:"Morgen: Essen für mehr Energie." },
   zh:{ name:"活動", theme:"重新感受你的身體。",
     desc:"今天只做簡單的活動——不做極端訓練。目標是重新與身體建立連結。",
-    tasks:["完成一個簡單的全身活動","散步20分鐘","做2分鐘的活動度訓練"],
-    reflection:"你的身體哪裡感覺僵硬、無力或受限？",
-    quote:"能量往往在活動之後出現，而不是之前。",
-    tip:"當你感覺卡住時，先動起來。10分鐘的散步就能改變你的狀態。",
+    quote:"沒人看見時仍信守的承諾，才是真正算數的。",
     teaser:"明天：用飲食支持能量。" } },
-3:{ chooseOne:false,
-  en:{ name:"Fuel", theme:"Eat to support energy.",
+3:{ en:{ name:"Fuel", theme:"Eat to support energy.",
     desc:"Today we build simple nutrition structure for better energy — no extreme dieting.",
-    tasks:["Eat one protein-first meal","Drink enough water","Eat one simple whole-food meal","Avoid extreme dieting"],
-    reflection:"Which meal gave you the best energy today?",
-    quote:"Your next decision is easier when your blood sugar is stable.",
-    tip:"Start meals with protein and fiber. This one habit can reduce cravings and energy crashes.",
+    quote:"You don't need more information. You need to do what you already know.",
     teaser:"Tomorrow: recovery is productive." },
   de:{ name:"Fuel", theme:"Essen, das Energie gibt.",
     desc:"Heute bauen wir einfache Ernährungsstruktur für bessere Energie — kein extremes Diäten.",
-    tasks:["Eine Protein-First-Mahlzeit essen","Genug Wasser trinken","Eine einfache, unverarbeitete Mahlzeit essen","Extremes Diäten vermeiden"],
-    reflection:"Welche Mahlzeit hat dir heute die beste Energie gegeben?",
-    quote:"Deine nächste Entscheidung fällt leichter, wenn dein Blutzucker stabil ist.",
-    tip:"Starte Mahlzeiten mit Protein und Ballaststoffen. Diese eine Gewohnheit kann Cravings und Energielöcher reduzieren.",
+    quote:"Du brauchst nicht mehr Wissen. Du musst tun, was du schon weißt.",
     teaser:"Morgen: Regeneration ist produktiv." },
   zh:{ name:"飲食", theme:"用飲食支持能量。",
     desc:"今天我們建立簡單的飲食結構來提升能量——不做極端節食。",
-    tasks:["吃一餐以蛋白質為主的餐點","喝足夠的水","吃一餐簡單的原型食物","避免極端節食"],
-    reflection:"哪一餐讓你今天的能量最好？",
-    quote:"當你的血糖穩定時，下一個決定會更容易。",
-    tip:"用蛋白質和纖維開始每一餐。這個習慣能減少渴望和能量低潮。",
+    quote:"你不需要更多知識，你需要做你已經知道的事。",
     teaser:"明天：恢復也是一種進步。" } },
-4:{ chooseOne:false,
-  en:{ name:"Recovery", theme:"Recovery is productive.",
+4:{ en:{ name:"Recovery", theme:"Recovery is productive.",
     desc:"Tonight decides tomorrow's energy. We build a simple evening structure.",
-    tasks:["Reduce evening screen time","Create a simple evening routine","Do 5 minutes of calm breathing","Set a realistic sleep target"],
-    reflection:"What is your biggest recovery problem right now?",
-    quote:"Recovery doesn't take your time away from progress. Recovery is what makes progress possible.",
-    tip:"Your evening routine decides tomorrow's energy more than your morning motivation.",
+    quote:"Consistency is just a promise kept on a day you didn't feel like it.",
     teaser:"Tomorrow: remove decision fatigue." },
   de:{ name:"Recovery", theme:"Regeneration ist produktiv.",
     desc:"Der heutige Abend entscheidet über die Energie von morgen. Wir bauen eine einfache Abendstruktur.",
-    tasks:["Bildschirmzeit am Abend reduzieren","Eine einfache Abendroutine erstellen","5 Minuten ruhig atmen","Ein realistisches Schlafziel setzen"],
-    reflection:"Was ist aktuell dein größtes Regenerations-Problem?",
-    quote:"Regeneration ist keine Pause vom Fortschritt. Regeneration macht Fortschritt erst möglich.",
-    tip:"Deine Abendroutine entscheidet mehr über die Energie von morgen als deine Motivation am Morgen.",
+    quote:"Konstanz ist nur ein Versprechen, das du an einem schlechten Tag trotzdem hältst.",
     teaser:"Morgen: Weniger Entscheidungen, mehr Struktur." },
   zh:{ name:"恢復", theme:"恢復也是一種進步。",
     desc:"今晚決定明天的能量。我們來建立一個簡單的晚間流程。",
-    tasks:["減少晚間螢幕時間","建立一個簡單的晚間流程","做5分鐘的平靜呼吸","設定一個實際的睡眠目標"],
-    reflection:"你目前最大的恢復問題是什麼？",
-    quote:"恢復不是暫停進步，恢復才能讓進步成為可能。",
-    tip:"你的晚間流程比早晨的動力更能決定明天的能量。",
+    quote:"恆心不過是在不想做的那天，依然信守的承諾。",
     teaser:"明天：減少決策疲勞。" } },
-5:{ chooseOne:false,
-  en:{ name:"Structure", theme:"Remove decision fatigue.",
+5:{ en:{ name:"Structure", theme:"Remove decision fatigue.",
     desc:"Discipline gets easier when the system removes unnecessary decisions.",
-    tasks:["Choose one anchor habit","Plan tomorrow's first meal","Schedule your movement","Prepare your water"],
-    reflection:"What routine would make your life easier?",
-    quote:"Discipline gets easier when the system removes unnecessary decisions.",
-    tip:"Choose one anchor habit. Same time. Same place. Same trigger.",
+    quote:"Small promises, kept daily, build the person who keeps big ones.",
     teaser:"Tomorrow: controlled discomfort." },
   de:{ name:"Structure", theme:"Weniger Entscheidungen, mehr Struktur.",
     desc:"Disziplin wird leichter, wenn das System unnötige Entscheidungen entfernt.",
-    tasks:["Eine Anker-Gewohnheit wählen","Die erste Mahlzeit von morgen planen","Bewegung fest einplanen","Wasser vorbereiten"],
-    reflection:"Welche Routine würde dein Leben leichter machen?",
-    quote:"Disziplin wird leichter, wenn das System unnötige Entscheidungen entfernt.",
-    tip:"Wähle eine Anker-Gewohnheit. Gleiche Zeit. Gleicher Ort. Gleicher Auslöser.",
+    quote:"Kleine Versprechen, täglich gehalten, bauen den Menschen, der große hält.",
     teaser:"Morgen: Kontrolliertes Unbehagen." },
   zh:{ name:"結構", theme:"減少決策，建立結構。",
     desc:"當系統移除不必要的決定時，自律會變得更容易。",
-    tasks:["選擇一個錨點習慣","規劃明天的第一餐","把活動時間排進行程","事先準備好飲水"],
-    reflection:"什麼樣的日常安排能讓你的生活更輕鬆？",
-    quote:"當系統移除不必要的決定時，自律會變得更容易。",
-    tip:"選一個錨點習慣。同樣的時間、同樣的地點、同樣的觸發點。",
+    quote:"每天信守的小承諾，造就能信守大承諾的人。",
     teaser:"明天：可控的不適感。" } },
-6:{ chooseOne:true,
-  en:{ name:"Resilience", theme:"Controlled discomfort.",
-    desc:"Choose at least one challenge. Small promises kept under discomfort build confidence.",
-    tasks:["Cold shower","Long walk","No phone for one hour","Extra mobility session","Wake up earlier","Do something you've been avoiding"],
-    reflection:"What did you learn about yourself under discomfort?",
-    quote:"Confidence is built when you keep small promises under discomfort.",
-    tip:"Controlled discomfort teaches your nervous system: I can handle this.",
+6:{ en:{ name:"Resilience", theme:"Controlled discomfort.",
+    desc:"Today's video is about doing the hard thing anyway. Small promises kept under discomfort build confidence.",
+    quote:"Discipline isn't knowing what to do. It's doing it anyway.",
     teaser:"Tomorrow: the new standard." },
   de:{ name:"Resilience", theme:"Kontrolliertes Unbehagen.",
-    desc:"Wähle mindestens eine Challenge. Kleine gehaltene Versprechen unter Unbehagen bauen Selbstvertrauen auf.",
-    tasks:["Kalte Dusche","Langer Spaziergang","Eine Stunde ohne Handy","Extra Mobility-Einheit","Früher aufstehen","Etwas tun, das du aufgeschoben hast"],
-    reflection:"Was hast du unter Unbehagen über dich gelernt?",
-    quote:"Selbstvertrauen entsteht, wenn du kleine Versprechen auch unter Unbehagen hältst.",
-    tip:"Kontrolliertes Unbehagen lehrt dein Nervensystem: Ich kann damit umgehen.",
+    desc:"Das heutige Video geht darum, das Unangenehme trotzdem zu tun. Kleine gehaltene Versprechen unter Unbehagen bauen Selbstvertrauen auf.",
+    quote:"Disziplin heißt nicht, zu wissen was zu tun ist. Es heißt, es trotzdem zu tun.",
     teaser:"Morgen: Der neue Standard." },
   zh:{ name:"韌性", theme:"可控的不適感。",
-    desc:"至少選擇一項挑戰。在不適中信守小承諾能建立自信。",
-    tasks:["冷水澡","長時間散步","一小時不使用手機","額外的活動度訓練","提早起床","做一件你一直拖延的事"],
-    reflection:"在不適中你對自己有什麼新的認識？",
-    quote:"當你在不適中仍信守小承諾時，自信便會建立起來。",
-    tip:"可控的不適感教會你的神經系統：我能應付這個。",
+    desc:"今天的影片談的是：明知不適仍去做。在不適中信守小承諾能建立自信。",
+    quote:"自律不是知道該做什麼，而是明知如此仍去做。",
     teaser:"明天：全新的標準。" } },
-7:{ chooseOne:false,
-  en:{ name:"The New Standard", theme:"This wasn't a challenge. It was proof.",
+7:{ en:{ name:"The New Standard", theme:"This wasn't a challenge. It was proof.",
     desc:"Seven days done. Today you look back — and decide what you keep.",
-    tasks:["Reflect for 10 min on the past 7 days","Choose 1–2 habits you want to stick to","Complete your final check-in"],
-    reflection:"What changed? How do you feel? What surprised you? What do you need help with next?",
-    quote:"This wasn't a challenge. It was proof.",
-    tip:"Don't try to keep everything. Keep the 1–2 habits that created the biggest shift.",
+    quote:"Seven days of proof beats seven years of intentions.",
     teaser:"" },
   de:{ name:"The New Standard", theme:"Das war keine Challenge. Das war der Beweis.",
     desc:"Sieben Tage geschafft. Heute blickst du zurück — und entscheidest, was du behältst.",
-    tasks:["10 Min über die letzten 7 Tage reflektieren","1–2 Gewohnheiten wählen, an denen du festhalten willst","Finalen Check-in abschließen"],
-    reflection:"Was hat sich verändert? Wie fühlst du dich? Was hat dich überrascht? Wobei brauchst du als Nächstes Hilfe?",
-    quote:"Das war keine Challenge. Das war der Beweis.",
-    tip:"Versuch nicht, alles beizubehalten. Behalte die 1–2 Gewohnheiten mit dem größten Effekt.",
+    quote:"Sieben Tage Beweis schlagen sieben Jahre Vorsätze.",
     teaser:"" },
   zh:{ name:"全新的標準", theme:"這不是一場挑戰，而是一份證明。",
     desc:"七天完成了。今天回顧這段旅程——並決定你要保留什麼。",
-    tasks:["花10分鐘回顧過去7天","選擇你想堅持的1–2個習慣","完成最終的Check-in"],
-    reflection:"有什麼改變了？你現在感覺如何？有什麼讓你驚訝？接下來你需要什麼幫助？",
-    quote:"這不是一場挑戰，而是一份證明。",
-    tip:"不要試圖保留所有事情。只保留帶來最大改變的1–2個習慣。",
+    quote:"七天的證明，勝過七年的打算。",
     teaser:"" } }
 };
 
@@ -1100,19 +1078,20 @@ en:{
   day0Cta:"Start Baseline Check-In", day0CtaDone:"Back to dashboard",
   videoSoon:"Video from René — coming soon", welcomeVideo:"Welcome video",
   baseEyebrow:"Baseline Check-In", baseTitle:"Where are you starting from?",
-  baseSub:"5 sliders, 1 minute. This is your before-picture — Day 7 will show you the difference.",
+  baseSub:"Your training days for this week — locked in once you start.",
   lblName:"Name", lblChannel:"Contact channel",
   lblPhoneWhatsapp:"WhatsApp number (optional, recommended)",
   lblPhoneLine:"LINE ID (optional, recommended)",
   phoneHintWhatsapp:"Include your country code — so René can reply to you directly.",
   phoneHintLine:"Your LINE ID — so René can reply to you directly.",
-  phWhatsapp:"+886 912 345 678", phLine:"your_line_id",
+  phWhatsapp:"+44 7911 123456", phLine:"your_line_id",
   lblSource:"Who invited you?",
   lblFriend:"Name of the friend", lblGoal:"3 biggest goals", lblStruggle:"3 biggest struggles",
   sources:[["instagram","Instagram"],["rene","René personally"],["friend","A friend"],["other","Other"]],
   goals:[["energy","More energy"],["nutrition","Better nutrition"],["training","Better training routine"],["sleep","Better sleep"],["stiffness","Less stiffness"],["consistency","More consistency"],["fat","Lose fat"],["strength","Build strength"],["healthy","Feel healthy again"]],
   struggles:[["nutrition","Nutrition"],["training","Training"],["sleep","Sleep"],["stress","Stress"],["energy","Low energy"],["structure","No structure"],["not_sure","Not sure"]],
-  baseSliders:[["energy","Energy today"],["sleep","Sleep quality"],["stress","Stress level"],["movement","Movement consistency"],["nutrition","Nutrition structure"]],
+  lblTrainingDays:"Which days will you train this week?",
+  weekdays:[["mon","Mon"],["tue","Tue"],["wed","Wed"],["thu","Thu"],["fri","Fri"],["sat","Sat"],["sun","Sun"]],
   baseSubmit:"Enter the Reset", baseNameReq:"Please enter your name.",
   baseGoalReq:"Please choose 3 goals.", baseStruggleReq:"Please choose 3 struggles.",
   dashHello:(n)=> n ? "Welcome back, "+n : "Welcome back",
@@ -1120,28 +1099,26 @@ en:{
   missionDoneTitle:"Day completed ✅", missionDoneDesc:"Strong. Come back tomorrow for the next day.",
   missionAllDoneTitle:"Reset completed", missionAllDoneDesc:"All 7 days done. Your next step is ready below.",
   missionCtaDone:"View today's summary", missionCtaFinal:"See your next step",
-  dayWord:"Day", statDayLbl:"Progress", statStreakLbl:"Day streak", statPointsLbl:"Reset Points", statEnergyLbl:"Your energy",
+  dayWord:"Day", statDaysLbl:"Days done", statChecksLbl:"Kept", statEnergyLbl:"Your energy",
   levelDefault:"Reset Participant", archiveHead:"Your 7 days", startHereLbl:"▶ Day 0 · Welcome video", logout:"Log out",
-  locked:"Locked", today:"Today",
+  navHome:"Home", navPlan:"Plan", navProgress:"Progress", navProfile:"Profile",
+  locked:"Locked", today:"Today", missed:"Missed",
   bnCardTitle:"Your Bottleneck Snapshot™ 🔓", bnCardSub:"Unlocked after Day 4 — see what's actually blocking you.",
   mapCardTitle:"Your Personal MAP™", mapCardSub:"You completed the Reset. See your next step.",
-  tasksHead:"Today's move", tasksHeadChoose:"Choose at least one",
   checkinHead:"Quick check-in", checkinSpeedHint:"15 seconds, then you're out",
-  lblEnergy:"Energy today", lblSleep:"Sleep last night",
-  lblMission:"How did it go?",
-  segMission:[["yes","Yes"],["partly","Half"],["no","Nope"]],
-  lblReflection:"Reflection",
-  notePlaceholder:"Anything you want to get off your chest? (optional)",
-  chipWin:"Biggest win", chipHard:"What was hard", chipGrateful:"Grateful for",
-  coachNote:"Write it however it comes out. I read every check-in myself — and I'm in this with you. If something's off, tell me. That's what we're all here for.",
-  daySubmit:"Submit check-in", missionReq:"Please let us know how it went.",
-  chooseOneReq:"Choose at least one challenge for today.",
-  rewardEyebrow:"Standard Completed ✅", pointsSuffix:"Reset Points",
-  badgeUnlocked:"Badge unlocked", streakWord:(n)=> "Current streak: "+n+(n===1?" day":" days"),
-  tipLbl:"Tip of the day", teaserLbl:"Tomorrow",
+  itemTraining:"Training done", itemTrainingOff:"Not a training day today",
+  itemProtein:"Ate a protein-rich meal", itemTask:"Completed your planned task",
+  lblEnergy:"Energy today", energyHint:"Just for you and René to see — doesn't affect your streak.",
+  daySubmit:"Submit check-in",
+  rewardEyebrow:"Check-in saved ✅", rewardChecksLbl:"kept today",
+  badgeUnlocked:"Badge unlocked",
+  progressSummary:(d,c)=> d+"/7 days · "+c+"/21 kept",
+  teaserLbl:"Tomorrow",
   rewardWhatsapp:"Send René a personal note", rewardContinue:"Continue",
-  checkinSaved:"Check-in submitted ✅ — René can now see your progress.",
-  waCheckin:(d,e,s,note)=>"Hey René, I completed Day "+d+" of the Modern Athlete Reset.\n\nEnergy: "+e+"/5\nSleep: "+s+"/5"+(note?"\nNote: "+note:""),
+  waCheckin:(d,items,energy)=>{
+    const mk=v=>v?"✓":"–";
+    return "Hey René, Day "+d+" check-in:\nTraining: "+mk(items.training)+"\nProtein meal: "+mk(items.protein)+"\nTask: "+mk(items.task)+"\nEnergy: "+EMOJI_SCALE[energy-1];
+  },
   groupScoreText:(a,b)=>"Together: "+a+" of "+b+" today",
   lbDrawText:"🎁 Finish all 7 days → entered into the draw",
   socialProofText:(a,b)=>a+" of "+b+" already checked in today 🔥",
@@ -1168,6 +1145,7 @@ en:{
     low:{ title:"You Finished — That Already Puts You Ahead.",
       intro:"Life doesn't pause for a 7-day reset, and you still made it to Day 7. That matters more than a perfect scorecard. If consistency was the hard part, that's precisely what a Personal MAP™ is designed to fix — a plan built around your real schedule, not an idealized one." }
   },
+  checksSuffix:"kept", finalEnergyLbl:"Your energy this week",
   prizeNote:"🎁 You're in: everyone who completes all 7 days enters the draw for a free Modern Athlete Assessment™ (worth 1,800 NTD).",
   offerTitle:"Modern Athlete Assessment™", offerPrice:"1,800 NTD",
   offerList:["Nutrition review","Movement / training review","Lifestyle score","Main bottleneck analysis","Personal next-step recommendation"],
@@ -1194,7 +1172,7 @@ en:{
   requestBtn:"Request", requestedBtn:"Requested ✓",
   nutritionRequested:"Requested — René will upload it here once it's ready.",
   trainingRequested:"Requested — René will upload it here once it's ready.",
-  waPlanRequest:(type,name)=> "Hey René, I'd like to request my "+type+" plan."+(name?" ("+name+")":""),
+  waPlanRequest:(type)=> "Hey René, I'd like to request my "+type+" plan.",
   noPlanYet:"No plan uploaded yet.", downloadPlan:"⬇ Download PDF"
 },
 de:{
@@ -1213,19 +1191,20 @@ de:{
   day0Cta:"Zur Challenge", day0CtaDone:"Zurück zum Dashboard",
   videoSoon:"Video von René — folgt in Kürze", welcomeVideo:"Willkommens-Video",
   baseEyebrow:"Baseline-Check-in", baseTitle:"Wo startest du gerade?",
-  baseSub:"5 Regler, 1 Minute. Das ist dein Vorher-Bild — Tag 7 zeigt dir den Unterschied.",
+  baseSub:"Deine Trainingstage für diese Woche — einmal festgelegt, gilt für die ganze Woche.",
   lblName:"Name", lblChannel:"Kontaktkanal",
   lblPhoneWhatsapp:"WhatsApp-Nummer (optional, empfohlen)",
   lblPhoneLine:"LINE-ID (optional, empfohlen)",
   phoneHintWhatsapp:"Mit Ländervorwahl (z. B. +886...) — so kann René dir direkt antworten.",
   phoneHintLine:"Deine LINE-ID — so kann René dir direkt antworten.",
-  phWhatsapp:"+886 912 345 678", phLine:"deine_line_id",
+  phWhatsapp:"+49 151 23456789", phLine:"deine_line_id",
   lblSource:"Wer hat dich eingeladen?",
   lblFriend:"Name des Freundes", lblGoal:"3 größte Ziele", lblStruggle:"3 größte Herausforderungen",
   sources:[["instagram","Instagram"],["rene","René persönlich"],["friend","Ein Freund"],["other","Sonstiges"]],
   goals:[["energy","Mehr Energie"],["nutrition","Bessere Ernährung"],["training","Bessere Trainingsroutine"],["sleep","Besserer Schlaf"],["stiffness","Weniger Steifheit"],["consistency","Mehr Konstanz"],["fat","Fett verlieren"],["strength","Kraft aufbauen"],["healthy","Mich wieder gesund fühlen"]],
   struggles:[["nutrition","Ernährung"],["training","Training"],["sleep","Schlaf"],["stress","Stress"],["energy","Wenig Energie"],["structure","Keine Struktur"],["not_sure","Nicht sicher"]],
-  baseSliders:[["energy","Energie heute"],["sleep","Schlafqualität"],["stress","Stresslevel"],["movement","Bewegungs-Konstanz"],["nutrition","Ernährungs-Struktur"]],
+  lblTrainingDays:"An welchen Tagen trainierst du diese Woche?",
+  weekdays:[["mon","Mo"],["tue","Di"],["wed","Mi"],["thu","Do"],["fri","Fr"],["sat","Sa"],["sun","So"]],
   baseSubmit:"Reset betreten", baseNameReq:"Bitte gib deinen Namen ein.",
   baseGoalReq:"Bitte wähle 3 Ziele aus.", baseStruggleReq:"Bitte wähle 3 Herausforderungen aus.",
   dashHello:(n)=> n ? "Willkommen zurück, "+n : "Willkommen zurück",
@@ -1233,28 +1212,26 @@ de:{
   missionDoneTitle:"Tag abgeschlossen ✅", missionDoneDesc:"Stark. Komm morgen für den nächsten Tag zurück.",
   missionAllDoneTitle:"Reset abgeschlossen", missionAllDoneDesc:"Alle 7 Tage geschafft. Dein nächster Schritt wartet unten.",
   missionCtaDone:"Heutige Zusammenfassung ansehen", missionCtaFinal:"Deinen nächsten Schritt ansehen",
-  dayWord:"Tag", statDayLbl:"Fortschritt", statStreakLbl:"Tage-Streak", statPointsLbl:"Reset Points", statEnergyLbl:"Deine Energie",
+  dayWord:"Tag", statDaysLbl:"Tage geschafft", statChecksLbl:"Gehalten", statEnergyLbl:"Deine Energie",
   levelDefault:"Reset-Teilnehmer", archiveHead:"Deine 7 Tage", startHereLbl:"▶ Tag 0 · Willkommens-Video", logout:"Abmelden",
-  locked:"Gesperrt", today:"Heute",
+  navHome:"Home", navPlan:"Plan", navProgress:"Fortschritt", navProfile:"Profil",
+  locked:"Gesperrt", today:"Heute", missed:"Verpasst",
   bnCardTitle:"Dein Bottleneck Snapshot™ 🔓", bnCardSub:"Nach Tag 4 freigeschaltet — sieh, was dich wirklich blockiert.",
   mapCardTitle:"Deine Personal MAP™", mapCardSub:"Du hast den Reset abgeschlossen. Sieh dir deinen nächsten Schritt an.",
-  tasksHead:"Dein heutiger Move", tasksHeadChoose:"Wähle mindestens eine",
   checkinHead:"Quick-Check-in", checkinSpeedHint:"15 Sekunden, dann bist du raus",
-  lblEnergy:"Energie heute", lblSleep:"Schlaf letzte Nacht",
-  lblMission:"Wie lief's?",
-  segMission:[["yes","Ja"],["partly","Halb"],["no","Nö"]],
-  lblReflection:"Reflexion",
-  notePlaceholder:"Willst du dir was von der Seele schreiben? (optional)",
-  chipWin:"Größter Win", chipHard:"Was war schwer", chipGrateful:"Dankbar für",
-  coachNote:"Schreib's einfach so wie's kommt. Ich lese jeden Check-in selbst — und ich bin mit dabei. Wenn was nicht passt, sag's mir. Dafür sind wir alle hier.",
-  daySubmit:"Check-in absenden", missionReq:"Sag uns kurz, wie's gelaufen ist.",
-  chooseOneReq:"Wähle mindestens eine Challenge für heute.",
-  rewardEyebrow:"Standard gehalten ✅", pointsSuffix:"Reset Points",
-  badgeUnlocked:"Badge freigeschaltet", streakWord:(n)=> "Aktueller Streak: "+n+(n===1?" Tag":" Tage"),
-  tipLbl:"Tipp des Tages", teaserLbl:"Morgen",
+  itemTraining:"Training erledigt", itemTrainingOff:"Heute kein Trainingstag",
+  itemProtein:"Proteinreiches Meal gegessen", itemTask:"Vorgenommene Aufgabe erledigt",
+  lblEnergy:"Energie heute", energyHint:"Nur für dich und René sichtbar — zählt nicht zur Kette.",
+  daySubmit:"Check-in absenden",
+  rewardEyebrow:"Check-in gespeichert ✅", rewardChecksLbl:"heute gehalten",
+  badgeUnlocked:"Badge freigeschaltet",
+  progressSummary:(d,c)=> d+"/7 Tage · "+c+"/21 gehalten",
+  teaserLbl:"Morgen",
   rewardWhatsapp:"René eine persönliche Nachricht senden", rewardContinue:"Weiter",
-  checkinSaved:"Check-in gespeichert ✅ — René kann deinen Fortschritt jetzt sehen.",
-  waCheckin:(d,e,s,note)=>"Hey René, ich habe Tag "+d+" vom Modern Athlete Reset abgeschlossen.\n\nEnergie: "+e+"/5\nSchlaf: "+s+"/5"+(note?"\nNotiz: "+note:""),
+  waCheckin:(d,items,energy)=>{
+    const mk=v=>v?"✓":"–";
+    return "Hey René, Tag "+d+" Check-in:\nTraining: "+mk(items.training)+"\nProtein-Mahlzeit: "+mk(items.protein)+"\nAufgabe: "+mk(items.task)+"\nEnergie: "+EMOJI_SCALE[energy-1];
+  },
   groupScoreText:(a,b)=>"Zusammen: "+a+" von "+b+" heute",
   lbDrawText:"🎁 Alle 7 Tage schaffen → in der Verlosung",
   socialProofText:(a,b)=>a+" von "+b+" haben heute schon eingecheckt 🔥",
@@ -1281,6 +1258,7 @@ de:{
     low:{ title:"Du hast durchgehalten — das bringt dich schon jetzt weiter.",
       intro:"Das Leben pausiert nicht für einen 7-Tage-Reset, und trotzdem hast du es bis Tag 7 geschafft. Das zählt mehr als eine perfekte Punktzahl. Wenn Konstanz der schwierige Teil war — genau dafür ist eine Personal MAP™ gemacht: ein Plan rund um deinen echten Alltag, nicht um einen Idealfall." }
   },
+  checksSuffix:"gehalten", finalEnergyLbl:"Deine Energie diese Woche",
   prizeNote:"🎁 Du bist dabei: Alle, die alle 7 Tage abschließen, nehmen an der Verlosung eines kostenlosen Modern Athlete Assessment™ teil (Wert: 1.800 NTD).",
   offerTitle:"Modern Athlete Assessment™", offerPrice:"1.800 NTD",
   offerList:["Ernährungs-Review","Bewegungs- / Trainings-Review","Lifestyle-Score","Analyse deines größten Bottlenecks","Persönliche Next-Step-Empfehlung"],
@@ -1307,7 +1285,7 @@ de:{
   requestBtn:"Anfordern", requestedBtn:"Angefordert ✓",
   nutritionRequested:"Angefordert — René lädt ihn hier hoch, sobald er fertig ist.",
   trainingRequested:"Angefordert — René lädt ihn hier hoch, sobald er fertig ist.",
-  waPlanRequest:(type,name)=> "Hey René, ich würde gerne meinen "+type+" anfordern."+(name?" ("+name+")":""),
+  waPlanRequest:(type)=> "Hey René, ich würde gerne meinen "+type+" anfordern.",
   noPlanYet:"Noch kein Plan hochgeladen.", downloadPlan:"⬇ PDF herunterladen"
 },
 zh:{
@@ -1326,7 +1304,7 @@ zh:{
   day0Cta:"開始基準 Check-In", day0CtaDone:"回到儀表板",
   videoSoon:"René 的影片——即將推出", welcomeVideo:"歡迎影片",
   baseEyebrow:"基準 Check-In", baseTitle:"你現在的起點在哪裡？",
-  baseSub:"5個滑桿，1分鐘。這是你的「之前」——第7天會讓你看到差異。",
+  baseSub:"本週的訓練日——一旦開始就固定不變。",
   lblName:"姓名", lblChannel:"聯絡方式",
   lblPhoneWhatsapp:"WhatsApp 號碼（選填，建議填寫）",
   lblPhoneLine:"LINE ID（選填，建議填寫）",
@@ -1338,7 +1316,8 @@ zh:{
   sources:[["instagram","Instagram"],["rene","René 本人"],["friend","朋友"],["other","其他"]],
   goals:[["energy","更多能量"],["nutrition","更好的飲食"],["training","更好的訓練習慣"],["sleep","更好的睡眠"],["stiffness","減少僵硬"],["consistency","更有恆心"],["fat","減脂"],["strength","增肌力"],["healthy","重新感覺健康"]],
   struggles:[["nutrition","飲食"],["training","訓練"],["sleep","睡眠"],["stress","壓力"],["energy","能量不足"],["structure","缺乏結構"],["not_sure","不確定"]],
-  baseSliders:[["energy","今天的能量"],["sleep","睡眠品質"],["stress","壓力程度"],["movement","活動穩定度"],["nutrition","飲食結構"]],
+  lblTrainingDays:"這週你打算哪幾天訓練？",
+  weekdays:[["mon","一"],["tue","二"],["wed","三"],["thu","四"],["fri","五"],["sat","六"],["sun","日"]],
   baseSubmit:"進入 Reset", baseNameReq:"請輸入你的姓名。",
   baseGoalReq:"請選擇3個目標。", baseStruggleReq:"請選擇3個困難。",
   dashHello:(n)=> n ? "歡迎回來，"+n : "歡迎回來",
@@ -1346,28 +1325,26 @@ zh:{
   missionDoneTitle:"今日完成 ✅", missionDoneDesc:"很棒。明天再回來完成下一天。",
   missionAllDoneTitle:"Reset 已完成", missionAllDoneDesc:"7天都完成了。你的下一步已經準備好了。",
   missionCtaDone:"查看今日總結", missionCtaFinal:"查看你的下一步",
-  dayWord:"Day", statDayLbl:"進度", statStreakLbl:"連續天數", statPointsLbl:"Reset 積分", statEnergyLbl:"你的能量",
+  dayWord:"Day", statDaysLbl:"完成天數", statChecksLbl:"已完成", statEnergyLbl:"你的能量",
   levelDefault:"Reset 參與者", archiveHead:"你的7天", startHereLbl:"▶ Day 0 · 歡迎影片", logout:"登出",
-  locked:"未解鎖", today:"今天",
+  navHome:"首頁", navPlan:"計畫", navProgress:"進度", navProfile:"個人",
+  locked:"未解鎖", today:"今天", missed:"已錯過",
   bnCardTitle:"你的 Bottleneck Snapshot™ 🔓", bnCardSub:"第4天後解鎖——看看真正卡住你的是什麼。",
   mapCardTitle:"你的 Personal MAP™", mapCardSub:"你已完成 Reset。查看你的下一步。",
-  tasksHead:"今天的行動", tasksHeadChoose:"至少選擇一項",
   checkinHead:"快速 Check-in", checkinSpeedHint:"15秒，馬上搞定",
-  lblEnergy:"今天的能量", lblSleep:"昨晚的睡眠",
-  lblMission:"今天做得如何？",
-  segMission:[["yes","是"],["partly","一半"],["no","沒有"]],
-  lblReflection:"反思",
-  notePlaceholder:"有什麼想說的嗎？（選填）",
-  chipWin:"最大的收穫", chipHard:"最難的部分", chipGrateful:"感謝的事",
-  coachNote:"想到什麼就寫什麼。我會親自看每一則 Check-in——我跟你一起在這裡。如果有什麼不對勁，跟我說。這就是我們都在這裡的原因。",
-  daySubmit:"送出 Check-in", missionReq:"跟我們說一下今天做得如何。",
-  chooseOneReq:"請至少選擇一項今天的挑戰。",
-  rewardEyebrow:"標準達成 ✅", pointsSuffix:"Reset 積分",
-  badgeUnlocked:"徽章已解鎖", streakWord:(n)=> "目前連續天數："+n+" 天",
-  tipLbl:"今日提示", teaserLbl:"明天",
+  itemTraining:"完成訓練", itemTrainingOff:"今天不是訓練日",
+  itemProtein:"吃了一餐高蛋白餐點", itemTask:"完成了你安排的任務",
+  lblEnergy:"今天的能量", energyHint:"只有你和 René 看得到——不會影響你的連續紀錄。",
+  daySubmit:"送出 Check-in",
+  rewardEyebrow:"Check-in 已儲存 ✅", rewardChecksLbl:"今天完成",
+  badgeUnlocked:"徽章已解鎖",
+  progressSummary:(d,c)=> d+"/7 天 · "+c+"/21 個完成",
+  teaserLbl:"明天",
   rewardWhatsapp:"傳一則訊息給 René", rewardContinue:"繼續",
-  checkinSaved:"Check-in 已送出 ✅ — René 現在可以看到你的進度。",
-  waCheckin:(d,e,s,note)=>"嗨 René，我完成了 Modern Athlete Reset 第"+d+"天。\n\n能量："+e+"/5\n睡眠："+s+"/5"+(note?"\n備註："+note:""),
+  waCheckin:(d,items,energy)=>{
+    const mk=v=>v?"✓":"–";
+    return "嗨 René，第"+d+"天 Check-in：\n訓練："+mk(items.training)+"\n蛋白質餐："+mk(items.protein)+"\n任務："+mk(items.task)+"\n能量："+EMOJI_SCALE[energy-1];
+  },
   groupScoreText:(a,b)=>"大家一起："+a+" / "+b+"（今天）",
   lbDrawText:"🎁 完成全部7天 → 進入抽獎",
   socialProofText:(a,b)=>"今天已經有 "+a+" / "+b+" 人 check-in 了 🔥",
@@ -1394,6 +1371,7 @@ zh:{
     low:{ title:"你完成了——這已經讓你領先一步。",
       intro:"生活不會為了七天重啟而暫停，而你還是撐到了第7天。這比完美的分數更重要。如果堅持是最難的部分——這正是 Personal MAP™ 要解決的：一個圍繞你真實日常打造的計畫，而不是理想化的版本。" }
   },
+  checksSuffix:"個", finalEnergyLbl:"這週的能量",
   prizeNote:"🎁 你已經入圍：所有完成7天的人都會參加免費 Modern Athlete Assessment™ 的抽獎（價值 1,800 NTD）。",
   offerTitle:"Modern Athlete Assessment™", offerPrice:"1,800 NTD",
   offerList:["飲食檢視","活動／訓練檢視","生活型態評分","主要瓶頸分析","個人化下一步建議"],
@@ -1420,7 +1398,7 @@ zh:{
   requestBtn:"申請", requestedBtn:"已申請 ✓",
   nutritionRequested:"已申請 — René 完成後會上傳到這裡。",
   trainingRequested:"已申請 — René 完成後會上傳到這裡。",
-  waPlanRequest:(type,name)=> "嗨 René，我想申請我的"+type+"。"+(name?"（"+name+"）":""),
+  waPlanRequest:(type)=> "嗨 René，我想申請我的"+type+"。",
   noPlanYet:"尚未上傳計畫。", downloadPlan:"⬇ 下載 PDF"
 }
 };
@@ -1432,7 +1410,8 @@ const $ = s=>document.querySelector(s);
 const state = {
   uid:null, lang: localStorage.getItem('mal_lang') || null,
   profile:null, checkins:{}, // day -> data
-  currentTasks:new Set(), missionAnswer:null, lastReward:null, viewDay:null, previewActive:false
+  currentItems:{training:false,protein:false,task:false}, currentEnergy:3,
+  lastReward:null, viewDay:null, previewActive:false, activeTab:'home'
 };
 const t = ()=> T[state.lang || 'en'];
 const dc = (day)=> DAYS[day][state.lang || 'en'];
@@ -1449,14 +1428,50 @@ $('#themeToggleBtn').addEventListener('click', ()=>{
   applyTheme(document.documentElement.getAttribute('data-theme')==='dark' ? 'light' : 'dark');
 });
 
+function scrollToTop(){
+  window.scrollTo(0,0);
+  // Fallback for browsers/cases where window.scrollTo doesn't hit the real
+  // scroll container (older WebKit, or when html/body itself carries the scroll).
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
+}
 function show(name){
   Object.values(screens).forEach(s=>s.classList.remove('active'));
   screens[name].classList.add('active');
   currentScreen = name;
-  window.scrollTo(0,0);
-  requestAnimationFrame(()=>window.scrollTo(0,0));
-  setTimeout(()=>window.scrollTo(0,0),150);
+  scrollToTop();
+  requestAnimationFrame(()=>{ scrollToTop(); requestAnimationFrame(scrollToTop); });
+  setTimeout(scrollToTop,150);
+  setTimeout(scrollToTop,400); // catches late-loading images/video pushing layout down
+  renderBottomNav();
 }
+/* ---------- Bottom tab bar (Home/Plan/Progress/Profil) ----------
+   Nur auf den 3 Hauptbereichen sichtbar — bei Tag-Check-in/Reward/
+   Bottleneck/Final bleibt sie weg (wie bei den meisten Apps: Tab-Bar
+   = oberste Ebene, Task-Screens werden "darüber" geöffnet). */
+const TAB_SCREENS = ['dash','plans','settings'];
+function goHome(){ state.activeTab='home'; renderDash(); show('dash'); }
+function renderBottomNav(){
+  const nav=$('#bottomNav');
+  const isTabScreen = TAB_SCREENS.includes(currentScreen);
+  nav.classList.toggle('hidden', !isTabScreen);
+  $('.app').classList.toggle('has-bottomnav', isTabScreen);
+  if(!isTabScreen) return;
+  const active = currentScreen==='plans' ? 'plan' : currentScreen==='settings' ? 'profile' : (state.activeTab==='progress' ? 'progress' : 'home');
+  nav.querySelectorAll('button').forEach(b=>b.classList.toggle('sel', b.dataset.tab===active));
+  const s=t();
+  nav.querySelector('[data-tab="home"] .nav-lbl').textContent=s.navHome;
+  nav.querySelector('[data-tab="plan"] .nav-lbl').textContent=s.navPlan;
+  nav.querySelector('[data-tab="progress"] .nav-lbl').textContent=s.navProgress;
+  nav.querySelector('[data-tab="profile"] .nav-lbl').textContent=s.navProfile;
+}
+$('#navHomeBtn').addEventListener('click', goHome);
+$('#navPlanBtn').addEventListener('click', ()=>{ state.activeTab='plan'; renderPlans(); show('plans'); });
+$('#navProgressBtn').addEventListener('click', ()=>{
+  state.activeTab='progress'; renderDash(); show('dash');
+  setTimeout(()=>{ $('#archiveHead')?.scrollIntoView({behavior:'smooth', block:'start'}); }, 450);
+});
+$('#navProfileBtn').addEventListener('click', ()=>{ state.activeTab='profile'; renderSettings(); show('settings'); });
 
 function todayStr(){
   const d=new Date();
@@ -1468,21 +1483,60 @@ function dateOffsetStr(offset){
 }
 
 function completedDays(){ return Object.keys(state.checkins).map(Number).sort((a,b)=>a-b); }
-function currentDay(){ return Math.min(7, completedDays().length + 1); }
-/* Test-Modus: erster noch offener Tag (erlaubt Lücken, z. B. Tag 2 übersprungen) */
+/* Test-/Preview-Modus: erster noch offener Tag (erlaubt Lücken beim Durchklicken) */
 function nextOpenDay(){ for(let d=1;d<=7;d++){ if(!state.checkins[d]) return d; } return 7; }
 function allDone(){ return completedDays().length >= 7; }
-function totalPoints(){ return completedDays().reduce((sum,d)=> sum + (state.checkins[d].points||0), 0); }
-const MAX_TOTAL_POINTS = 700; // 7 days x 100 max/day (70 tasks + 10 check-in + 20 reflection)
-function scoreTier(points){ if(points>=MAX_TOTAL_POINTS*0.8) return 'top'; if(points>=MAX_TOTAL_POINTS*0.4) return 'mid'; return 'low'; }
-function completedToday(){ return Object.values(state.checkins).some(c=>c.dateStr===todayStr()); }
-function computeStreak(){
-  const dates = new Set(Object.values(state.checkins).map(c=>c.dateStr));
-  let streak=0, offset=0;
-  if(!dates.has(todayStr())) offset = -1;
-  while(dates.has(dateOffsetStr(offset - streak))) streak++;
-  return streak;
+
+function parseDateStr(s){ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
+function fmtDateStr(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function weekdayKey(date){ return JS_DAY_TO_KEY[date.getDay()]; }
+/* Tag N ist an ein festes Kalenderdatum gebunden (Tag 1 = Tag der Baseline).
+   So bleibt ein verpasster Tag sichtbar leer statt dass die App einfach nachrückt. */
+function dateForDay(n){
+  const start = state.profile?.challengeStartDate || todayStr();
+  const d = parseDateStr(start);
+  d.setDate(d.getDate() + (n-1));
+  return fmtDateStr(d);
 }
+function todayDayNumber(){
+  const start = state.profile?.challengeStartDate;
+  if(!start) return 1;
+  const diff = Math.round((parseDateStr(todayStr()) - parseDateStr(start)) / 86400000);
+  return diff + 1;
+}
+function isTrainingDay(n){
+  const key = weekdayKey(parseDateStr(dateForDay(n)));
+  return (state.profile?.trainingDays || []).includes(key);
+}
+/* 'done' = Check-in vorhanden · 'today' = heute dran · 'missed' = Kalendertag ist
+   vorbei, kein Check-in (bleibt sichtbar leer, kein nachträgliches Ausfüllen) ·
+   'locked' = noch nicht dran. Test-/Preview-Modus: jeder offene Tag ist 'open'. */
+function dayStatus(n){
+  if(state.checkins[n]) return 'done';
+  if(TEST_ALL_DAYS_UNLOCKED || state.previewActive) return 'open';
+  const tdn = todayDayNumber();
+  if(n < tdn) return 'missed';
+  if(n === tdn) return 'today';
+  return 'locked';
+}
+/* Ist die ganze Reset-Woche vorbei? Im Test-/Preview-Modus zählt stattdessen,
+   ob alle 7 Tage einen Check-in haben — sonst käme man in Test-Ansicht nie zu Tag 7. */
+function challengeFinished(){
+  if(TEST_ALL_DAYS_UNLOCKED || state.previewActive) return allDone();
+  return todayDayNumber() > 7;
+}
+function activeDay(){
+  if(TEST_ALL_DAYS_UNLOCKED || state.previewActive) return nextOpenDay();
+  return Math.min(7, Math.max(1, todayDayNumber()));
+}
+
+const CHECK_ITEM_KEYS = ['training','protein','task'];
+function itemsChecked(ci){ return ci ? CHECK_ITEM_KEYS.reduce((n,k)=> n + (ci[k]?1:0), 0) : 0; }
+function totalChecks(){ return completedDays().reduce((sum,d)=> sum + itemsChecked(state.checkins[d]), 0); }
+const MAX_TOTAL_CHECKS = 21; // 3 Items x 7 Tage
+function scoreTier(checks){ if(checks>=MAX_TOTAL_CHECKS*0.8) return 'top'; if(checks>=MAX_TOTAL_CHECKS*0.4) return 'mid'; return 'low'; }
+
+function completedToday(){ return !!state.checkins[todayDayNumber()]; }
 function latestBadge(){
   const days = completedDays();
   return days.length ? BADGES[days[days.length-1]] : null;
@@ -1691,7 +1745,7 @@ function route(){
   document.documentElement.lang = state.lang;
   if(!state.uid){ applyAuthText(); show('auth'); return; }
   if(!state.profile || !state.profile.baselineAt){ renderDay0(false); show('day0'); return; }
-  renderDash(); show('dash');
+  goHome();
 }
 
 /* =========================================================
@@ -1709,7 +1763,7 @@ function renderDay0(fromDash){
   $('#day0BackBtn').classList.toggle('hidden', !fromDash);
   $('#day0Cta').onclick = ()=>{ done ? (renderDash(),show('dash')) : (renderBaseline(),show('baseline')); };
 }
-$('#day0BackBtn').addEventListener('click',()=>{ renderDash(); show('dash'); });
+$('#day0BackBtn').addEventListener('click',()=>{ goHome(); });
 
 /* =========================================================
    BASELINE
@@ -1759,7 +1813,7 @@ function renderEmojiPicker(el, value){
   paint();
   return { getValue:()=>current, setValue:(n)=>{ current=n; paint(); } };
 }
-let baseGoalGrid=null, baseStruggleGrid=null, baseNumPickers={};
+let baseGoalGrid=null, baseStruggleGrid=null, baseTrainingGrid=null;
 function renderBaseline(){
   const s=t();
   $('#baseEyebrow').textContent=s.baseEyebrow;
@@ -1779,22 +1833,13 @@ function renderBaseline(){
   $('#lblFriend').textContent=s.lblFriend;
   $('#lblGoal').textContent=s.lblGoal;
   $('#lblStruggle').textContent=s.lblStruggle;
+  $('#lblTrainingDays').textContent=s.lblTrainingDays;
   $('#baseSubmit').textContent=s.baseSubmit;
   fillSelect($('#baseSource'), s.sources);
   baseGoalGrid=renderChoiceGrid($('#baseGoal'), s.goals, 3);
   baseStruggleGrid=renderChoiceGrid($('#baseStruggle'), s.struggles, 3);
+  baseTrainingGrid=renderChoiceGrid($('#baseTrainingDays'), s.weekdays, 7);
   $('#baseSource').onchange=()=>{ $('#friendNameWrap').classList.toggle('hidden', $('#baseSource').value!=='friend'); };
-  const box=$('#baseSliders'); box.innerHTML='';
-  box.style.cssText='display:flex;flex-direction:column;gap:14px;margin-top:4px';
-  baseNumPickers={};
-  s.baseSliders.forEach(([key,label])=>{
-    const w=document.createElement('div'); w.className='slider-block';
-    w.innerHTML='<div class="slider-head"><span class="sl">'+label+'</span></div>';
-    const grid=document.createElement('div'); grid.className='seg';
-    w.appendChild(grid);
-    box.appendChild(w);
-    baseNumPickers[key]=renderEmojiPicker(grid, 3);
-  });
 }
 $('#baseSubmit').addEventListener('click', async ()=>{
   const s=t(); const err=$('#baseError'); err.textContent='';
@@ -1804,8 +1849,7 @@ $('#baseSubmit').addEventListener('click', async ()=>{
   const biggestStruggles=baseStruggleGrid.getSelected();
   if(mainGoals.length!==3){ err.textContent=s.baseGoalReq; return; }
   if(biggestStruggles.length!==3){ err.textContent=s.baseStruggleReq; return; }
-  const baseline={};
-  s.baseSliders.forEach(([key])=>{ baseline[key]=baseNumPickers[key].getValue(); });
+  const trainingDays=baseTrainingGrid.getSelected();
   const data={
     name,
     phone: $('#basePhone').value.trim(),
@@ -1813,7 +1857,11 @@ $('#baseSubmit').addEventListener('click', async ()=>{
     source: $('#baseSource').value,
     invitedBy: $('#baseSource').value==='friend' ? $('#baseFriend').value.trim() : '',
     mainGoals, biggestStruggles,
-    baseline, baselineAt: serverTimestamp(),
+    trainingDays,
+    /* Tag 1 = heute, der Tag der Baseline. Fixiert für die ganze Woche —
+       steuert die Kalenderbindung von Tag 1-7 und die Trainingstage-Erkennung. */
+    challengeStartDate: todayStr(),
+    baselineAt: serverTimestamp(),
     preferredLanguage: state.lang, email: auth.currentUser?.email || ''
   };
   const isFirstTime = !state.profile?.baselineAt;
@@ -1821,16 +1869,26 @@ $('#baseSubmit').addEventListener('click', async ()=>{
     await setDoc(doc(db,'users',state.uid), data, { merge:true });
     Object.assign(state.profile, data, { baselineAt:{ seconds: Date.now()/1000 } });
     if(isFirstTime) recordNewParticipant().catch(()=>{});
-    renderDash(); show('dash');
+    goHome();
   }catch(e){ err.textContent=t().errFallback; }
 });
 
 /* =========================================================
    DASHBOARD
 ========================================================= */
+function renderEnergyTrend(el){
+  el.innerHTML='';
+  for(let d=1; d<=7; d++){
+    const bar=document.createElement('i');
+    const e=state.checkins[d]?.energy;
+    if(e){ bar.style.height=(e*10)+'%'; }
+    else { bar.style.height='12%'; bar.className='ghost'; }
+    el.appendChild(bar);
+  }
+}
 function renderDash(){
   const s=t();
-  const day = TEST_ALL_DAYS_UNLOCKED ? nextOpenDay() : currentDay(), done=completedDays().length;
+  const day = activeDay(), done=completedDays().length;
   $('#dashHello').textContent = s.dashHello(state.profile?.name || '');
   $('#dashHead').textContent = s.dashHead;
 
@@ -1845,19 +1903,19 @@ function renderDash(){
 
   // mission card
   const dcta=$('#missionCta');
-  if(allDone()){
+  if(challengeFinished()){
     $('#missionEyebrow').textContent = s.dayWord+' 7 / 7';
     $('#missionTitle').textContent = s.missionAllDoneTitle;
     $('#missionDesc').textContent = s.missionAllDoneDesc;
     dcta.textContent = s.missionCtaFinal;
     dcta.onclick=()=>{ renderFinal(); show('final'); };
-  } else if(!TEST_ALL_DAYS_UNLOCKED && completedToday()){
-    const lastDay = completedDays()[completedDays().length-1];
-    $('#missionEyebrow').textContent = s.dayWord+' '+lastDay+' / 7 — '+dc(lastDay).name;
+  } else if(!TEST_ALL_DAYS_UNLOCKED && !state.previewActive && completedToday()){
+    const doneToday = todayDayNumber();
+    $('#missionEyebrow').textContent = s.dayWord+' '+doneToday+' / 7 — '+dc(doneToday).name;
     $('#missionTitle').textContent = s.missionDoneTitle;
     $('#missionDesc').textContent = s.missionDoneDesc;
     dcta.textContent = s.missionCtaDone;
-    dcta.onclick=()=>{ openDay(lastDay,true); };
+    dcta.onclick=()=>{ openDay(doneToday,true); };
   } else {
     $('#missionEyebrow').textContent = s.dayWord+' '+day+' / 7 — '+dc(day).name;
     $('#missionTitle').textContent = dc(day).theme;
@@ -1867,20 +1925,13 @@ function renderDash(){
   }
 
   // stats
-  $('#dayCount').innerHTML = '0'+Math.min(done,7)+'<small>/07</small>';
-  $('#statStreak').textContent = computeStreak();
-  $('#statStreakLbl').textContent = s.statStreakLbl;
-  $('#statPoints').textContent = totalPoints();
-  $('#statPointsLbl').textContent = s.statPointsLbl;
+  $('#dayCount').innerHTML = Math.min(done,7)+'<small>/7</small>';
+  $('#statDays').textContent = done;
+  $('#statDaysLbl').textContent = s.statDaysLbl;
+  $('#statChecks').textContent = totalChecks();
+  $('#statChecksLbl').textContent = s.statChecksLbl;
   $('#statTrendLbl').textContent = s.statEnergyLbl;
-  const trend=$('#statTrend'); trend.innerHTML='';
-  for(let d=1; d<=7; d++){
-    const bar=document.createElement('i');
-    const e=state.checkins[d]?.energy;
-    if(e){ bar.style.height=(e*10)+'%'; }
-    else { bar.style.height='12%'; bar.className='ghost'; }
-    trend.appendChild(bar);
-  }
+  renderEnergyTrend($('#statTrend'));
   $('#levelChip').textContent = '● '+(latestBadge() || s.levelDefault);
 
   // unlock cards (Bottleneck-Karte ersetzt durch Gate ◈ in der Spine)
@@ -1889,7 +1940,7 @@ function renderDash(){
   $('#bnCardTitle').textContent=s.bnCardTitle; $('#bnCardSub').textContent=s.bnCardSub;
   bn.onclick=()=>{ renderBottleneck(); show('bottleneck'); };
   const mc=$('#mapCard');
-  mc.classList.toggle('hidden', !allDone());
+  mc.classList.toggle('hidden', !challengeFinished());
   $('#mapCardTitle').textContent=s.mapCardTitle; $('#mapCardSub').textContent=s.mapCardSub;
   mc.onclick=()=>{ renderFinal(); show('final'); };
 
@@ -1900,34 +1951,32 @@ function renderDash(){
   const rows=document.createElement('div'); rows.className='spine-rows';
   const bnUnlocked = done>=4;
   for(let d=1; d<=7; d++){
-    const isDone=!!state.checkins[d];
-    const previewAll = TEST_ALL_DAYS_UNLOCKED || state.previewActive;
-    const isCurrent=!isDone && d===day && (previewAll || !completedToday());
-    // Test-/Preview-Modus: alle noch offenen Tage sind klickbar (🔓), nicht nur der nächste
-    const isOpen=previewAll && !isDone && !isCurrent;
+    const status = dayStatus(d); // 'done'|'today'|'open'|'missed'|'locked'
+    const clickable = status==='done' || status==='today' || status==='open';
 
     const node=document.createElement('div');
-    node.className='spine-node '+(isDone?'done':(isCurrent?'today':'locked'));
+    node.className='spine-node '+(status==='done'?'done':(status==='today'||status==='open'?'today':(status==='missed'?'missed':'locked')));
     node.textContent=d;
     rail.appendChild(node);
 
     const row=document.createElement('div');
-    row.className='archive-row'+(isDone||isCurrent||isOpen?' clickable':' locked')+(isCurrent?' today-row':'');
-    const stateHtml = isDone
-      ? '<span class="a-state">+'+(state.checkins[d].points||0)+'</span>'
-      : (isCurrent
+    row.className='archive-row'+(clickable?' clickable':' locked')+(status==='today'?' today-row':'')+(status==='missed'?' missed':'');
+    const stateHtml = status==='done'
+      ? '<span class="a-state">✓ '+itemsChecked(state.checkins[d])+'/3</span>'
+      : (status==='today'
         ? '<span class="a-state a-today">'+s.today+'</span>'
-        : (isOpen
+        : (status==='open'
           ? '<span class="a-state a-today">🔓</span>'
-          : '<span class="a-state a-locked">'+s.locked+'</span>'));
+          : (status==='missed'
+            ? '<span class="a-state a-missed">'+s.missed+'</span>'
+            : '<span class="a-state a-locked">'+s.locked+'</span>')));
     row.innerHTML='<span class="a-name">'+dc(d).name+'<small>'+dc(d).theme+'</small></span>'+stateHtml;
-    if(isDone) row.onclick=()=>openDay(d,true);
-    else if(isCurrent||isOpen) row.onclick=()=>openDay(d,false);
+    if(clickable) row.onclick=()=>openDay(d, status==='done');
     rows.appendChild(row);
 
     if(d<7){
       const link=document.createElement('div');
-      link.className='spine-link'+(isDone?'':' future');
+      link.className='spine-link'+(status==='done'?'':' future');
       rail.appendChild(link);
     }
     // Gate ◈ zwischen Tag 4 und 5
@@ -2019,7 +2068,7 @@ async function updateLeaderboardEntry(){
   try{
     await setDoc(doc(db,'leaderboard',state.uid),{
       name: state.profile?.name || (auth.currentUser?.email?.split('@')[0]) || '—',
-      streak: computeStreak(), updatedAt: serverTimestamp()
+      checks: totalChecks(), updatedAt: serverTimestamp()
     },{ merge:true });
   }catch(e){}
 }
@@ -2031,16 +2080,16 @@ async function renderLeaderboard(){
   let real=[];
   try{
     const snap=await getDocs(collection(db,'leaderboard'));
-    real = snap.docs.map(d=>({ uid:d.id, ...d.data() })).filter(e=>e.streak>0);
+    real = snap.docs.map(d=>({ uid:d.id, ...d.data() })).filter(e=>e.checks>0);
   }catch(e){}
-  const entries=[...FAKE_LEADERBOARD, ...real].sort((a,b)=>b.streak-a.streak);
+  const entries=[...FAKE_LEADERBOARD, ...real].sort((a,b)=>b.checks-a.checks);
   const medals=['🥇','🥈','🥉'];
   const list=$('#lbList'); list.innerHTML='';
   entries.forEach((e,i)=>{
     const row=document.createElement('div');
     row.className='lb-row'+(e.uid===state.uid?' lb-me':'');
-    const streakDisplay=(medals[i]||'⚡')+' '+e.streak;
-    row.innerHTML='<div class="lb-rank">'+(i+1)+'</div><div class="lb-name">'+e.name+(e.uid===state.uid?' '+s.lbYou:'')+'</div><div class="lb-streak">'+streakDisplay+'</div>';
+    const checksDisplay=(medals[i]||'⚡')+' '+e.checks;
+    row.innerHTML='<div class="lb-rank">'+(i+1)+'</div><div class="lb-name">'+e.name+(e.uid===state.uid?' '+s.lbYou:'')+'</div><div class="lb-streak">'+checksDisplay+'</div>';
     list.appendChild(row);
   });
 }
@@ -2109,142 +2158,108 @@ async function renderPlans(){
   renderFiles($('#nutritionFiles'), nFiles, nRequested);
   renderFiles($('#trainingFiles'), tFiles, tRequested);
 }
-$('#plansBackBtn').addEventListener('click',()=>{ renderDash(); show('dash'); });
+$('#plansBackBtn').addEventListener('click',()=>{ goHome(); });
 $('#verifyResendBtn').addEventListener('click', async ()=>{
   if(!auth.currentUser) return;
   try{ await sendEmailVerification(auth.currentUser,{ url: window.location.origin+'/verify.html' }); }catch(e){}
   $('#verifyResendBtn').textContent=t().verifySent;
 });
 $('#logoutBtn').addEventListener('click',()=>signOut(auth));
-$('#brandLogo').addEventListener('click',()=>{ if(state.uid && state.profile?.baselineAt){ renderDash(); show('dash'); } });
+$('#brandLogo').addEventListener('click',()=>{ if(state.uid && state.profile?.baselineAt){ goHome(); } });
 
 /* =========================================================
    DAY SCREEN
 ========================================================= */
-let energyPicker=null, sleepPicker=null;
+let energyPicker=null;
+/* Die 3 gezählten Check-in-Items — identisch an jedem Tag. "Training" ist nur an
+   Tagen aktiv, die laut Day-0-Plan Trainingstage sind (siehe isTrainingDay). */
+function renderCheckinItems(container, values, opts){
+  const s=t();
+  container.innerHTML='';
+  const defs=[
+    { key:'training', label:s.itemTraining, active:opts.dayIsTraining },
+    { key:'protein', label:s.itemProtein, active:true },
+    { key:'task', label:s.itemTask, active:true }
+  ];
+  defs.forEach(def=>{
+    const el=document.createElement('div');
+    const checked=!!values[def.key];
+    const off=!def.active;
+    el.className='task'+(checked?' done':'')+(off?' off':'');
+    el.innerHTML='<span class="box">✓</span><span>'+def.label+'</span>';
+    if(opts.interactive && !off){
+      el.addEventListener('click',()=>{
+        values[def.key]=!values[def.key];
+        el.classList.toggle('done', values[def.key]);
+      });
+    }
+    container.appendChild(el);
+    if(off){
+      const note=document.createElement('div');
+      note.className='task-off-note';
+      note.textContent=s.itemTrainingOff;
+      container.appendChild(note);
+    }
+  });
+}
 function openDay(day, archived){
   const s=t(); const c=dc(day);
   state.viewDay=day;
-  state.currentTasks=new Set(); state.missionAnswer=null;
   $('#dayEyebrow').textContent = s.dayWord+' '+day+' / 7';
   $('#dayTitle').textContent = c.name;
   $('#dayTheme').textContent = c.theme;
   $('#dayDesc').textContent = c.desc;
   renderVideo($('#dayVideo'), VIDEOS[day][state.lang], s.dayWord+' '+day+' — '+c.name);
-  $('#tasksHead').textContent = DAYS[day].chooseOne ? s.tasksHeadChoose : s.tasksHead;
+  $('#dayQuote').textContent = '“'+c.quote+'”';
 
   const existing = archived ? state.checkins[day] : null;
-  const list=$('#taskList'); list.innerHTML='';
-  c.tasks.forEach((task,i)=>{
-    const el=document.createElement('div');
-    const done = existing ? (existing.tasksChecked||[]).includes(i) : false;
-    el.className='task'+(done?' done':'');
-    el.innerHTML='<span class="box">✓</span><span>'+task+'</span>';
-    if(!archived){
-      el.addEventListener('click',()=>{
-        if(state.currentTasks.has(i)){ state.currentTasks.delete(i); el.classList.remove('done'); }
-        else { state.currentTasks.add(i); el.classList.add('done'); }
-      });
-    }
-    list.appendChild(el);
-    const hint=TASK_HINTS[day+'-'+i];
-    if(hint){
-      const hintEl=document.createElement('div');
-      hintEl.className='task-hint';
-      hintEl.textContent=hint[state.lang]||hint.en;
-      list.appendChild(hintEl);
-    }
-  });
-
   $('#checkinBlock').classList.toggle('hidden', !!archived);
   $('#archiveView').classList.toggle('hidden', !archived);
 
   if(archived){
-    $('#arcQuote').textContent='“'+c.quote+'”';
-    $('#arcTipLbl').textContent=s.tipLbl;
-    $('#arcTip').textContent=c.tip;
-    const e=existing;
-    const noteText = e.note || [e.biggestWin, e.biggestStruggle, e.reflection].filter(Boolean).join(' · ');
-    $('#arcStats').innerHTML =
-      '<b>'+s.lblEnergy+':</b> '+e.energy+'/5 · <b>'+s.lblSleep+':</b> '+e.sleep+'/5 · <b>+'+(e.points||0)+' '+s.pointsSuffix+'</b>'+
-      (noteText?'<br><b>'+s.lblReflection+':</b> '+noteText:'');
+    renderCheckinItems($('#arcItems'), existing, { interactive:false, dayIsTraining:isTrainingDay(day) });
+    $('#arcEnergy').innerHTML = '<b>'+s.lblEnergy+':</b> '+EMOJI_SCALE[(existing.energy||3)-1];
   } else {
     $('#checkinHead').textContent=s.checkinHead;
     $('#checkinSpeedHint').textContent=s.checkinSpeedHint;
-    $('#lblEnergy').textContent=s.lblEnergy;
-    $('#lblSleep').textContent=s.lblSleep;
-    $('#lblMission').textContent=s.lblMission;
-    $('#lblReflection').textContent=c.reflection;
-    $('#coachNote').textContent=s.coachNote;
-    $('#daySubmit').textContent=s.daySubmit;
     $('#dayError').textContent='';
-    const prev=state.checkins[day-1];
-    energyPicker=renderEmojiPicker($('#pickEnergy'), prev?prev.energy:3);
-    sleepPicker=renderEmojiPicker($('#pickSleep'), prev?prev.sleep:3);
-    const noteField=$('#txtNote'); noteField.value=''; noteField.placeholder=s.notePlaceholder;
-    const chipRow=$('#noteChips'); chipRow.innerHTML='';
-    ['chipWin','chipHard','chipGrateful'].forEach(key=>{
-      const b=document.createElement('button');
-      b.type='button'; b.className='chip'; b.textContent=s[key];
-      b.addEventListener('click',()=>{
-        const prefix=s[key]+': ';
-        noteField.value = noteField.value.trim() ? noteField.value.replace(/\s*$/,'')+'\n'+prefix : prefix;
-        noteField.focus(); noteField.selectionStart=noteField.selectionEnd=noteField.value.length;
-      });
-      chipRow.appendChild(b);
-    });
-    const seg=$('#segMission'); seg.innerHTML='';
-    s.segMission.forEach(([val,label])=>{
-      const b=document.createElement('button');
-      b.textContent=label;
-      b.onclick=()=>{ state.missionAnswer=val; seg.querySelectorAll('button').forEach(x=>x.classList.remove('sel')); b.classList.add('sel'); };
-      seg.appendChild(b);
-    });
+    state.currentItems={training:false,protein:false,task:false};
+    renderCheckinItems($('#checkinItems'), state.currentItems, { interactive:true, dayIsTraining:isTrainingDay(day) });
+    $('#lblEnergy').textContent=s.lblEnergy;
+    $('#energyHint').textContent=s.energyHint;
+    energyPicker=renderEmojiPicker($('#pickEnergy'), 3);
+    $('#daySubmit').textContent=s.daySubmit;
   }
   show('day');
 }
-$('#dayBackBtn').addEventListener('click',()=>{ renderDash(); show('dash'); });
+$('#dayBackBtn').addEventListener('click',()=>{ goHome(); });
 
 $('#daySubmit').addEventListener('click', async ()=>{
-  const s=t(); const day=state.viewDay; const c=dc(day);
+  const day=state.viewDay;
   const err=$('#dayError'); err.textContent='';
-  if(!state.missionAnswer){ err.textContent=s.missionReq; return; }
-  if(DAYS[day].chooseOne && state.currentTasks.size===0){ err.textContent=s.chooseOneReq; return; }
-
-  // points: tasks share 70 (chooseOne day: any task = full 70), check-in 10, note 20
-  const n=c.tasks.length;
-  let taskPts;
-  if(DAYS[day].chooseOne) taskPts = state.currentTasks.size>0 ? 70 : 0;
-  else taskPts = Math.min(70, Math.round(70/n*state.currentTasks.size));
-  const note=$('#txtNote').value.trim();
-  const points = taskPts + 10 + (note?20:0);
   const wasCheckedInToday = completedToday();
+  const items={ training:!!state.currentItems.training, protein:!!state.currentItems.protein, task:!!state.currentItems.task };
+  const energy=energyPicker.getValue();
 
   const data={
     uid:state.uid, day, dateStr:todayStr(),
-    energy:energyPicker.getValue(),
-    sleep:sleepPicker.getValue(),
-    completedMission:state.missionAnswer,
-    note,
-    tasksChecked:[...state.currentTasks].sort((a,b)=>a-b),
-    points, createdAt:serverTimestamp()
+    ...items, isTrainingDay:isTrainingDay(day),
+    energy, createdAt:serverTimestamp()
   };
   const btn=$('#daySubmit'); btn.disabled=true;
   try{
     await setDoc(doc(db,'resetCheckins',state.uid+'_day'+day), data);
     state.checkins[day]=data;
     await setDoc(doc(db,'users',state.uid),{
-      currentDay: currentDay(), completedDays: completedDays().length,
-      points: totalPoints(), streak: computeStreak(),
+      completedDays: completedDays().length, totalChecks: totalChecks(),
       lastCompletionDate: todayStr(), lastActive: serverTimestamp(),
       latestBadge: BADGES[day]
     },{ merge:true });
     if(!wasCheckedInToday){
-      const standardsToday=(DAYS[day].chooseOne ? (state.currentTasks.size>0?1:0) : state.currentTasks.size) + 1;
-      recordGroupProgress(standardsToday).catch(()=>{});
+      recordGroupProgress(itemsChecked(items)).catch(()=>{});
     }
-    state.lastReward={ day, points };
-    await renderReward(day, points);
+    state.lastReward={ day, items, energy };
+    await renderReward(day, items, energy);
     show('reward');
   }catch(e){ err.textContent=t().errFallback; }
   finally{ btn.disabled=false; }
@@ -2253,16 +2268,15 @@ $('#daySubmit').addEventListener('click', async ()=>{
 /* =========================================================
    REWARD
 ========================================================= */
-async function renderReward(day, points){
+async function renderReward(day, items, energy){
   const s=t(); const c=dc(day);
   $('#rewardEyebrow').textContent=s.rewardEyebrow;
-  $('#rewardPoints').innerHTML='+'+points+'<small></small>';
-  $('#rewardPoints').querySelector('small').textContent=s.pointsSuffix;
+  const kept=itemsChecked(items);
+  $('#rewardPoints').innerHTML=kept+'/3<small></small>';
+  $('#rewardPoints').querySelector('small').textContent=s.rewardChecksLbl;
   $('#rewardBadge').textContent='🏅 '+BADGES[day]+' — '+s.badgeUnlocked;
-  $('#rewardStreak').textContent=s.streakWord(computeStreak());
+  $('#rewardStreak').textContent=s.progressSummary(completedDays().length, totalChecks());
   $('#rewardQuote').textContent='“'+c.quote+'”';
-  $('#rewardTipLbl').textContent=s.tipLbl;
-  $('#rewardTip').textContent=c.tip;
   const teaser=$('#teaserCard');
   if(c.teaser){
     teaser.classList.remove('hidden');
@@ -2271,8 +2285,7 @@ async function renderReward(day, points){
   } else teaser.classList.add('hidden');
   const wa=$('#rewardWhatsapp');
   wa.textContent=s.rewardWhatsapp;
-  const ci=state.checkins[day];
-  wa.onclick=()=>window.open(waLink(s.waCheckin(day, ci.energy, ci.sleep, ci.note)),'_blank');
+  wa.onclick=()=>window.open(waLink(s.waCheckin(day, items, energy)),'_blank');
   loadGroupScore().then(({checkedIn,totalCrew})=>{
     $('#rewardSocialProof').textContent = s.socialProofText(checkedIn, totalCrew);
   }).catch(()=>{});
@@ -2281,7 +2294,7 @@ async function renderReward(day, points){
   cont.onclick=()=>{
     if(day===4){ renderBottleneck(); show('bottleneck'); }
     else if(day===7){ renderFinal(); show('final'); }
-    else { renderDash(); show('dash'); }
+    else { goHome(); }
   };
 }
 
@@ -2318,21 +2331,23 @@ function renderBottleneck(){
     box.appendChild(card);
   });
 }
-$('#bnBackBtn').addEventListener('click',()=>{ renderDash(); show('dash'); });
+$('#bnBackBtn').addEventListener('click',()=>{ goHome(); });
 
 /* =========================================================
    DAY 7 — FINAL
 ========================================================= */
 function renderFinal(){
   const s=t();
-  const points=totalPoints();
-  const tier=s.finalTiers?.[scoreTier(points)];
+  const checks=totalChecks();
+  const tier=s.finalTiers?.[scoreTier(checks)];
   $('#finalEyebrow').textContent=s.finalEyebrow;
   $('#finalTitle').textContent=tier?.title || s.finalTitle;
   $('#finalIntro').textContent=tier?.intro || s.finalIntro;
-  $('#scorePoints').textContent=points;
-  $('#scoreOf').textContent='/ '+MAX_TOTAL_POINTS+' '+s.pointsSuffix;
-  $('#scoreBar').style.width=Math.min(100,Math.round(points/MAX_TOTAL_POINTS*100))+'%';
+  $('#scorePoints').textContent=checks;
+  $('#scoreOf').textContent='/ '+MAX_TOTAL_CHECKS+' '+s.checksSuffix;
+  $('#scoreBar').style.width=Math.min(100,Math.round(checks/MAX_TOTAL_CHECKS*100))+'%';
+  $('#finalEnergyLbl').textContent=s.finalEnergyLbl;
+  renderEnergyTrend($('#finalEnergyTrend'));
   $('#prizeNote').textContent=s.prizeNote;
   renderVideo($('#finalVideo'), VIDEOS.final[state.lang], 'Personal MAP™');
   $('#offerTitle').textContent=s.offerTitle;
@@ -2348,7 +2363,7 @@ function renderFinal(){
     box.appendChild(b);
   });
 }
-$('#finalBackBtn').addEventListener('click',()=>{ renderDash(); show('dash'); });
+$('#finalBackBtn').addEventListener('click',()=>{ goHome(); });
 
 /* =========================================================
    SETTINGS
