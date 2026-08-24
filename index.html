@@ -698,6 +698,9 @@ select.field{appearance:auto}
 
     <div class="collage-strip" id="collageStrip"><div class="collage-track" id="collageTrack"></div></div>
 
+    <div class="card small-link-row hidden" id="crewChatRow" role="button" tabindex="0">
+      <span id="crewChatRowLbl"></span><svg class="row-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </div>
     <div class="card small-link-row" id="plansRow" role="button" tabindex="0">
       <span id="plansRowLbl"></span><svg class="row-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </div>
@@ -965,6 +968,12 @@ const JS_DAY_TO_KEY = ['sun','mon','tue','wed','thu','fri','sat'];
    Leave empty to let WhatsApp open with the message and free contact choice. */
 const COACH_WHATSAPP = "491784938499";
 
+/* Invite link of René's WhatsApp group for participants ("Crew-Chat") —
+   create the group in WhatsApp, then paste its invite link here
+   (format: https://chat.whatsapp.com/XXXXXXXXXXXXXXXXXXXXXX).
+   Leave empty to keep the dashboard's crew-chat row hidden. */
+const CREW_GROUP_LINK = "";
+
 /* Country codes offered for the WhatsApp number field. */
 const PHONE_COUNTRIES = [
   // Western/Central Europe
@@ -1207,6 +1216,7 @@ en:{
   cancel:"Cancel",
   verifyNote:"Please verify your email — check your inbox.", verifyResend:"Resend email", verifySent:"Email sent.",
   lbHead:"🏆 Leaderboard", lbPrizeText:"🎁 Top 3 win a gift!", lbYou:"(you)",
+  crewChatRowLbl:"💬 Join the crew chat on WhatsApp",
   plansRowLbl:"📄 My Plans — request nutrition & training plans",
   plansEyebrow:"My Plans", plansTitle:"Request your personal plans",
   plansIntro:"Ask René for a personal nutrition or training plan. He'll get notified and upload your PDF here as soon as it's ready.",
@@ -1320,6 +1330,7 @@ de:{
   cancel:"Abbrechen",
   verifyNote:"Bitte bestätige deine E-Mail — check dein Postfach.", verifyResend:"Erneut senden", verifySent:"E-Mail verschickt.",
   lbHead:"🏆 Bestenliste", lbPrizeText:"🎁 Platz 1–3 kriegen ein Geschenk!", lbYou:"(du)",
+  crewChatRowLbl:"💬 Crew-Chat auf WhatsApp beitreten",
   plansRowLbl:"📄 Meine Pläne — Ernährungs- & Trainingsplan anfordern",
   plansEyebrow:"Meine Pläne", plansTitle:"Fordere deine persönlichen Pläne an",
   plansIntro:"Frag René nach einem persönlichen Ernährungs- oder Trainingsplan. Er bekommt eine Benachrichtigung und lädt dein PDF hier hoch, sobald es fertig ist.",
@@ -1433,6 +1444,7 @@ zh:{
   cancel:"取消",
   verifyNote:"請驗證你的電子郵件——check你的信箱。", verifyResend:"重新寄送", verifySent:"郵件已寄出。",
   lbHead:"🏆 排行榜", lbPrizeText:"🎁 前3名可獲得禮物！", lbYou:"（你）",
+  crewChatRowLbl:"💬 加入 WhatsApp 夥伴聊天群",
   plansRowLbl:"📄 我的計畫 — 申請飲食與訓練計畫",
   plansEyebrow:"我的計畫", plansTitle:"申請你的個人計畫",
   plansIntro:"向 René 申請個人化的飲食或訓練計畫。他會收到通知，並在完成後將PDF上傳到這裡。",
@@ -2065,6 +2077,9 @@ function renderDash(){
   $('#startHereRow').onclick=()=>{ renderDay0(true); show('day0'); };
 
   renderCollageStrip();
+  $('#crewChatRowLbl').textContent=s.crewChatRowLbl;
+  $('#crewChatRow').classList.toggle('hidden', !CREW_GROUP_LINK);
+  $('#crewChatRow').onclick=()=>window.open(CREW_GROUP_LINK,'_blank');
   $('#plansRowLbl').textContent=s.plansRowLbl;
   $('#plansRow').classList.toggle('hidden', !(completedDays().length >= 4 || previewAll));
   $('#plansRow').onclick=()=>{ renderPlans(); show('plans'); };
