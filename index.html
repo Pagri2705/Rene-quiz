@@ -218,6 +218,9 @@ select.field{appearance:auto}
 .err:empty,.ok:empty{display:none}
 .password-field{position:relative;width:100%}
 .password-field .field{padding-right:46px}
+.phone-row{display:flex;gap:8px;width:100%}
+.phone-row .phone-code{flex:0 0 104px;padding-left:10px;padding-right:4px}
+.phone-row .phone-number{flex:1;min-width:0}
 .password-toggle{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:15px;padding:8px;color:var(--muted)}
 .remember-me{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);cursor:pointer}
 .remember-me input{width:16px;height:16px;accent-color:var(--accent)}
@@ -636,7 +639,10 @@ select.field{appearance:auto}
       <option value="line">LINE</option>
     </select>
     <label class="field-label" id="lblPhone">WhatsApp number (optional, recommended)</label>
-    <input class="field" id="basePhone" type="tel" autocomplete="tel" placeholder="+886 912 345 678">
+    <div class="phone-row">
+      <select class="field phone-code hidden" id="basePhoneCode"></select>
+      <input class="field phone-number" id="basePhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+886 912 345 678">
+    </div>
     <div class="f-hint" id="phoneHint"></div>
     <label class="field-label" id="lblSource">Who invited you?</label>
     <select class="field" id="baseSource"></select>
@@ -659,6 +665,7 @@ select.field{appearance:auto}
     <div class="verify-note hidden" id="verifyNote">
       <span id="verifyNoteText"></span>
       <button id="verifyResendBtn"></button>
+      <div class="err" id="verifyNoteErr" style="flex-basis:100%"></div>
     </div>
     <div>
       <div class="eyebrow" id="dashHello"></div>
@@ -921,8 +928,11 @@ const STORAGE_ENABLED = false;
 /* ======= TEST-MODUS =======
    true  = Tage 1–7 sind für ALLE sofort freigeschaltet (damit René alles testen kann).
    false = Original-Verhalten: ein Tag pro Kalendertag, streng der Reihe nach.
-   Zum Zurücksetzen NUR diese eine Zeile auf false stellen — sonst ändert sich nichts. */
-const TEST_ALL_DAYS_UNLOCKED = true;
+   Zum Zurücksetzen NUR diese eine Zeile auf false stellen — sonst ändert sich nichts.
+   Für ein befristetes Freischalten aller Teilnehmer (z.B. 5 Tage) stattdessen den
+   Vorschau-Modus im Coach-Dashboard (admin.html) nutzen — der läuft automatisch
+   wieder ab, ohne dass hier im Code etwas geändert werden muss. */
+const TEST_ALL_DAYS_UNLOCKED = false;
 const COLLAGE_PHOTOS = Array.from({length:18},(_,i)=>'assets/collage/photo'+(i+1)+'.jpg');
 /* Leaderboard ranks by kept check-ins (0–21), not a resettable streak. */
 const FAKE_LEADERBOARD = [
@@ -950,6 +960,18 @@ const JS_DAY_TO_KEY = ['sun','mon','tue','wed','thu','fri','sat'];
 /* René's WhatsApp number in international format without +, e.g. "886912345678".
    Leave empty to let WhatsApp open with the message and free contact choice. */
 const COACH_WHATSAPP = "491784938499";
+
+/* Country codes offered for the WhatsApp number field. */
+const PHONE_COUNTRIES = [
+  ["+49","DE"],["+43","AT"],["+41","CH"],["+1","US/CA"],["+44","GB"],
+  ["+31","NL"],["+32","BE"],["+33","FR"],["+34","ES"],["+39","IT"],
+  ["+45","DK"],["+46","SE"],["+47","NO"],["+48","PL"],["+351","PT"],
+  ["+352","LU"],["+353","IE"],["+358","FI"],["+30","GR"],["+420","CZ"],
+  ["+36","HU"],["+40","RO"],["+90","TR"],["+971","AE"],
+  ["+61","AU"],["+64","NZ"],["+81","JP"],["+82","KR"],["+86","CN"],
+  ["+852","HK"],["+886","TW"],["+65","SG"],["+60","MY"],["+66","TH"],
+  ["+62","ID"],["+63","PH"],["+91","IN"],["+27","ZA"],["+55","BR"]
+];
 
 /* =========================================================
    VIDEO URLS — fill in when René has recorded them.
@@ -1092,7 +1114,7 @@ en:{
   struggles:[["nutrition","Nutrition"],["training","Training"],["sleep","Sleep"],["stress","Stress"],["energy","Low energy"],["structure","No structure"],["not_sure","Not sure"]],
   lblTrainingDays:"Which days will you train this week?",
   weekdays:[["mon","Mon"],["tue","Tue"],["wed","Wed"],["thu","Thu"],["fri","Fri"],["sat","Sat"],["sun","Sun"]],
-  baseSubmit:"Enter the Reset", baseNameReq:"Please enter your name.",
+  baseSubmit:"Enter the Reset", baseNameReq:"Please enter your name.", basePhoneReq:"Please enter your WhatsApp number.",
   baseGoalReq:"Please choose 3 goals.", baseStruggleReq:"Please choose 3 struggles.",
   dashHello:(n)=> n ? "Welcome back, "+n : "Welcome back",
   dashHead:"The 7-Day Reset", missionCta:"Start Today's Move",
@@ -1205,7 +1227,7 @@ de:{
   struggles:[["nutrition","Ernährung"],["training","Training"],["sleep","Schlaf"],["stress","Stress"],["energy","Wenig Energie"],["structure","Keine Struktur"],["not_sure","Nicht sicher"]],
   lblTrainingDays:"An welchen Tagen trainierst du diese Woche?",
   weekdays:[["mon","Mo"],["tue","Di"],["wed","Mi"],["thu","Do"],["fri","Fr"],["sat","Sa"],["sun","So"]],
-  baseSubmit:"Reset betreten", baseNameReq:"Bitte gib deinen Namen ein.",
+  baseSubmit:"Reset betreten", baseNameReq:"Bitte gib deinen Namen ein.", basePhoneReq:"Bitte gib deine WhatsApp-Nummer ein.",
   baseGoalReq:"Bitte wähle 3 Ziele aus.", baseStruggleReq:"Bitte wähle 3 Herausforderungen aus.",
   dashHello:(n)=> n ? "Willkommen zurück, "+n : "Willkommen zurück",
   dashHead:"Der 7-Day Reset", missionCta:"Heutigen Move starten",
@@ -1318,7 +1340,7 @@ zh:{
   struggles:[["nutrition","飲食"],["training","訓練"],["sleep","睡眠"],["stress","壓力"],["energy","能量不足"],["structure","缺乏結構"],["not_sure","不確定"]],
   lblTrainingDays:"這週你打算哪幾天訓練？",
   weekdays:[["mon","一"],["tue","二"],["wed","三"],["thu","四"],["fri","五"],["sat","六"],["sun","日"]],
-  baseSubmit:"進入 Reset", baseNameReq:"請輸入你的姓名。",
+  baseSubmit:"進入 Reset", baseNameReq:"請輸入你的姓名。", basePhoneReq:"請輸入你的 WhatsApp 號碼。",
   baseGoalReq:"請選擇3個目標。", baseStruggleReq:"請選擇3個困難。",
   dashHello:(n)=> n ? "歡迎回來，"+n : "歡迎回來",
   dashHead:"7-Day Reset", missionCta:"開始今天的行動",
@@ -1678,7 +1700,8 @@ $('#authSubmitBtn').addEventListener('click', async ()=>{
       await signInWithEmailAndPassword(auth,email,password);
     } else {
       const cred=await createUserWithEmailAndPassword(auth,email,password);
-      try{ await sendEmailVerification(cred.user,{ url: window.location.origin+'/verify.html' }); }catch(e){}
+      try{ await sendEmailVerification(cred.user,{ url: window.location.origin+'/verify.html', handleCodeInApp:true }); }
+      catch(e){ console.error('sendEmailVerification failed', e); }
       await setDoc(doc(db,'users',cred.user.uid),{
         email, preferredLanguage: state.lang || 'en', createdAt: serverTimestamp()
       },{ merge:true });
@@ -1821,11 +1844,16 @@ function renderBaseline(){
   $('#baseSub').textContent=s.baseSub;
   $('#lblName').textContent=s.lblName;
   $('#lblChannel').textContent=s.lblChannel;
+  if(!$('#basePhoneCode').options.length){
+    fillSelect($('#basePhoneCode'), PHONE_COUNTRIES.map(([code,iso])=>[code, code+' '+iso]));
+    $('#basePhoneCode').value = state.lang==='zh' ? '+886' : '+49';
+  }
   const syncChannel=()=>{
     const isLine=$('#baseChannel').value==='line';
     $('#lblPhone').textContent=isLine ? s.lblPhoneLine : s.lblPhoneWhatsapp;
     $('#basePhone').placeholder=isLine ? s.phLine : s.phWhatsapp;
     $('#phoneHint').textContent=isLine ? s.phoneHintLine : s.phoneHintWhatsapp;
+    $('#basePhoneCode').classList.toggle('hidden', isLine);
   };
   $('#baseChannel').onchange=syncChannel;
   syncChannel();
@@ -1845,6 +1873,10 @@ $('#baseSubmit').addEventListener('click', async ()=>{
   const s=t(); const err=$('#baseError'); err.textContent='';
   const name=$('#baseName').value.trim();
   if(!name){ err.textContent=s.baseNameReq; return; }
+  const isWhatsapp=$('#baseChannel').value==='whatsapp';
+  const phoneRaw=$('#basePhone').value.trim();
+  const phoneDigits=phoneRaw.replace(/[^\d]/g,'').replace(/^0+/,'');
+  if(isWhatsapp && !phoneDigits){ err.textContent=s.basePhoneReq; return; }
   const mainGoals=baseGoalGrid.getSelected();
   const biggestStruggles=baseStruggleGrid.getSelected();
   if(mainGoals.length!==3){ err.textContent=s.baseGoalReq; return; }
@@ -1852,7 +1884,7 @@ $('#baseSubmit').addEventListener('click', async ()=>{
   const trainingDays=baseTrainingGrid.getSelected();
   const data={
     name,
-    phone: $('#basePhone').value.trim(),
+    phone: isWhatsapp ? ($('#basePhoneCode').value+' '+phoneDigits) : phoneRaw,
     contactChannel: $('#baseChannel').value,
     source: $('#baseSource').value,
     invitedBy: $('#baseSource').value==='friend' ? $('#baseFriend').value.trim() : '',
@@ -1899,6 +1931,7 @@ function renderDash(){
     vn.classList.remove('hidden');
     $('#verifyNoteText').textContent=s.verifyNote;
     $('#verifyResendBtn').textContent=s.verifyResend;
+    $('#verifyNoteErr').textContent='';
   } else vn.classList.add('hidden');
 
   // mission card
@@ -1939,8 +1972,9 @@ function renderDash(){
   bn.classList.add('hidden');
   $('#bnCardTitle').textContent=s.bnCardTitle; $('#bnCardSub').textContent=s.bnCardSub;
   bn.onclick=()=>{ renderBottleneck(); show('bottleneck'); };
+  const previewAll = TEST_ALL_DAYS_UNLOCKED || state.previewActive;
   const mc=$('#mapCard');
-  mc.classList.toggle('hidden', !challengeFinished());
+  mc.classList.toggle('hidden', !(allDone() || previewAll));
   $('#mapCardTitle').textContent=s.mapCardTitle; $('#mapCardSub').textContent=s.mapCardSub;
   mc.onclick=()=>{ renderFinal(); show('final'); };
 
@@ -1949,7 +1983,7 @@ function renderDash(){
   const list=$('#archiveList'); list.innerHTML='';
   const rail=document.createElement('div'); rail.className='spine-rail';
   const rows=document.createElement('div'); rows.className='spine-rows';
-  const bnUnlocked = done>=4;
+  const bnUnlocked = done>=4 || previewAll;
   for(let d=1; d<=7; d++){
     const status = dayStatus(d); // 'done'|'today'|'open'|'missed'|'locked'
     const clickable = status==='done' || status==='today' || status==='open';
@@ -2002,7 +2036,7 @@ function renderDash(){
 
   renderCollageStrip();
   $('#plansRowLbl').textContent=s.plansRowLbl;
-  $('#plansRow').classList.toggle('hidden', completedDays().length < 4);
+  $('#plansRow').classList.toggle('hidden', !(completedDays().length >= 4 || previewAll));
   $('#plansRow').onclick=()=>{ renderPlans(); show('plans'); };
   $('#lbDrawNote').textContent=s.lbDrawText;
   loadGroupScore().then(({groupSum,groupMax})=>{
@@ -2138,13 +2172,13 @@ async function renderPlans(){
   $('#trainingRequestedNote').textContent = tRequested ? s.trainingRequested : '';
 
   nBtn.onclick = async ()=>{
+    window.open(waLink(s.waPlanRequest(s.plansNutritionTitle)),'_blank');
     try{ await setDoc(doc(db,'users',state.uid),{ nutritionPlanRequestedAt: serverTimestamp() },{ merge:true }); state.profile.nutritionPlanRequestedAt=true; }catch(e){}
-    window.open(waLink(s.waPlanRequest(s.plansNutritionTitle, state.profile?.name)),'_blank');
     renderPlans();
   };
   tBtn.onclick = async ()=>{
+    window.open(waLink(s.waPlanRequest(s.plansTrainingTitle)),'_blank');
     try{ await setDoc(doc(db,'users',state.uid),{ trainingPlanRequestedAt: serverTimestamp() },{ merge:true }); state.profile.trainingPlanRequestedAt=true; }catch(e){}
-    window.open(waLink(s.waPlanRequest(s.plansTrainingTitle, state.profile?.name)),'_blank');
     renderPlans();
   };
 
@@ -2161,7 +2195,9 @@ async function renderPlans(){
 $('#plansBackBtn').addEventListener('click',()=>{ goHome(); });
 $('#verifyResendBtn').addEventListener('click', async ()=>{
   if(!auth.currentUser) return;
-  try{ await sendEmailVerification(auth.currentUser,{ url: window.location.origin+'/verify.html' }); }catch(e){}
+  const errEl=$('#verifyNoteErr'); errEl.textContent='';
+  try{ await sendEmailVerification(auth.currentUser,{ url: window.location.origin+'/verify.html', handleCodeInApp:true }); }
+  catch(e){ console.error('sendEmailVerification failed', e); errEl.textContent=authErr(e.code); return; }
   $('#verifyResendBtn').textContent=t().verifySent;
 });
 $('#logoutBtn').addEventListener('click',()=>signOut(auth));
@@ -2318,13 +2354,13 @@ function renderBottleneck(){
     b.textContent=opt.cta;
     card.onclick=(e)=>{ if(e.target!==b) b.click(); };
     b.onclick=async ()=>{
+      window.open(waLink(opt.wa),'_blank');
       try{
         await setDoc(doc(db,'users',state.uid),{
           guidanceInterest:opt.key, hotLead:true, guidanceSelectedAt:serverTimestamp()
         },{ merge:true });
         state.profile.guidanceInterest=opt.key; state.profile.hotLead=true;
       }catch(e){}
-      window.open(waLink(opt.wa),'_blank');
       renderBottleneck();
     };
     card.appendChild(b);
