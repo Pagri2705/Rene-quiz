@@ -60,7 +60,12 @@
   --shadow-soft:0 1px 2px rgba(0,0,0,.25),0 10px 28px -16px rgba(0,0,0,.5);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow-x:hidden;max-width:100vw;overflow-anchor:none;background:var(--bg)}
+/* html/body never scroll — .app-scroll below is the one true scroll container.
+   This is what makes the bottom nav sit as a real, non-floating bar instead of a
+   position:fixed overlay (unreliable in several mobile browsers/in-app webviews),
+   and it kills the "swipe left/right feels like leaving the app" edge-swipe issue
+   since the page itself has nothing left to pan/scroll horizontally. */
+html,body{height:100%;overflow:hidden;max-width:100vw;overflow-anchor:none;background:var(--bg);overscroll-behavior:none}
 body{
   background:var(--bg);
   color:var(--ink);
@@ -68,18 +73,27 @@ body{
   font-size:16px;line-height:1.55;
   -webkit-font-smoothing:antialiased;
   display:flex;justify-content:center;
+  touch-action:pan-y;
 }
 .app{
-  width:100%;max-width:560px;min-height:100dvh;
+  width:100%;max-width:560px;height:100dvh;
   display:flex;flex-direction:column;
-  padding:0 20px calc(28px + env(safe-area-inset-bottom));
   position:relative;z-index:1;background:var(--bg);
+  overflow:hidden;
+}
+.app-scroll{
+  flex:1;min-height:0;
+  display:flex;flex-direction:column;
+  overflow-y:auto;overflow-x:hidden;
+  overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;
+  padding:0 20px calc(16px + env(safe-area-inset-bottom));
 }
 @media(min-width:640px){
   .app{border-left:1px solid var(--line);border-right:1px solid var(--line)}
 }
 @media(min-width:900px){
-  .app{max-width:760px;padding:0 40px calc(28px + env(safe-area-inset-bottom))}
+  .app{max-width:760px}
+  .app-scroll{padding:0 40px calc(16px + env(safe-area-inset-bottom))}
 }
 
 /* ---------- Header ---------- */
@@ -138,7 +152,7 @@ em{font-style:normal;color:var(--accent)}
 
 /* ---------- Cards / Buttons ---------- */
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--card-glow),var(--shadow-soft)}
-.stat-tile,.archive-row,.task,.slider-block,.option-card,.small-link-row,.tip-box,.lang-card{box-shadow:var(--card-glow),var(--shadow-soft)}
+.stat-tile,.archive-row,.task,.option-card,.small-link-row,.lang-card{box-shadow:var(--card-glow),var(--shadow-soft)}
 /* CTA: Pill + Button-in-Button-Pfeilkreis + Press-Physik */
 .cta{
   appearance:none;border:none;cursor:pointer;width:100%;
@@ -365,9 +379,6 @@ select.field{appearance:auto}
 }
 .task.done{border-color:var(--success);background:var(--success-soft)}
 .task.done .box{background:var(--success);border-color:var(--success)}
-.slider-block{display:flex;flex-direction:column;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px}
-.slider-head{display:flex;justify-content:space-between;align-items:baseline}
-.slider-head .sl{font-size:13.5px;font-weight:600}
 .seg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .seg button{
   background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);
@@ -383,7 +394,6 @@ select.field{appearance:auto}
 .seg-emoji button{padding:10px 0 6px;font-size:22px;line-height:1.2}
 .seg-week{grid-template-columns:repeat(7,1fr);gap:6px;margin-top:4px}
 .seg-week button{padding:10px 0;font-size:12.5px}
-.choice-count{font-size:12px;color:var(--muted);margin-top:-6px}
 /* Check-in items (A: gezählt) vs. Energie (B: nicht gezählt) — bewusst
    unterschiedliche Optik, damit sofort klar ist: zählt zur Kette vs. Info */
 .task.off{opacity:.5;cursor:not-allowed}
@@ -400,21 +410,8 @@ select.field{appearance:auto}
 .spine-node.missed{background:var(--line);color:var(--muted);border:none}
 .archive-row.missed{opacity:.7}
 .archive-row .a-state.a-missed{color:var(--muted);font-size:11.5px;font-weight:600}
-.coach-note{
-  background:var(--accent-soft);border:1px solid #D7E1FA;border-radius:var(--radius-sm);
-  padding:12px 14px;font-size:13px;color:var(--accent);text-align:center;
-}
-.task-hint{font-size:12px;color:var(--muted);margin:-4px 0 2px 34px}
-.chip-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:-4px}
-.chip{
-  background:var(--card);border:1px solid var(--line);border-radius:999px;
-  padding:7px 13px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;font-family:'Inter';
-}
-.chip:hover{border-color:#C9C9C2;color:var(--ink)}
 .speed-hint{font-size:12px;color:var(--muted);text-align:center;margin-top:-6px}
 .quote-box{background:var(--card);border-left:3px solid var(--ink);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:14px 16px;font-size:15px;font-style:italic}
-.tip-box{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px 16px;font-size:13.5px}
-.tip-box b{font-family:'Archivo';font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px}
 
 /* ---------- Reward ---------- */
 .reward{justify-content:center;text-align:center;gap:16px}
@@ -513,16 +510,18 @@ select.field{appearance:auto}
 .cta.danger{background:#C0392B}
 .footer-note{font-size:11.5px;color:var(--muted);text-align:center;padding-top:8px}
 
-/* ---------- Bottom tab bar ---------- */
-.app.has-bottomnav{padding-bottom:calc(100px + env(safe-area-inset-bottom))}
+/* ---------- Bottom tab bar ----------
+   Deliberately NOT position:fixed — it's a normal flex sibling of .app-scroll
+   inside .app, so it always occupies real space at the bottom of the viewport
+   (never overlaps content, never "floats into" the scrolling text) and can't be
+   affected by mobile browsers/webviews with unreliable fixed-position support. */
 .bottom-nav{
-  position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));
-  transform:translateX(-50%);
+  flex-shrink:0;align-self:center;
   width:calc(100% - 40px);max-width:420px;
+  margin:0 0 calc(10px + env(safe-area-inset-bottom));
   background:var(--card);border:1px solid var(--line);border-radius:999px;
   display:flex;align-items:stretch;justify-content:space-between;
   padding:6px;box-shadow:var(--card-glow),0 12px 32px -12px rgba(20,22,18,.28);
-  z-index:40;
 }
 .bottom-nav button{
   appearance:none;background:none;border:none;cursor:pointer;flex:1;
@@ -550,6 +549,7 @@ select.field{appearance:auto}
 <div class="side-bg left" aria-hidden="true"><img src="assets/bg-fengshui.jpg" alt=""></div>
 <div class="side-bg right" aria-hidden="true"><img src="assets/bg-fengshui.jpg" alt=""></div>
 <div class="app">
+  <div class="app-scroll" id="appScroll">
 
   <header>
     <div class="brand" id="brandLogo" role="button" tabindex="0">
@@ -872,6 +872,7 @@ select.field{appearance:auto}
 
   <div class="footer-note" id="footerNote">Modern Athlete LAB™ · The 7-Day Reset</div>
 
+  </div>
   <nav class="bottom-nav hidden" id="bottomNav">
     <button type="button" data-tab="home" id="navHomeBtn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
@@ -936,11 +937,14 @@ const TEST_ALL_DAYS_UNLOCKED = false;
 const COLLAGE_PHOTOS = Array.from({length:18},(_,i)=>'assets/collage/photo'+(i+1)+'.jpg');
 /* Leaderboard ranks by kept check-ins (0–21), not a resettable streak. */
 const FAKE_LEADERBOARD = [
-  { uid:'fake1', name:'Lena K.', checks:19 },
-  { uid:'fake2', name:'Markus B.', checks:16 },
-  { uid:'fake3', name:'Sarah W.', checks:14 },
-  { uid:'fake4', name:'Jonas T.', checks:12 },
-  { uid:'fake5', name:'Aylin D.', checks:9 }
+  { uid:'fake1', name:'Yu-Ting C.', checks:19 },
+  { uid:'fake2', name:'Lena K.', checks:17 },
+  { uid:'fake3', name:'Jordan M.', checks:16 },
+  { uid:'fake4', name:'Wei-Chen L.', checks:14 },
+  { uid:'fake5', name:'Camila R.', checks:13 },
+  { uid:'fake6', name:'Markus B.', checks:12 },
+  { uid:'fake7', name:'Ivo P.', checks:10 },
+  { uid:'fake8', name:'Katya S.', checks:9 }
 ];
 
 /* Group score: real numbers get a small "phantom crew" baked in so it feels
@@ -963,14 +967,31 @@ const COACH_WHATSAPP = "491784938499";
 
 /* Country codes offered for the WhatsApp number field. */
 const PHONE_COUNTRIES = [
-  ["+49","DE"],["+43","AT"],["+41","CH"],["+1","US/CA"],["+44","GB"],
-  ["+31","NL"],["+32","BE"],["+33","FR"],["+34","ES"],["+39","IT"],
-  ["+45","DK"],["+46","SE"],["+47","NO"],["+48","PL"],["+351","PT"],
-  ["+352","LU"],["+353","IE"],["+358","FI"],["+30","GR"],["+420","CZ"],
-  ["+36","HU"],["+40","RO"],["+90","TR"],["+971","AE"],
-  ["+61","AU"],["+64","NZ"],["+81","JP"],["+82","KR"],["+86","CN"],
-  ["+852","HK"],["+886","TW"],["+65","SG"],["+60","MY"],["+66","TH"],
-  ["+62","ID"],["+63","PH"],["+91","IN"],["+27","ZA"],["+55","BR"]
+  // Western/Central Europe
+  ["+49","DE"],["+43","AT"],["+41","CH"],["+44","GB"],["+33","FR"],
+  ["+31","NL"],["+32","BE"],["+34","ES"],["+39","IT"],["+351","PT"],
+  ["+352","LU"],["+353","IE"],["+377","MC"],["+376","AD"],["+423","LI"],["+378","SM"],
+  // Northern Europe
+  ["+45","DK"],["+46","SE"],["+47","NO"],["+358","FI"],["+354","IS"],
+  // Eastern/Southeastern Europe
+  ["+48","PL"],["+420","CZ"],["+421","SK"],["+36","HU"],["+40","RO"],
+  ["+359","BG"],["+385","HR"],["+386","SI"],["+381","RS"],["+387","BA"],
+  ["+382","ME"],["+389","MK"],["+355","AL"],["+372","EE"],["+371","LV"],
+  ["+370","LT"],["+356","MT"],["+357","CY"],["+30","GR"],["+380","UA"],
+  ["+373","MD"],["+375","BY"],["+7","RU"],
+  // Americas
+  ["+1","US/CA"],["+52","MX"],["+55","BR"],["+54","AR"],["+56","CL"],
+  ["+57","CO"],["+51","PE"],["+58","VE"],["+593","EC"],["+598","UY"],
+  ["+595","PY"],["+591","BO"],["+506","CR"],["+507","PA"],["+502","GT"],
+  // Asia
+  ["+90","TR"],["+81","JP"],["+82","KR"],["+86","CN"],["+852","HK"],
+  ["+886","TW"],["+65","SG"],["+60","MY"],["+66","TH"],["+62","ID"],
+  ["+63","PH"],["+84","VN"],["+91","IN"],["+92","PK"],["+880","BD"],
+  ["+971","AE"],["+966","SA"],["+972","IL"],["+974","QA"],["+965","KW"],
+  ["+973","BH"],["+968","OM"],["+962","JO"],["+961","LB"],
+  // North Africa + Oceania + Southern Africa
+  ["+20","EG"],["+212","MA"],["+213","DZ"],["+216","TN"],["+218","LY"],
+  ["+61","AU"],["+64","NZ"],["+27","ZA"]
 ];
 
 /* =========================================================
@@ -1451,11 +1472,10 @@ $('#themeToggleBtn').addEventListener('click', ()=>{
 });
 
 function scrollToTop(){
-  window.scrollTo(0,0);
-  // Fallback for browsers/cases where window.scrollTo doesn't hit the real
-  // scroll container (older WebKit, or when html/body itself carries the scroll).
-  document.documentElement.scrollTop = 0;
-  document.body.scrollTop = 0;
+  // .app-scroll is the one real scroll container (see its CSS comment) — no need
+  // to also touch window/html/body, they never scroll.
+  const el = document.getElementById('appScroll');
+  if(el) el.scrollTop = 0;
 }
 function show(name){
   Object.values(screens).forEach(s=>s.classList.remove('active'));
@@ -1477,7 +1497,6 @@ function renderBottomNav(){
   const nav=$('#bottomNav');
   const isTabScreen = TAB_SCREENS.includes(currentScreen);
   nav.classList.toggle('hidden', !isTabScreen);
-  $('.app').classList.toggle('has-bottomnav', isTabScreen);
   if(!isTabScreen) return;
   const active = currentScreen==='plans' ? 'plan' : currentScreen==='settings' ? 'profile' : (state.activeTab==='progress' ? 'progress' : 'home');
   nav.querySelectorAll('button').forEach(b=>b.classList.toggle('sel', b.dataset.tab===active));
@@ -1700,14 +1719,25 @@ $('#authSubmitBtn').addEventListener('click', async ()=>{
       await signInWithEmailAndPassword(auth,email,password);
     } else {
       const cred=await createUserWithEmailAndPassword(auth,email,password);
-      try{ await sendEmailVerification(cred.user,{ url: window.location.origin+'/verify.html', handleCodeInApp:true }); }
-      catch(e){ console.error('sendEmailVerification failed', e); }
-      await setDoc(doc(db,'users',cred.user.uid),{
-        email, preferredLanguage: state.lang || 'en', createdAt: serverTimestamp()
-      },{ merge:true });
+      // Account exists and is signed in the moment this line resolves — everything
+      // after is best-effort. Run both in parallel and let neither one throw, so a
+      // slow/failed verification email or Firestore write can never surface as a
+      // false "something went wrong" and leave the user stuck on the auth screen.
+      await Promise.allSettled([
+        sendEmailVerification(cred.user,{ url: window.location.origin+'/verify.html', handleCodeInApp:true }),
+        setDoc(doc(db,'users',cred.user.uid),{
+          email, preferredLanguage: state.lang || 'en', createdAt: serverTimestamp()
+        },{ merge:true })
+      ]);
     }
   }catch(e){ err.textContent=authErr(e.code); }
-  finally{ btn.disabled=false; btn.textContent=orig; }
+  finally{
+    btn.disabled=false; btn.textContent=orig;
+    // Safety net: onAuthStateChanged normally routes away from the auth screen the
+    // moment sign-in/registration succeeds. If it hasn't fired yet for some reason,
+    // don't leave the user stuck here staring at a login form they already passed.
+    if(auth.currentUser && currentScreen==='auth'){ route(); }
+  }
 });
 $('#authForgotBtn').addEventListener('click', async ()=>{
   const email=$('#authEmail').value.trim().toLowerCase();
